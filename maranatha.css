@@ -393,6 +393,25 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
   color: var(--g1); font-size: 15px; cursor: pointer; transition: .2s;
 }
 .cosb:hover { background: var(--au); color: var(--g9); border-color: transparent; }
+.sos { margin-top: 1.4rem; }
+.sosl { font-size: 11px; color: rgba(255,255,255,.4); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+.sosi { display: flex; flex-direction: column; gap: 8px; }
+.sosb {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+  border-radius: 9px; padding: 9px 12px; transition: .2s;
+}
+.sosb:hover { background: var(--au); border-color: transparent; transform: translateY(-2px); }
+.sosic {
+  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+  background: rgba(186,117,23,.2); color: var(--al); font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+}
+.sosb:hover .sosic { background: rgba(255,255,255,.25); color: var(--g9); }
+.sosx { display: flex; flex-direction: column; min-width: 0; }
+.sosn { font-size: 13px; font-weight: 600; color: #fff; }
+.sosh { font-size: 12px; color: var(--g1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sosb:hover .sosn, .sosb:hover .sosh { color: var(--g9); }
 .cof { display: flex; flex-direction: column; gap: 12px; }
 .cfr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .cof input, .cof textarea {
