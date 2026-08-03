@@ -13,7 +13,11 @@
     team:    { title: 'Team / leadership',      hint: 'The people shown in "Meet the Team".' },
     members: { title: 'Choir members',          hint: 'One row per singer; the site groups them by voice part.' },
     gallery: { title: 'Gallery',                hint: 'Photos and videos from your choir life.' },
-    works:   { title: 'Music & recordings',     hint: 'Songs listed in "Our Works" — link each to YouTube or a recording.' }
+    works:   { title: 'Music & recordings',     hint: 'Songs listed in "Our Works" — link each to YouTube or a recording.' },
+    admins:  { title: 'Portal admins',          hint: 'Names that get admin access in the member portal (must match sign-up names).' },
+    memberInfo: { title: 'Member resources',    hint: 'Shown to every signed-in member in the member portal.' },
+    leaderInfo: { title: 'Leader resources',    hint: 'Shown only to leaders (and admins) in the member portal.' },
+    adminInfo:  { title: 'Admin resources',     hint: 'Shown only to admins in the member portal.' }
   };
 
   /* Row field definitions: [key, label, type, extra] */
@@ -58,6 +62,24 @@
       ['sub', 'Subtitle (e.g. Hymn · Live)', 'text'],
       ['year', 'Year', 'text'],
       ['href', 'Link to the recording', 'text']
+    ],
+    admins: [
+      ['name', 'Full name (as used when signing up)', 'text']
+    ],
+    memberInfo: [
+      ['title', 'Title', 'text'],
+      ['body', 'Body', 'textarea'],
+      ['date', 'Date (optional)', 'text']
+    ],
+    leaderInfo: [
+      ['title', 'Title', 'text'],
+      ['body', 'Body', 'textarea'],
+      ['date', 'Date (optional)', 'text']
+    ],
+    adminInfo: [
+      ['title', 'Title', 'text'],
+      ['body', 'Body', 'textarea'],
+      ['date', 'Date (optional)', 'text']
     ]
   };
 
@@ -145,6 +167,7 @@
       }
       try {
         data = JSON.parse(b64decode(res.body.content));
+        data.admins = (Array.isArray(data.siteAdmins) ? data.siteAdmins : []).map(n => ({ name: n }));
       } catch (e) {
         setStatus('admStatus', 'content.json is not valid JSON.', 'err');
         return false;
@@ -341,6 +364,8 @@
   function saveAll() {
     const body = {};
     Object.keys(TABS).forEach(t => { body[t] = collectTab(t); });
+    body.siteAdmins = (body.admins || []).map(a => (a.name || '').trim()).filter(Boolean);
+    delete body.admins;
     const json = JSON.stringify(body, null, 2);
     const b64 = b64encode(json);
 
@@ -367,6 +392,7 @@
         $('admReload').disabled = false;
         if (res.ok) {
           data = body;
+          data.admins = body.siteAdmins.map(n => ({ name: n }));
           setStatus('admStatus', 'Saved \u2713 \u2014 the site republishes in about a minute.', 'ok');
         } else {
           setStatus('admStatus', 'Save failed (error ' + res.status + '). Check your token permissions.', 'err');

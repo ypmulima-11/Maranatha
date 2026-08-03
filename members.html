@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Member Portal — Maranatha Choir</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230d2a04' stroke='%23BA7517' stroke-width='3'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%23FAC775' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="members.css">
+<script src="members.js" defer></script>
+</head>
+<body>
+
+<header class="mp-h">
+  <div class="mp-h-in">
+    <a class="mp-brand" href="index.html">
+      <span class="mp-logo">M</span>
+      <span>Maranatha <em>Member Portal</em></span>
+    </a>
+    <nav class="mp-nav">
+      <a href="index.html">Back to site</a>
+      <a href="admin.html" class="mp-nav-admin" id="mpNavAdmin" hidden>Admin panel</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ AUTH ============ -->
+<section class="mp-auth" id="authView">
+  <div class="mp-card">
+    <div class="mp-tabs" role="tablist">
+      <button type="button" class="mp-tab on" id="tabSignin" data-view="signin">Sign in</button>
+      <button type="button" class="mp-tab" id="tabSignup" data-view="signup">Create account</button>
+    </div>
+
+    <form class="mp-form on" id="signinForm" novalidate>
+      <h1>Welcome back</h1>
+      <p class="mp-hint">Sign in to access member resources, leadership materials and admin tools.</p>
+      <label class="mp-field">Email
+        <input type="email" id="siEmail" placeholder="you@example.com" autocomplete="email">
+      </label>
+      <label class="mp-field">Password
+        <input type="password" id="siPass" placeholder="Your password" autocomplete="current-password">
+      </label>
+      <div class="mp-msg" id="siMsg" role="status"></div>
+      <button type="submit" class="mp-btn big">Sign in</button>
+      <p class="mp-hint mp-center"><button type="button" class="mp-link" id="siForgot">Forgot password?</button> (demo: resets the account so you can sign up again)</p>
+    </form>
+
+    <form class="mp-form" id="signupForm" novalidate>
+      <h1>Create your account</h1>
+      <p class="mp-hint">Accounts are checked against the choir roster: if your name matches a leader or admin in <code>content.json</code>, you get that access level automatically.</p>
+      <label class="mp-field">Full name
+        <input type="text" id="suName" placeholder="e.g. E. Mwaijande" autocomplete="name">
+      </label>
+      <label class="mp-field">Email
+        <input type="email" id="suEmail" placeholder="you@example.com" autocomplete="email">
+      </label>
+      <label class="mp-field">Password (at least 6 characters)
+        <input type="password" id="suPass" placeholder="Choose a password" autocomplete="new-password">
+      </label>
+      <label class="mp-field">Voice part (optional)
+        <select id="suPart">
+          <option value="">Not selected</option>
+          <option>Soprano</option>
+          <option>Alto</option>
+          <option>Tenor</option>
+          <option>Bass</option>
+        </select>
+      </label>
+      <div class="mp-role" id="suRole"></div>
+      <div class="mp-msg" id="suMsg" role="status"></div>
+      <button type="submit" class="mp-btn big">Create account</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<section class="mp-dash" id="dashView" hidden>
+  <div class="mp-dash-in">
+
+    <div class="mp-welcome">
+      <div>
+        <div class="mp-greet" id="mpGreet"></div>
+        <div class="mp-sub" id="mpSub"></div>
+      </div>
+      <button type="button" class="mp-btn ghost" id="mpOut">Sign out</button>
+    </div>
+
+    <div class="mp-note">Demo accounts are stored in this browser only (localStorage). Real, server-based registration can be added later — this is the working preview.</div>
+
+    <div class="mp-grid">
+
+      <div class="mp-card2">
+        <h2>My profile</h2>
+        <div class="mp-pro" id="mpProfile"></div>
+      </div>
+
+      <div class="mp-card2">
+        <h2>Member resources</h2>
+        <div class="mp-list" id="mpMemberInfo"></div>
+      </div>
+
+      <div class="mp-card2" id="mpLeaderCard" hidden>
+        <h2>Leader resources <span class="mp-badge leader">Leader</span></h2>
+        <div class="mp-list" id="mpLeaderInfo"></div>
+      </div>
+
+      <div class="mp-card2" id="mpAdminCard" hidden>
+        <h2>Admin resources <span class="mp-badge admin">Admin</span></h2>
+        <div class="mp-list" id="mpAdminInfo"></div>
+        <p class="mp-hint"><a class="mp-link" href="admin.html">Open the admin dashboard &rarr;</a> to edit the site content.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

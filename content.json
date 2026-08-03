@@ -1,4 +1,33 @@
 {
+  "siteAdmins": [
+    "Choir Director"
+  ],
+  "memberInfo": [
+    {
+      "title": "Rehearsal schedule",
+      "body": "Placeholder — the choir leaders will publish the weekly rehearsal schedule here soon.",
+      "date": ""
+    },
+    {
+      "title": "Member handbook",
+      "body": "Placeholder — guidelines, dress code and member expectations will be shared here.",
+      "date": ""
+    }
+  ],
+  "leaderInfo": [
+    {
+      "title": "Leadership notes",
+      "body": "Placeholder — practice plans, repertoire and section reports will live here.",
+      "date": ""
+    }
+  ],
+  "adminInfo": [
+    {
+      "title": "Administrator desk",
+      "body": "Placeholder — accounts, site settings and official documents will be managed here.",
+      "date": ""
+    }
+  ],
   "news": [
     {
       "date": "2026-07-28",
