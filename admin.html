@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Maranatha Admin</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230d2a04' stroke='%23BA7517' stroke-width='3'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%23FAC775' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="admin.css">
+<script src="admin.js" defer></script>
+</head>
+<body>
+
+<header class="adm-h">
+  <div class="adm-h-in">
+    <div class="adm-brand"><span class="adm-logo">M</span><span>Maranatha Admin</span></div>
+    <div class="adm-hr">
+      <span class="adm-repo" id="admRepo"></span>
+      <a id="admView" class="adm-link" href="https://ypmulima-11.github.io/Maranatha/" target="_blank" rel="noopener">View site &nearr;</a>
+      <button type="button" class="adm-btn ghost" id="admOut" hidden>Sign out</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ LOGIN ============ -->
+<section class="adm-login" id="admLogin">
+  <div class="adm-card">
+    <h1>Admin sign in</h1>
+    <p class="adm-hint">Sign in with a GitHub token that has <b>Contents: Read and write</b> access to the Maranatha repository. Your edits are saved straight to the repo and GitHub Pages republishes the site automatically (about 1 minute).</p>
+    <label class="adm-field">Repository
+      <input type="text" id="admRepoIn" placeholder="owner/repository" autocomplete="off" spellcheck="false">
+    </label>
+    <label class="adm-field">GitHub token
+      <input type="password" id="admTok" placeholder="github_pat_... or ghp_..." autocomplete="off">
+    </label>
+    <button type="button" class="adm-btn big" id="admSignIn">Sign in</button>
+    <div class="adm-msg" id="admLoginMsg" role="status"></div>
+    <details class="adm-help">
+      <summary>How to create a token (once)</summary>
+      <ol>
+        <li>Open github.com and sign in as the repository owner.</li>
+        <li>Go to <b>Settings</b> &rarr; <b>Developer settings</b> &rarr; <b>Personal access tokens</b> &rarr; <b>Fine-grained tokens</b>.</li>
+        <li>Click <b>Generate new token</b>, give it a name, and set an expiry.</li>
+        <li>Under <b>Repository access</b>, choose <b>Only select repositories</b> and pick the Maranatha repo.</li>
+        <li>Under <b>Permissions &rarr; Repository permissions</b>, set <b>Contents</b> to <b>Read and write</b>.</li>
+        <li>Click <b>Generate token</b> and copy it here. You only need it once per browser.</li>
+      </ol>
+      <p class="adm-warn"><b>Security:</b> this token grants write access to your repository. It is stored only in this browser (localStorage) and never sent anywhere except GitHub. Sign out when you are done, and never use this page on a shared computer.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============ WORKSPACE ============ -->
+<section class="adm-main" id="admMain" hidden>
+  <div class="adm-body">
+
+    <aside class="adm-side">
+      <button type="button" class="adm-tab on" data-tab="news">News</button>
+      <button type="button" class="adm-tab" data-tab="events">Events</button>
+      <button type="button" class="adm-tab" data-tab="videos">Videos</button>
+      <button type="button" class="adm-tab" data-tab="team">Team</button>
+      <button type="button" class="adm-tab" data-tab="members">Members</button>
+      <button type="button" class="adm-tab" data-tab="gallery">Gallery</button>
+      <button type="button" class="adm-tab" data-tab="works">Works</button>
+    </aside>
+
+    <div class="adm-pane">
+      <div class="adm-bar">
+        <div>
+          <h2 id="admPaneTitle">News &amp; updates</h2>
+          <p class="adm-hint" id="admPaneHint">Add, edit or remove items, then press Save changes to publish.</p>
+        </div>
+        <div class="adm-bar-actions">
+          <span class="adm-status" id="admStatus" role="status"></span>
+          <button type="button" class="adm-btn ghost" id="admReload">Reload from repo</button>
+          <button type="button" class="adm-btn" id="admSave">Save changes</button>
+        </div>
+      </div>
+
+      <div class="adm-tab-wrap">
+
+        <section class="adm-pane-sec on" id="pane-news">
+          <div class="adm-rows" id="rows-news"></div>
+          <button type="button" class="adm-btn ghost add" data-add="news">&plus; Add news item</button>
+        </section>
+
+        <section class="adm-pane-sec" id="pane-events">
+          <div class="adm-rows" id="rows-events"></div>
+          <button type="button" class="adm-btn ghost add" data-add="events">&plus; Add event</button>
+        </section>
+
+        <section class="adm-pane-sec" id="pane-videos">
+          <div class="adm-rows" id="rows-videos"></div>
+          <button type="button" class="adm-btn ghost add" data-add="videos">&plus; Add video</button>
+        </section>
+
+        <section class="adm-pane-sec" id="pane-team">
+          <div class="adm-rows" id="rows-team"></div>
+          <button type="button" class="adm-btn ghost add" data-add="team">&plus; Add team member</button>
+        </section>
+
+        <section class="adm-pane-sec" id="pane-members">
+          <div class="adm-rows" id="rows-members"></div>
+          <button type="button" class="adm-btn ghost add" data-add="members">&plus; Add member</button>
+        </section>
+
+        <section class="adm-pane-sec" id="pane-gallery">
+          <p class="adm-hint">Images: type a path (e.g. <code>images/gallery1.jpg</code>) or upload a picture straight to the site. Videos: paste a YouTube link to embed it in the gallery.</p>
+          <div class="adm-rows" id="rows-gallery"></div>
+          <button type="button" class="adm-btn ghost add" data-add="gallery">&plus; Add gallery item</button>
+        </section>
+
+        <section class="adm-pane-sec" id="pane-works">
+          <div class="adm-rows" id="rows-works"></div>
+          <button type="button" class="adm-btn ghost add" data-add="works">&plus; Add song</button>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

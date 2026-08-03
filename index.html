@@ -216,25 +216,8 @@
       <div class="slbl">Our works</div>
       <h2 class="stit">Music & Recordings</h2>
       <p class="ssub">Listen to our recordings and watch live performances from our services and concerts.</p>
-      <div class="mug rev-stagger">
-        <!-- REPLACE href with your actual YouTube or music links -->
-        <a href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" class="muc">
-          <div class="muth"><div class="pc"><div class="pt"></div></div><div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
-          <div class="mub"><div class="mut">Bwana ni Mchungaji</div><div class="mutp">Hymn · Live Recording</div><div class="muy">2025</div></div>
-        </a>
-        <a href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" class="muc">
-          <div class="muth"><div class="pc"><div class="pt"></div></div><div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
-          <div class="mub"><div class="mut">Mungu ni Mwema</div><div class="mutp">Praise · Studio</div><div class="muy">2025</div></div>
-        </a>
-        <a href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" class="muc">
-          <div class="muth"><div class="pc"><div class="pt"></div></div><div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
-          <div class="mub"><div class="mut">Neema ya Bwana</div><div class="mutp">Worship · Live Recording</div><div class="muy">2024</div></div>
-        </a>
-        <a href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" class="muc">
-          <div class="muth"><div class="pc"><div class="pt"></div></div><div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
-          <div class="mub"><div class="mut">Shangwe na Furaha</div><div class="mutp">Hymn · Studio</div><div class="muy">2024</div></div>
-        </a>
-      </div>
+      <!-- Song list is rendered from content.json (editable in admin.html) -->
+      <div class="mug rev-stagger" id="muList"></div>
       <div class="gact"><a href="#contact" class="bg" style="display:inline-block">Request our full song list</a></div>
       <div class="plr">
         <div class="plr-eq" id="plrEq" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
@@ -270,41 +253,13 @@
         </div>
         <div class="cdt" id="cdTitle"></div>
       </div>
-      <div class="evg rev-stagger">
-        <div class="evc">
-          <div class="evh"><span class="evd">16</span><div class="evmi"><span class="evm">Aug</span><span class="evy">2026</span></div></div>
-          <div class="evb"><div class="evt">Sunday Mass Performance</div><div class="evmt">Parish Church · 9:00 AM</div><span class="evtg">Liturgy</span></div>
-        </div>
-        <div class="evc">
-          <div class="evh"><span class="evd">06</span><div class="evmi"><span class="evm">Sep</span><span class="evy">2026</span></div></div>
-          <div class="evb"><div class="evt">Maranatha Annual Concert</div><div class="evmt">Community Hall · 4:00 PM</div><span class="evtg">Concert</span></div>
-        </div>
-        <div class="evc">
-          <div class="evh"><span class="evd">11</span><div class="evmi"><span class="evm">Oct</span><span class="evy">2026</span></div></div>
-          <div class="evb"><div class="evt">Special Worship Service</div><div class="evmt">Parish Church · 9:00 AM</div><span class="evtg">Liturgy</span></div>
-        </div>
-        <div class="evc">
-          <div class="evh"><span class="evd">20</span><div class="evmi"><span class="evm">Dec</span><span class="evy">2026</span></div></div>
-          <div class="evb"><div class="evt">Christmas Carol Gala</div><div class="evmt">Main Auditorium · 5:00 PM</div><span class="evtg">Concert</span></div>
-        </div>
-      </div>
+      <!-- Events are rendered from content.json (editable in admin.html) -->
+      <div class="evg rev-stagger" id="evList"></div>
       <div class="evv">
         <div class="slbl">Media highlights</div>
         <h3 class="evvh">Recent performances</h3>
-        <div class="vidg rev-stagger">
-          <a href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" class="vid">
-            <div class="vidth"><div class="vpc"><div class="vpt"></div></div></div>
-            <div class="vidb"><div class="vidt">Bwana ni Mchungaji — Live</div><div class="vidp">Sunday Mass · 2025</div></div>
-          </a>
-          <a href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" class="vid">
-            <div class="vidth"><div class="vpc"><div class="vpt"></div></div></div>
-            <div class="vidb"><div class="vidt">Maranatha Annual Gala</div><div class="vidp">Concert Highlights · 2025</div></div>
-          </a>
-          <a href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" class="vid">
-            <div class="vidth"><div class="vpc"><div class="vpt"></div></div></div>
-            <div class="vidb"><div class="vidt">Christmas Carol Gala</div><div class="vidp">Main Auditorium · 2024</div></div>
-          </a>
-        </div>
+        <!-- Videos are rendered from content.json (editable in admin.html) -->
+        <div class="vidg rev-stagger" id="vidList"></div>
       </div>
     </div>
   </div>
@@ -317,26 +272,8 @@
       <div class="slbl">News & updates</div>
       <h2 class="stit">From the choir life</h2>
       <p class="ssub">Announcements, recaps and community updates from Maranatha Choir.</p>
-      <div class="nwg rev-stagger">
-        <article class="nwc">
-          <div class="nwd"><span>28</span><small>Jul 2026</small></div>
-          <h3>Rehearsals continue every Thursday</h3>
-          <p>Our regular rehearsals take place every Thursday at 6:30 PM in the parish hall. New voices are always welcome.</p>
-          <a class="nwlink" href="#join">Join us &#8594;</a>
-        </article>
-        <article class="nwc">
-          <div class="nwd"><span>19</span><small>Jul 2026</small></div>
-          <h3>Thanks for the Annual Concert</h3>
-          <p>We are grateful to everyone who attended and supported our Annual Concert. Highlights are now on our YouTube channel.</p>
-          <a class="nwlink" href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" rel="noopener">Watch highlights &#8594;</a>
-        </article>
-        <article class="nwc">
-          <div class="nwd"><span>05</span><small>Jul 2026</small></div>
-          <h3>Follow our social media</h3>
-          <p>Stay up to date with our performances by following us on YouTube, Instagram and TikTok.</p>
-          <a class="nwlink" href="#contact">Follow us &#8594;</a>
-        </article>
-      </div>
+      <!-- News are rendered from content.json (editable in admin.html) -->
+      <div class="nwg rev-stagger" id="nwList"></div>
     </div>
   </div>
 </div>
@@ -348,14 +285,8 @@
       <div class="slbl">Leadership</div>
       <h2 class="stit">Meet the Team</h2>
       <p class="ssub">The dedicated people who lead, organize, and inspire Maranatha Choir.</p>
-      <div class="tmg rev-stagger">
-        <div class="tmc"><div class="tma">CD</div><div class="tmn">Choir Director</div><div class="tmr">Director & Conductor</div></div>
-        <div class="tmc"><div class="tma">AM</div><div class="tmn">Asst. Music Dir.</div><div class="tmr">Music Director</div></div>
-        <div class="tmc"><div class="tma">KP</div><div class="tmn">Keyboard Player</div><div class="tmr">Instrumentalist</div></div>
-        <div class="tmc"><div class="tma">SL</div><div class="tmn">Section Leader</div><div class="tmr">Soprano Lead</div></div>
-        <div class="tmc"><div class="tma">TR</div><div class="tmn">Treasurer</div><div class="tmr">Finance</div></div>
-        <div class="tmc"><div class="tma">SE</div><div class="tmn">Secretary</div><div class="tmr">Administration</div></div>
-      </div>
+      <!-- Team is rendered from content.json (editable in admin.html) -->
+      <div class="tmg rev-stagger" id="tmList"></div>
     </div>
   </div>
 </div>
@@ -367,37 +298,8 @@
       <div class="slbl">Members</div>
       <h2 class="stit">Our voices</h2>
       <p class="ssub">The singers who bring our harmony to life — grouped by voice part.</p>
-      <!-- REPLACE placeholder member names with your real roster -->
-      <div class="msg rev-stagger">
-        <div class="msp">
-          <h3>Soprano</h3>
-          <div class="msl">
-            <div class="msm"><div class="msa">EM</div><div class="msx"><div class="msn">E. Mwaijande</div><div class="msr">Soprano Lead</div></div></div>
-            <div class="msm"><div class="msa">JT</div><div class="msx"><div class="msn">J. Temu</div><div class="msr">Soprano</div></div></div>
-          </div>
-        </div>
-        <div class="msp">
-          <h3>Alto</h3>
-          <div class="msl">
-            <div class="msm"><div class="msa">NK</div><div class="msx"><div class="msn">N. Komba</div><div class="msr">Alto Lead</div></div></div>
-            <div class="msm"><div class="msa">LR</div><div class="msx"><div class="msn">L. Rweyemamu</div><div class="msr">Alto</div></div></div>
-          </div>
-        </div>
-        <div class="msp">
-          <h3>Tenor</h3>
-          <div class="msl">
-            <div class="msm"><div class="msa">PM</div><div class="msx"><div class="msn">P. Mwakalinga</div><div class="msr">Tenor Lead</div></div></div>
-            <div class="msm"><div class="msa">KK</div><div class="msx"><div class="msn">K. Kimaro</div><div class="msr">Tenor</div></div></div>
-          </div>
-        </div>
-        <div class="msp">
-          <h3>Bass</h3>
-          <div class="msl">
-            <div class="msm"><div class="msa">DN</div><div class="msx"><div class="msn">D. Nyerere</div><div class="msr">Bass Lead</div></div></div>
-            <div class="msm"><div class="msa">MU</div><div class="msx"><div class="msn">M. Urio</div><div class="msr">Bass</div></div></div>
-          </div>
-        </div>
-      </div>
+      <!-- Members are rendered from content.json (editable in admin.html) -->
+      <div class="msg rev-stagger" id="msList"></div>
     </div>
   </div>
 </div>
@@ -409,13 +311,8 @@
       <div class="slbl">Memories</div>
       <h2 class="stit">Gallery</h2>
       <p class="ssub">Moments captured from our performances, celebrations, and choir life.</p>
-      <div class="gag rev-stagger">
-        <!-- REPLACE src with your image file paths (e.g. images/photo1.jpg) -->
-        <div class="gam"><img src="images/gallery1.jpg" alt="Choir performance" onerror="this.style.display='none'"><div class="gaov"><div class="gapl">+</div></div></div>
-        <div class="gam"><img src="images/gallery2.jpg" alt="Choir performance" onerror="this.style.display='none'"><div class="gaov"><div class="gapl">+</div></div></div>
-        <div class="gam"><img src="images/gallery3.jpg" alt="Choir performance" onerror="this.style.display='none'"><div class="gaov"><div class="gapl">+</div></div></div>
-        <div class="gam"><img src="images/gallery4.jpg" alt="Choir performance" onerror="this.style.display='none'"><div class="gaov"><div class="gapl">+</div></div></div>
-      </div>
+      <!-- Gallery is rendered from content.json (editable in admin.html) -->
+      <div class="gag rev-stagger" id="gaList"></div>
       <div class="gact"><a href="#contact" class="bg" style="display:inline-block">Share your photos with us</a></div>
     </div>
   </div>
@@ -618,7 +515,7 @@
     </div>
   </div>
   <div class="fbot">
-    <span>&#169; 2026 Maranatha Choir &middot; Dar es Salaam, Tanzania. All rights reserved.</span>
+    <span>&#169; 2026 Maranatha Choir &middot; Dar es Salaam, Tanzania. All rights reserved. &middot; <a href="admin.html">Admin</a></span>
   </div>
 </footer>
 
@@ -628,6 +525,7 @@
   <button class="lb-n lb-prev" id="lbPrev" aria-label="Previous image">&lsaquo;</button>
   <div class="lb-imgw">
     <img id="lbImg" src="" alt="">
+    <iframe class="lb-frame" id="lbFrame" src="" allowfullscreen title="Gallery video"></iframe>
     <div class="lbcap" id="lbCap"></div>
   </div>
   <button class="lb-n lb-next" id="lbNext" aria-label="Next image">&rsaquo;</button>

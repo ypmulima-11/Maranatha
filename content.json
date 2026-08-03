@@ -1,0 +1,122 @@
+{
+  "news": [
+    {
+      "date": "2026-07-28",
+      "title": "Rehearsals continue every Thursday",
+      "body": "Our regular rehearsals take place every Thursday at 6:30 PM in the parish hall. New voices are always welcome.",
+      "linkText": "Join us",
+      "linkHref": "#join"
+    },
+    {
+      "date": "2026-07-19",
+      "title": "Thanks for the Annual Concert",
+      "body": "We are grateful to everyone who attended and supported our Annual Concert. Highlights are now on our YouTube channel.",
+      "linkText": "Watch highlights",
+      "linkHref": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+    },
+    {
+      "date": "2026-07-05",
+      "title": "Follow our social media",
+      "body": "Stay up to date with our performances by following us on YouTube, Instagram and TikTok.",
+      "linkText": "Follow us",
+      "linkHref": "#contact"
+    }
+  ],
+  "events": [
+    {
+      "date": "2026-08-16",
+      "time": "9:00 AM",
+      "place": "Parish Church",
+      "title": "Sunday Mass Performance",
+      "tag": "Liturgy"
+    },
+    {
+      "date": "2026-09-06",
+      "time": "4:00 PM",
+      "place": "Community Hall",
+      "title": "Maranatha Annual Concert",
+      "tag": "Concert"
+    },
+    {
+      "date": "2026-10-11",
+      "time": "9:00 AM",
+      "place": "Parish Church",
+      "title": "Special Worship Service",
+      "tag": "Liturgy"
+    },
+    {
+      "date": "2026-12-20",
+      "time": "5:00 PM",
+      "place": "Main Auditorium",
+      "title": "Christmas Carol Gala",
+      "tag": "Concert"
+    }
+  ],
+  "videos": [
+    {
+      "title": "Bwana ni Mchungaji — Live",
+      "sub": "Sunday Mass · 2025",
+      "href": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+    },
+    {
+      "title": "Maranatha Annual Gala",
+      "sub": "Concert Highlights · 2025",
+      "href": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+    },
+    {
+      "title": "Christmas Carol Gala",
+      "sub": "Main Auditorium · 2024",
+      "href": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+    }
+  ],
+  "team": [
+    { "initials": "CD", "name": "Choir Director", "role": "Director & Conductor" },
+    { "initials": "AM", "name": "Asst. Music Dir.", "role": "Music Director" },
+    { "initials": "KP", "name": "Keyboard Player", "role": "Instrumentalist" },
+    { "initials": "SL", "name": "Section Leader", "role": "Soprano Lead" },
+    { "initials": "TR", "name": "Treasurer", "role": "Finance" },
+    { "initials": "SE", "name": "Secretary", "role": "Administration" }
+  ],
+  "members": [
+    { "part": "Soprano", "initials": "EM", "name": "E. Mwaijande", "role": "Soprano Lead" },
+    { "part": "Soprano", "initials": "JT", "name": "J. Temu", "role": "Soprano" },
+    { "part": "Alto", "initials": "NK", "name": "N. Komba", "role": "Alto Lead" },
+    { "part": "Alto", "initials": "LR", "name": "L. Rweyemamu", "role": "Alto" },
+    { "part": "Tenor", "initials": "PM", "name": "P. Mwakalinga", "role": "Tenor Lead" },
+    { "part": "Tenor", "initials": "KK", "name": "K. Kimaro", "role": "Tenor" },
+    { "part": "Bass", "initials": "DN", "name": "D. Nyerere", "role": "Bass Lead" },
+    { "part": "Bass", "initials": "MU", "name": "M. Urio", "role": "Bass" }
+  ],
+  "gallery": [
+    { "src": "images/gallery1.jpg", "cap": "Choir performance" },
+    { "src": "images/gallery2.jpg", "cap": "Choir performance" },
+    { "src": "images/gallery3.jpg", "cap": "Choir performance" },
+    { "src": "images/gallery4.jpg", "cap": "Choir performance" }
+  ],
+  "works": [
+    {
+      "title": "Bwana ni Mchungaji",
+      "sub": "Hymn · Live Recording",
+      "year": "2025",
+      "href": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+    },
+    {
+      "title": "Mungu ni Mwema",
+      "sub": "Praise · Studio",
+      "year": "2025",
+      "href": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+    },
+    {
+      "title": "Neema ya Bwana",
+      "sub": "Worship · Live Recording",
+      "year": "2024",
+      "href": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+    },
+    {
+      "title": "Shangwe na Furaha",
+      "sub": "Hymn · Studio",
+      "year": "2024",
+      "href": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+    }
+  ]
+}

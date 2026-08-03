@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /admin.html
 
 Sitemap: https://ypmulima-11.github.io/Maranatha/sitemap.xml
