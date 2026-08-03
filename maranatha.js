@@ -21,6 +21,19 @@
     nmMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
   }
 
+  /* ---------- Language switcher (visual) ---------- */
+  const langBtns = [...document.querySelectorAll('#tblang button')];
+  langBtns.forEach(b => {
+    b.addEventListener('click', () => {
+      langBtns.forEach(x => {
+        x.classList.remove('on');
+        x.setAttribute('aria-pressed', 'false');
+      });
+      b.classList.add('on');
+      b.setAttribute('aria-pressed', 'true');
+    });
+  });
+
   /* ---------- Navbar: shadow on scroll + scrollspy ---------- */
   const nav = document.querySelector('nav');
   const onScroll = () => {

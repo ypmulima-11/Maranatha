@@ -4,22 +4,35 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Maranatha Choir — Dar es Salaam</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="description" content="Maranatha Choir — a Catholic choir based in Dar es Salaam, Tanzania. Worship, discipline, friendship and musical excellence.">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="maranatha.css">
 <script src="maranatha.js" defer></script>
 </head>
 <body>
 <script>document.documentElement.className += ' js';</script>
 
+<!-- TOP BAR -->
+<div class="tb">
+  <span class="tb-mail">&#9993; <a href="mailto:info@maranathachoir.co.tz">info@maranathachoir.co.tz</a></span>
+  <div class="tblang" id="tblang">
+    <button type="button" class="on" data-lang="en" aria-pressed="true">EN</button>
+    <span>|</span>
+    <button type="button" data-lang="sw" aria-pressed="false">SW</button>
+  </div>
+</div>
+
+<!-- NAV -->
 <nav>
   <div class="nb">
     <div class="nc">M</div>
     <span class="nn">Maranatha Choir</span>
   </div>
   <div class="nl">
+    <a href="#home">Home</a>
     <a href="#about">About</a>
+    <a href="#works">Works</a>
     <a href="#events">Events</a>
-    <a href="#music">Music</a>
     <a href="#team">Team</a>
     <a href="#gallery">Gallery</a>
     <a href="#contact" class="nc-cta">Contact</a>
@@ -29,35 +42,55 @@
   </button>
 </nav>
 <div class="nm-menu" id="nmMenu">
+  <a href="#home">Home</a>
   <a href="#about">About</a>
-    <a href="#events">Events</a>
-    <a href="#music">Music</a>
-    <a href="#team">Team</a>
-    <a href="#gallery">Gallery</a>
-    <a href="#contact" class="nc-cta">Contact</a>
+  <a href="#works">Works</a>
+  <a href="#events">Events</a>
+  <a href="#team">Team</a>
+  <a href="#gallery">Gallery</a>
+  <a href="#contact" class="nc-cta">Contact</a>
 </div>
 
-<section class="hero">
+<!-- HERO -->
+<section class="hero" id="home">
   <div class="hbg"></div>
   <div class="hring"></div>
   <div class="hc">
     <div class="hlbl">Dar es Salaam · Tanzania</div>
     <h1>Singing His Praise<br>with <em>One Voice</em></h1>
-    <p class="hsub">Maranatha Choir — a community of faith united<br>through music, worship, and the joy of the Lord.</p>
+    <p class="hsub">Maranatha Choir — a Catholic choir based in Dar es Salaam, Tanzania.<br>Worship, discipline, friendship and musical excellence.</p>
     <div class="hbtns">
       <a href="#about" class="bg">Discover our story</a>
-      <a href="#music" class="bo">▶ Watch us perform</a>
+      <a href="#works" class="bo">&#9654; Listen to our music</a>
+    </div>
+    <div class="hstats">
+      <div><span>50+</span><div class="hsl">Members</div></div>
+      <div><span>10+</span><div class="hsl">Years</div></div>
+      <div><span>100+</span><div class="hsl">Performances</div></div>
+      <div><span>4</span><div class="hsl">Albums</div></div>
     </div>
   </div>
 </section>
+
+<!-- FEATURES -->
+<div class="fsw">
+  <div class="sw">
+    <div class="fsi rev-stagger">
+      <div class="fsb"><div class="fsic">&#127925;</div><div><h3>Choir Ministry</h3><p>Faith, service and worship in every song we lift up.</p></div></div>
+      <div class="fsb"><div class="fsic">&#127942;</div><div><h3>Award Winning</h3><p>Celebrating achievements and milestones together.</p></div></div>
+      <div class="fsb"><div class="fsic">&#128247;</div><div><h3>Media Focused</h3><p>Videos, photos and stories from our journey.</p></div></div>
+      <div class="fsb"><div class="fsic">&#128101;</div><div><h3>Strong Community</h3><p>Friendship, prayer and spiritual growth through music.</p></div></div>
+    </div>
+  </div>
+</div>
 
 <!-- ABOUT -->
 <div class="aw" id="about">
   <div class="sw">
     <div class="ag reveal">
       <div class="atxt">
-        <div class="slbl">Who we are</div>
-        <h2 class="stit">About Maranatha Choir</h2>
+        <div class="slbl">Welcome to Maranatha</div>
+        <h2 class="stit">So much more than just a choir</h2>
         <p class="ssub">A spirit-filled choir dedicated to enhancing worship and serving the community through music.</p>
         <p>Maranatha Choir is a dedicated choir based in Dar es Salaam, Tanzania. Founded on the belief that music is a powerful form of prayer, we strive to lead our congregation into deeper worship and encounter with God.</p>
         <p>Our members come from diverse backgrounds — all united by faith and a deep love of sacred music. We minister at Sunday services, feast days, special celebrations, and community events throughout the year.</p>
@@ -72,6 +105,84 @@
         <img src="images/about-choir.jpg" alt="Maranatha Choir Group" onerror="this.style.display='none'">
         <div class="abdg">Est. Dar es Salaam</div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- VALUES -->
+<div class="valw" id="values">
+  <div class="sw">
+    <div class="vali">
+      <div class="slbl">What we value</div>
+      <h2 class="stit">A ministry of song, discipline and prayer</h2>
+      <p class="ssub">Maranatha does more than sing. We engage our minds and souls in everything we do, always at service to our community.</p>
+      <div class="valg rev-stagger">
+        <div class="valc"><div class="valic">&#128330;</div><h3>Everyone is Welcome</h3><p>A welcoming Catholic choir community for singers, supporters and worshippers.</p></div>
+        <div class="valc"><div class="valic">&#127925;</div><h3>Live Events & Masses</h3><p>Live masses, church celebrations, performances and special worship events.</p></div>
+        <div class="valc"><div class="valic">&#127942;</div><h3>Awards & Recognition</h3><p>Milestones such as Best Choir of the Year and other notable achievements.</p></div>
+        <div class="valc"><div class="valic">&#128218;</div><h3>Music & Library</h3><p>Recordings, documents, archives and a growing library of sacred songs.</p></div>
+        <div class="valc"><div class="valic">&#129309;</div><h3>Strong Community</h3><p>Friendship, discipline, prayer life and spiritual growth through music ministry.</p></div>
+        <div class="valc"><div class="valic">&#127911;</div><h3>Leadership & Service</h3><p>Dedicated leaders, team structure and service to the parish and beyond.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STORIES -->
+<div class="stw" id="stories">
+  <div class="sw">
+    <div class="sti">
+      <div class="slbl">Our stories</div>
+      <h2 class="stit">The voices behind the music</h2>
+      <p class="ssub">Mission, testimony and the human side of Maranatha Choir.</p>
+      <div class="stg rev-stagger">
+        <div class="stc">
+          <div class="stq">&#8220;</div>
+          <p>Singing with Maranatha is more than performance. It is prayer, family and a joyful way to serve God every week.</p>
+          <div class="stm"><div class="sta">CD</div><div><div class="stn">Choir Director</div><div class="str">Soprano & Leadership</div></div></div>
+        </div>
+        <div class="stc">
+          <div class="stq">&#8220;</div>
+          <p>From our first practice to the Christmas Gala, this choir has become my second family. The harmony is in the people.</p>
+          <div class="stm"><div class="sta">AM</div><div><div class="stn">Asst. Music Director</div><div class="str">Music & Rehearsals</div></div></div>
+        </div>
+        <div class="stc">
+          <div class="stq">&#8220;</div>
+          <p>Every Sunday we prepare our hearts together. That discipline and prayer life is what makes our worship special.</p>
+          <div class="stm"><div class="sta">SL</div><div><div class="stn">Section Leader</div><div class="str">Soprano Lead</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WORKS -->
+<div class="muw" id="works">
+  <div class="sw">
+    <div class="mui">
+      <div class="slbl">Our works</div>
+      <h2 class="stit">Music & Recordings</h2>
+      <p class="ssub">Listen to our recordings and watch live performances from our services and concerts.</p>
+      <div class="mug rev-stagger">
+        <!-- REPLACE href with your actual YouTube or music links -->
+        <a href="https://youtube.com" target="_blank" class="muc">
+          <div class="muth"><div class="pc"><div class="pt"></div></div><div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
+          <div class="mub"><div class="mut">Bwana ni Mchungaji</div><div class="mutp">Hymn · Live Recording</div><div class="muy">2025</div></div>
+        </a>
+        <a href="https://youtube.com" target="_blank" class="muc">
+          <div class="muth"><div class="pc"><div class="pt"></div></div><div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
+          <div class="mub"><div class="mut">Mungu ni Mwema</div><div class="mutp">Praise · Studio</div><div class="muy">2025</div></div>
+        </a>
+        <a href="https://youtube.com" target="_blank" class="muc">
+          <div class="muth"><div class="pc"><div class="pt"></div></div><div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
+          <div class="mub"><div class="mut">Neema ya Bwana</div><div class="mutp">Worship · Live Recording</div><div class="muy">2024</div></div>
+        </a>
+        <a href="https://youtube.com" target="_blank" class="muc">
+          <div class="muth"><div class="pc"><div class="pt"></div></div><div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
+          <div class="mub"><div class="mut">Shangwe na Furaha</div><div class="mutp">Hymn · Studio</div><div class="muy">2024</div></div>
+        </a>
+      </div>
+      <div class="gact"><a href="#contact" class="bg" style="display:inline-block">Request our full song list</a></div>
     </div>
   </div>
 </div>
@@ -111,35 +222,23 @@
           <div class="evb"><div class="evt">Christmas Carol Gala</div><div class="evmt">Main Auditorium · 5:00 PM</div><span class="evtg">Concert</span></div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- MUSIC -->
-<div class="muw" id="music">
-  <div class="sw">
-    <div class="mui">
-      <div class="slbl">Discography</div>
-      <h2 class="stit">Music & Videos</h2>
-      <p class="ssub">Listen to our recordings and watch live performances from our services and concerts.</p>
-      <div class="mug rev-stagger">
-        <!-- REPLACE href with your actual YouTube or music links -->
-        <a href="https://youtube.com" target="_blank" class="muc">
-          <div class="muth"><div class="pc"><div class="pt"></div></div><div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
-          <div class="mub"><div class="mut">Bwana ni Mchungaji</div><div class="mutp">Hymn · Live Recording</div><div class="muy">2025</div></div>
-        </a>
-        <a href="https://youtube.com" target="_blank" class="muc">
-          <div class="muth"><div class="pc"><div class="pt"></div></div><div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
-          <div class="mub"><div class="mut">Mungu ni Mwema</div><div class="mutp">Praise · Studio</div><div class="muy">2025</div></div>
-        </a>
-        <a href="https://youtube.com" target="_blank" class="muc">
-          <div class="muth"><div class="pc"><div class="pt"></div></div><div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
-          <div class="mub"><div class="mut">Neema ya Bwana</div><div class="mutp">Worship · Live Recording</div><div class="muy">2024</div></div>
-        </a>
-        <a href="https://youtube.com" target="_blank" class="muc">
-          <div class="muth"><div class="pc"><div class="pt"></div></div><div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>
-          <div class="mub"><div class="mut">Shangwe na Furaha</div><div class="mutp">Hymn · Studio</div><div class="muy">2024</div></div>
-        </a>
+      <div class="evv">
+        <div class="slbl">Media highlights</div>
+        <h3 class="evvh">Recent performances</h3>
+        <div class="vidg rev-stagger">
+          <a href="https://youtube.com" target="_blank" class="vid">
+            <div class="vidth"><div class="vpc"><div class="vpt"></div></div></div>
+            <div class="vidb"><div class="vidt">Bwana ni Mchungaji — Live</div><div class="vidp">Sunday Mass · 2025</div></div>
+          </a>
+          <a href="https://youtube.com" target="_blank" class="vid">
+            <div class="vidth"><div class="vpc"><div class="vpt"></div></div></div>
+            <div class="vidb"><div class="vidt">Maranatha Annual Gala</div><div class="vidp">Concert Highlights · 2025</div></div>
+          </a>
+          <a href="https://youtube.com" target="_blank" class="vid">
+            <div class="vidth"><div class="vpc"><div class="vpt"></div></div></div>
+            <div class="vidb"><div class="vidt">Christmas Carol Gala</div><div class="vidp">Main Auditorium · 2024</div></div>
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -178,7 +277,22 @@
         <div class="gam"><img src="images/gallery3.jpg" alt="Choir performance" onerror="this.style.display='none'"><div class="gaov"><div class="gapl">+</div></div></div>
         <div class="gam"><img src="images/gallery4.jpg" alt="Choir performance" onerror="this.style.display='none'"><div class="gaov"><div class="gapl">+</div></div></div>
       </div>
-      <div class="gact"><a href="#gallery" class="bg" style="display:inline-block;margin-top:1.2rem">View full gallery</a></div>
+      <div class="gact"><a href="#contact" class="bg" style="display:inline-block">Share your photos with us</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="ctaw">
+  <div class="sw">
+    <div class="ctai reveal">
+      <div class="slbl">Start your journey</div>
+      <h2 class="stit">Join our family of voices</h2>
+      <p class="ssub">Whether you sing, play an instrument, or simply love worship music, there is a place for you at Maranatha Choir.</p>
+      <div class="hbtns">
+        <a href="#contact" class="bg">Join the choir</a>
+        <a href="#events" class="bo">See upcoming events</a>
+      </div>
     </div>
   </div>
 </div>
@@ -192,14 +306,14 @@
       <p class="ssub">Reach out for bookings, collaborations, or general enquiries. We'd love to hear from you.</p>
       <div class="cog reveal">
         <div>
-          <div class="coit"><div class="coib">📍</div><div><div class="col">Location</div><div class="cov">Dar es Salaam, Tanzania</div></div></div>
-          <div class="coit"><div class="coib">✉</div><div><div class="col">Email</div><div class="cov">info@maranathachoir.co.tz</div></div></div>
-          <div class="coit"><div class="coib">📞</div><div><div class="col">Phone</div><div class="cov">+255 700 000 000</div></div></div>
+          <div class="coit"><div class="coib">&#128205;</div><div><div class="col">Location</div><div class="cov">Dar es Salaam, Tanzania</div></div></div>
+          <div class="coit"><div class="coib">&#9993;</div><div><div class="col">Email</div><div class="cov">info@maranathachoir.co.tz</div></div></div>
+          <div class="coit"><div class="coib">&#9742;</div><div><div class="col">Phone</div><div class="cov">+255 700 000 000</div></div></div>
           <div class="coso">
-            <div class="cosb">f</div>
-            <div class="cosb">▶</div>
-            <div class="cosb">◎</div>
-            <div class="cosb">✆</div>
+            <a class="cosb" href="#contact">f</a>
+            <a class="cosb" href="https://youtube.com" target="_blank">&#9654;</a>
+            <a class="cosb" href="#contact">&#9678;</a>
+            <a class="cosb" href="#contact">&#9990;</a>
           </div>
         </div>
         <form class="cof" id="cof" novalidate>
@@ -210,23 +324,53 @@
           <div class="fld"><input type="text" name="subject" placeholder="Subject" /></div>
           <div class="fld"><textarea name="message" placeholder="Your message..."></textarea></div>
           <div class="form-ok" id="formOk">Thank you! Your message has been sent. We'll be in touch soon.</div>
-          <button type="submit">Send message →</button>
+          <button type="submit">Send message &#8594;</button>
         </form>
       </div>
     </div>
   </div>
 </div>
 
+<!-- FOOTER -->
 <footer>
-  <div class="fl">© 2026 Maranatha Choir · Dar es Salaam, Tanzania. All rights reserved.</div>
-  <div class="fls">
-    <a href="#about">About</a>
-    <a href="#events">Events</a>
-    <a href="#music">Music</a>
-    <a href="#contact">Contact</a>
+  <div class="fwrap">
+    <div class="fcol fbrand">
+      <div class="nb"><div class="nc">M</div><span class="nn">Maranatha Choir</span></div>
+      <p>Kwaya ya Maranatha — a ministry of song, discipline and prayer in the Catholic community of Dar es Salaam, Tanzania.</p>
+      <div class="coso">
+        <a class="cosb" href="#contact">f</a>
+        <a class="cosb" href="https://youtube.com" target="_blank">&#9654;</a>
+        <a class="cosb" href="#contact">&#9678;</a>
+      </div>
+    </div>
+    <div class="fcol">
+      <h4>Quick Links</h4>
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#works">Works</a>
+      <a href="#events">Events</a>
+      <a href="#gallery">Gallery</a>
+    </div>
+    <div class="fcol">
+      <h4>Music & Media</h4>
+      <a href="#works">Our Recordings</a>
+      <a href="https://youtube.com" target="_blank">YouTube</a>
+      <a href="#gallery">Photo Gallery</a>
+      <a href="#contact">Bookings</a>
+    </div>
+    <div class="fcol">
+      <h4>Contact</h4>
+      <span>Dar es Salaam, Tanzania</span>
+      <a href="mailto:info@maranathachoir.co.tz">info@maranathachoir.co.tz</a>
+      <a href="tel:+255700000000">+255 700 000 000</a>
+    </div>
+  </div>
+  <div class="fbot">
+    <span>&#169; 2026 Maranatha Choir &middot; Dar es Salaam, Tanzania. All rights reserved.</span>
   </div>
 </footer>
 
+<!-- LIGHTBOX -->
 <div class="lb" id="lb" aria-hidden="true">
   <button class="lb-x" id="lbX" aria-label="Close">&times;</button>
   <button class="lb-n lb-prev" id="lbPrev" aria-label="Previous image">&lsaquo;</button>
