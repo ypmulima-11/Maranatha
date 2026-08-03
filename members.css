@@ -82,12 +82,13 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 .mp-center { text-align: center; margin-top: 12px; }
 
 .mp-field { display: block; font-weight: 600; font-size: 13px; margin-bottom: 13px; }
-.mp-field input, .mp-field select {
+.mp-field input, .mp-field select, .mp-field textarea {
   display: block; width: 100%; margin-top: 5px;
   border: 1px solid var(--line); border-radius: 8px;
   padding: 9px 11px; background: #fbfcf8;
 }
-.mp-field input:focus, .mp-field select:focus { outline: 2px solid var(--al); border-color: var(--au); }
+.mp-field textarea { resize: vertical; min-height: 70px; }
+.mp-field input:focus, .mp-field select:focus, .mp-field textarea:focus { outline: 2px solid var(--al); border-color: var(--au); }
 
 .mp-role {
   background: #fdf3e2; border: 1px solid #f0d9a8; color: #7a5b1a;
@@ -139,6 +140,30 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 .mp-pro { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
 .mp-pro .mp-k { font-size: 11px; color: var(--mut); text-transform: uppercase; letter-spacing: .05em; }
 .mp-pro .mp-v { font-size: 13.5px; font-weight: 600; }
+
+/* ---------- Setup banner ---------- */
+.mp-banner {
+  max-width: 700px; margin: 2rem auto 0; background: #fff8ec;
+  border: 1px solid #f0d9a8; border-radius: 12px; padding: 18px 22px;
+}
+.mp-banner h3 { font-size: 16px; margin-bottom: 6px; }
+.mp-banner p { font-size: 13px; color: var(--mut); margin-bottom: 8px; }
+.mp-banner ol { margin: 0 0 0 18px; font-size: 13px; color: var(--mut); }
+.mp-banner li { margin-bottom: 5px; }
+
+/* ---------- Admin: member list + resource form ---------- */
+.mp-sec { font-size: 13px; margin: 18px 0 8px; color: var(--mut); text-transform: uppercase; letter-spacing: .05em; }
+.mp-mrow-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 4px; }
+.mp-mrow {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px;
+}
+.mp-mwho { min-width: 0; }
+.mp-mrow select {
+  border: 1px solid var(--line); border-radius: 7px;
+  padding: 6px 8px; background: #fbfcf8; cursor: pointer;
+}
+.mp-res-form { margin-top: 4px; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 720px) {

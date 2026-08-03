@@ -1,66 +1,185 @@
 (function () {
   'use strict';
 
-  const ACC_KEY = 'maranathaAccounts';
-  const SES_KEY = 'maranathaSession';
   const $ = id => document.getElementById(id);
-
-  const PARTS = ['Soprano', 'Alto', 'Tenor', 'Bass'];
-
-  /* Fallback roster (used if content.json cannot be fetched, e.g. local file preview).
-     These should match content.json — role detection on the live site uses content.json. */
-  let siteAdmins = ['Choir Director'];
-  let team = [];
-  let members = [];
-
-  /* ---------- Storage helpers ---------- */
-
-  function loadUsers() {
-    try { return JSON.parse(localStorage.getItem(ACC_KEY) || '[]'); } catch (e) { return []; }
-  }
-  function saveUsers(u) {
-    localStorage.setItem(ACC_KEY, JSON.stringify(u));
-  }
-  function loadSession() {
-    try { return JSON.parse(sessionStorage.getItem(SES_KEY) || 'null'); } catch (e) { return null; }
-  }
-  function saveSession(s) {
-    sessionStorage.setItem(SES_KEY, JSON.stringify(s));
-  }
-
-  /* ---------- Password hashing (SHA-256 where available) ---------- */
-
-  async function hashPassword(pw, salt) {
-    const s = salt + ':' + pw;
-    if (window.crypto && crypto.subtle && crypto.subtle.digest) {
-      try {
-        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-      } catch (e) { /* fall through */ }
-    }
-    let h = 5381;
-    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
-    return 'x' + h.toString(36);
-  }
-
-  function makeSalt() {
-    return Math.random().toString(36).slice(2) + Date.now().toString(36);
-  }
-
-  /* ---------- Role detection (content-driven) ---------- */
-
-  function detectRole(name) {
-    const n = (name || '').trim().toLowerCase();
-    if (!n) return { role: 'member', title: 'Member' };
-    if (siteAdmins.some(a => a.trim().toLowerCase() === n)) return { role: 'admin', title: 'Site Admin' };
-    const t = team.find(x => (x.name || '').trim().toLowerCase() === n);
-    if (t) return { role: 'leader', title: t.role || t.name };
-    const m = members.find(x => (x.name || '').trim().toLowerCase() === n);
-    if (m && /lead/i.test(m.role || '')) return { role: 'leader', title: m.role };
-    return { role: 'member', title: m ? m.role : 'Member' };
-  }
-
   const ROLE_LABEL = { member: 'Member', leader: 'Leader', admin: 'Admin' };
+
+  let supabase = null;
+  let profile = null;
+  let resources = [];
+
+  /* ---------- Setup banner (shown until supabase-config.js is filled in) ---------- */
+
+  function showSetupBanner() {
+    const banner = $('setupBanner');
+    if (banner) banner.hidden = false;
+    ['signinForm', 'signupForm'].forEach(id => { if ($(id)) $(id).hidden = true; });
+  }
+
+  /* ---------- View switching ---------- */
+
+  function showAuth() {
+    $('dashView').hidden = true;
+    $('resetView').hidden = true;
+    $('authView').hidden = false;
+  }
+
+  function showDash() {
+    $('resetView').hidden = true;
+    $('authView').hidden = true;
+    $('dashView').hidden = false;
+  }
+
+  function showReset() {
+    $('authView').hidden = true;
+    $('dashView').hidden = true;
+    $('resetView').hidden = false;
+  }
+
+  /* ---------- Auth actions ---------- */
+
+  async function signIn(e) {
+    e.preventDefault();
+    const msg = $('siMsg');
+    const email = $('siEmail').value.trim().toLowerCase();
+    const password = $('siPass').value;
+    if (!email || !password) {
+      msg.className = 'mp-msg err';
+      msg.textContent = 'Enter your email and password.';
+      return;
+    }
+    msg.className = 'mp-msg';
+    msg.textContent = 'Signing in\u2026';
+    const { error } = await supabase.auth.signInWithPassword({ email: email, password: password });
+    if (error) {
+      msg.className = 'mp-msg err';
+      msg.textContent = error.message === 'Invalid login credentials'
+        ? 'Incorrect email or password.'
+        : error.message;
+    }
+  }
+
+  async function signUp(e) {
+    e.preventDefault();
+    const msg = $('suMsg');
+    const name = $('suName').value.trim();
+    const email = $('suEmail').value.trim().toLowerCase();
+    const password = $('suPass').value;
+    const part = $('suPart').value;
+
+    if (!name || !email || !password) {
+      msg.className = 'mp-msg err';
+      msg.textContent = 'Fill in your name, email and a password.';
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      msg.className = 'mp-msg err';
+      msg.textContent = 'Enter a valid email address.';
+      return;
+    }
+    if (password.length < 6) {
+      msg.className = 'mp-msg err';
+      msg.textContent = 'Password must be at least 6 characters.';
+      return;
+    }
+    msg.className = 'mp-msg';
+    msg.textContent = 'Creating account\u2026';
+
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: { data: { full_name: name, voice_part: part } }
+    });
+
+    if (error) {
+      msg.className = 'mp-msg err';
+      msg.textContent = error.message;
+      return;
+    }
+    if (data.session) {
+      msg.className = 'mp-msg ok';
+      msg.textContent = 'Account created \u2014 welcome!';
+      return;
+    }
+    msg.className = 'mp-msg ok';
+    msg.textContent = 'Account created! Check your inbox for a confirmation link, then sign in.';
+    switchTab('signin');
+    $('siEmail').value = email;
+  }
+
+  async function forgotPassword(e) {
+    e.preventDefault();
+    const msg = $('siMsg');
+    const email = $('siEmail').value.trim().toLowerCase();
+    if (!email) {
+      msg.className = 'mp-msg err';
+      msg.textContent = 'Type your email first, then use the reset link.';
+      return;
+    }
+    msg.className = 'mp-msg';
+    msg.textContent = 'Sending reset email\u2026';
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.href
+    });
+    msg.className = 'mp-msg ' + (error ? 'err' : 'ok');
+    msg.textContent = error
+      ? error.message
+      : 'Reset email sent \u2014 click the link in it to set a new password.';
+  }
+
+  async function resetPassword(e) {
+    e.preventDefault();
+    const msg = $('rsMsg');
+    const pass = $('rsPass').value;
+    if (pass.length < 6) {
+      msg.className = 'mp-msg err';
+      msg.textContent = 'Password must be at least 6 characters.';
+      return;
+    }
+    msg.className = 'mp-msg';
+    msg.textContent = 'Updating password\u2026';
+    const { error } = await supabase.auth.updateUser({ password: pass });
+    msg.className = 'mp-msg ' + (error ? 'err' : 'ok');
+    msg.textContent = error
+      ? error.message
+      : 'Password updated \u2014 you can now sign in.';
+    $('rsPass').value = '';
+  }
+
+  async function signOut() {
+    await supabase.auth.signOut();
+    showAuth();
+  }
+
+  /* ---------- Dashboard data ---------- */
+
+  async function loadDashboard() {
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData && userData.user;
+    if (!user) { showAuth(); return; }
+
+    let { data: prof } = await supabase
+      .from('profiles').select('*').eq('id', user.id).maybeSingle();
+
+    if (!prof) {
+      const meta = (user.user_metadata || {});
+      await supabase.from('profiles').upsert({
+        id: user.id,
+        email: user.email,
+        full_name: meta.full_name || 'Member',
+        voice_part: meta.voice_part || ''
+      });
+      ({ data: prof } = await supabase
+        .from('profiles').select('*').eq('id', user.id).maybeSingle());
+    }
+    profile = prof;
+
+    const { data: res } = await supabase
+      .from('resources').select('*').order('created_at', { ascending: true });
+    resources = res || [];
+
+    renderDashboard();
+  }
 
   /* ---------- Rendering ---------- */
 
@@ -83,39 +202,36 @@
   }
 
   function renderList(box, list, emptyMsg) {
+    box.innerHTML = '';
     if (!list || !list.length) {
-      box.appendChild((function () {
-        const e = document.createElement('p');
-        e.className = 'mp-empty';
-        e.textContent = emptyMsg;
-        return e;
-      })());
+      const e = document.createElement('p');
+      e.className = 'mp-empty';
+      e.textContent = emptyMsg;
+      box.appendChild(e);
       return;
     }
     list.forEach(it => box.appendChild(makeItem(it)));
   }
 
   function renderDashboard() {
-    const u = loadSession();
-    if (!u) return;
-    const users = loadUsers();
-    const user = users.find(x => x.email === u.email);
-    if (!user) { signOut(); return; }
+    if (!profile) return;
+    const isLeader = profile.role === 'leader' || profile.role === 'admin';
+    const isAdmin = profile.role === 'admin';
 
-    $('mpGreet').textContent = 'Habari, ' + user.name;
+    $('mpGreet').textContent = 'Habari, ' + profile.full_name;
     $('mpSub').textContent =
-      (user.title ? user.title + ' \u00b7 ' : '') + 'Signed in as ' + ROLE_LABEL[user.role];
+      (profile.title ? profile.title + ' \u00b7 ' : '') +
+      'Signed in as ' + ROLE_LABEL[profile.role];
 
     $('mpProfile').innerHTML = '';
-    const rows = [
-      ['Name', user.name],
-      ['Email', user.email],
-      ['Access level', ROLE_LABEL[user.role]],
-      ['Title', user.title || '\u2014'],
-      ['Voice part', user.part || '\u2014'],
-      ['Joined', user.joined]
-    ];
-    rows.forEach(r => {
+    [
+      ['Name', profile.full_name],
+      ['Email', profile.email],
+      ['Access level', ROLE_LABEL[profile.role]],
+      ['Title', profile.title || '\u2014'],
+      ['Voice part', profile.voice_part || '\u2014'],
+      ['Member since', profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }) : '\u2014']
+    ].forEach(r => {
       const k = document.createElement('div');
       k.className = 'mp-k';
       k.textContent = r[0];
@@ -126,192 +242,145 @@
       $('mpProfile').appendChild(v);
     });
 
-    const isLeader = user.role === 'leader' || user.role === 'admin';
-    const isAdmin = user.role === 'admin';
-
     $('mpLeaderCard').hidden = !isLeader;
     $('mpAdminCard').hidden = !isAdmin;
     $('mpNavAdmin').hidden = !isAdmin;
 
-    $('mpMemberInfo').innerHTML = '';
-    renderList($('mpMemberInfo'), info.memberInfo, 'Nothing here yet \u2014 the leaders will add member resources soon.');
+    renderList($('mpMemberInfo'),
+      resources.filter(r => r.audience === 'member'),
+      'Nothing here yet \u2014 the leaders will add member resources soon.');
+    renderList($('mpLeaderInfo'),
+      resources.filter(r => r.audience === 'leader'),
+      'Nothing here yet \u2014 leadership materials will be added soon.');
+    renderList($('mpAdminInfo'),
+      resources.filter(r => r.audience === 'admin'),
+      'Nothing here yet \u2014 admin tools will be added soon.');
 
-    if (isLeader) {
-      $('mpLeaderInfo').innerHTML = '';
-      renderList($('mpLeaderInfo'), info.leaderInfo, 'Nothing here yet \u2014 leadership materials will be added soon.');
-    }
     if (isAdmin) {
-      $('mpAdminInfo').innerHTML = '';
-      renderList($('mpAdminInfo'), info.adminInfo, 'Nothing here yet \u2014 admin tools will be added soon.');
+      loadAdminMembers();
+      const form = $('adminResourceForm');
+      if (form) form.style.display = '';
     }
   }
 
-  /* ---------- Auth actions ---------- */
+  /* ---------- Admin: manage members ---------- */
 
-  function signOut() {
-    sessionStorage.removeItem(SES_KEY);
-    showAuth();
+  async function loadAdminMembers() {
+    const box = $('adminMembers');
+    if (!box) return;
+    const { data } = await supabase.from('profiles').select('*').order('full_name');
+    box.innerHTML = '';
+    (data || []).forEach(m => {
+      const row = document.createElement('div');
+      row.className = 'mp-mrow';
+      const who = document.createElement('div');
+      who.className = 'mp-mwho';
+      const n = document.createElement('div');
+      n.textContent = m.full_name + (m.id === profile.id ? ' (you)' : '');
+      const em = document.createElement('div');
+      em.className = 'mp-date';
+      em.textContent = m.email;
+      who.appendChild(n);
+      who.appendChild(em);
+      row.appendChild(who);
+      const sel = document.createElement('select');
+      ['member', 'leader', 'admin'].forEach(r => {
+        const o = document.createElement('option');
+        o.value = r;
+        o.textContent = ROLE_LABEL[r];
+        if (m.role === r) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.addEventListener('change', async () => {
+        const newRole = sel.value;
+        if (m.id === profile.id && newRole !== 'admin') {
+          const ok = window.confirm('Remove admin access from your own account? You will lose access to this panel.');
+          if (!ok) { sel.value = m.role; return; }
+        }
+        const { error } = await supabase.rpc('admin_set_role', {
+          p_email: m.email,
+          p_role: newRole
+        });
+        if (error) {
+          window.alert('Could not change role: ' + error.message);
+          sel.value = m.role;
+          return;
+        }
+        m.role = newRole;
+        if (m.id === profile.id && newRole !== 'admin') {
+          loadDashboard();
+        }
+      });
+      row.appendChild(sel);
+      box.appendChild(row);
+    });
   }
 
-  function showAuth() {
-    $('dashView').hidden = true;
-    $('authView').hidden = false;
-  }
+  /* ---------- Admin: add a resource ---------- */
 
-  function showDash() {
-    $('authView').hidden = true;
-    $('dashView').hidden = false;
-    renderDashboard();
-  }
-
-  async function signIn(e) {
+  async function addResource(e) {
     e.preventDefault();
-    const msg = $('siMsg');
-    const email = $('siEmail').value.trim().toLowerCase();
-    const pass = $('siPass').value;
-    if (!email || !pass) {
+    const msg = $('arMsg');
+    const title = $('arTitle').value.trim();
+    const body = $('arBody').value.trim();
+    const audience = $('arAudience').value;
+    if (!title) {
       msg.className = 'mp-msg err';
-      msg.textContent = 'Enter your email and password.';
+      msg.textContent = 'Give the resource a title.';
       return;
     }
-    const users = loadUsers();
-    const user = users.find(x => x.email === email);
-    if (!user) {
+    const { error } = await supabase.from('resources').insert({
+      title: title,
+      body: body,
+      audience: audience
+    });
+    if (error) {
       msg.className = 'mp-msg err';
-      msg.textContent = 'No account with that email. Create one first \u2014 or check the spelling.';
+      msg.textContent = error.message;
       return;
     }
-    const hash = await hashPassword(pass, user.salt);
-    if (hash !== user.hash) {
-      msg.className = 'mp-msg err';
-      msg.textContent = 'Incorrect password.';
-      return;
-    }
-    msg.className = 'mp-msg';
-    msg.textContent = '';
-    saveSession({ email: user.email });
-    showDash();
-  }
-
-  async function signUp(e) {
-    e.preventDefault();
-    const msg = $('suMsg');
-    const name = $('suName').value.trim();
-    const email = $('suEmail').value.trim().toLowerCase();
-    const pass = $('suPass').value;
-    const part = $('suPart').value;
-
-    if (!name || !email || !pass) {
-      msg.className = 'mp-msg err';
-      msg.textContent = 'Fill in your name, email and a password.';
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      msg.className = 'mp-msg err';
-      msg.textContent = 'Enter a valid email address.';
-      return;
-    }
-    if (pass.length < 6) {
-      msg.className = 'mp-msg err';
-      msg.textContent = 'Password must be at least 6 characters.';
-      return;
-    }
-    const users = loadUsers();
-    if (users.some(x => x.email === email)) {
-      msg.className = 'mp-msg err';
-      msg.textContent = 'An account with that email already exists \u2014 sign in instead.';
-      return;
-    }
-
-    const role = detectRole(name);
-    const salt = makeSalt();
-    const user = {
-      email: email,
-      name: name,
-      salt: salt,
-      hash: await hashPassword(pass, salt),
-      role: role.role,
-      title: role.title,
-      part: part,
-      joined: new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })
-    };
-    users.push(user);
-    saveUsers(users);
+    $('arTitle').value = '';
+    $('arBody').value = '';
     msg.className = 'mp-msg ok';
-    msg.textContent = 'Account created \u2014 you have ' + ROLE_LABEL[role.role].toLowerCase() + ' access.';
-    saveSession({ email: user.email });
-    showDash();
+    msg.textContent = 'Resource added.';
+    loadDashboard();
   }
 
-  function forgot(e) {
-    e.preventDefault();
-    const email = $('siEmail').value.trim().toLowerCase();
-    const msg = $('siMsg');
-    if (!email) {
-      msg.className = 'mp-msg err';
-      msg.textContent = 'Type your email first, then use the reset link.';
-      return;
-    }
-    const users = loadUsers();
-    const i = users.findIndex(x => x.email === email);
-    if (i === -1) {
-      msg.className = 'mp-msg err';
-      msg.textContent = 'No account with that email.';
-      return;
-    }
-    users.splice(i, 1);
-    saveUsers(users);
-    msg.className = 'mp-msg ok';
-    msg.textContent = 'Account reset. Switch to "Create account" to set a new one with this email.';
+  /* ---------- Tabs + wiring ---------- */
+
+  function switchTab(view) {
+    document.querySelectorAll('.mp-tab').forEach(x => x.classList.toggle('on', x.dataset.view === view));
+    document.querySelectorAll('.mp-form').forEach(f => f.classList.toggle('on', f.id === (view === 'signin' ? 'signinForm' : 'signupForm')));
   }
-
-  /* ---------- Role preview on signup ---------- */
-
-  $('suName').addEventListener('input', () => {
-    const r = detectRole($('suName').value);
-    const box = $('suRole');
-    box.style.display = 'none';
-    if (r.role !== 'member') {
-      box.style.display = 'block';
-      box.textContent = 'This name matches the roster \u2014 you will get ' + ROLE_LABEL[r.role].toLowerCase() + ' access (' + r.title + ').';
-    }
-  });
-
-  /* ---------- Tabs ---------- */
 
   document.querySelectorAll('.mp-tab').forEach(b =>
-    b.addEventListener('click', () => {
-      document.querySelectorAll('.mp-tab').forEach(x => x.classList.toggle('on', x === b));
-      document.querySelectorAll('.mp-form').forEach(f => f.classList.toggle('on', f.id === (b.dataset.view === 'signin' ? 'signinForm' : 'signupForm')));
-    })
+    b.addEventListener('click', () => switchTab(b.dataset.view))
   );
-
-  /* ---------- Wire up ---------- */
 
   $('signinForm').addEventListener('submit', signIn);
   $('signupForm').addEventListener('submit', signUp);
-  $('siForgot').addEventListener('click', forgot);
+  $('siForgot').addEventListener('click', forgotPassword);
+  $('resetForm').addEventListener('submit', resetPassword);
   $('mpOut').addEventListener('click', signOut);
+  $('adminResourceForm').addEventListener('submit', addResource);
 
-  /* ---------- Content + boot ---------- */
+  /* ---------- Boot ---------- */
 
-  let info = { memberInfo: [], leaderInfo: [], adminInfo: [] };
+  if (!window.supabase || !SUPABASE_READY) {
+    showSetupBanner();
+    return;
+  }
 
-  fetch('content.json?t=' + Date.now())
-    .then(r => (r.ok ? r.json() : null))
-    .catch(() => null)
-    .then(json => {
-      if (json) {
-        if (Array.isArray(json.siteAdmins) && json.siteAdmins.length) siteAdmins = json.siteAdmins;
-        team = json.team || [];
-        members = json.members || [];
-        info = {
-          memberInfo: json.memberInfo || [],
-          leaderInfo: json.leaderInfo || [],
-          adminInfo: json.adminInfo || []
-        };
-      }
-      $('suRole').style.display = 'none';
-      if (loadSession()) showDash();
-    });
+  supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+      showDash();
+      loadDashboard();
+    } else if (event === 'SIGNED_OUT') {
+      showAuth();
+    } else if (event === 'PASSWORD_RECOVERY') {
+      showReset();
+    }
+  });
 })();
