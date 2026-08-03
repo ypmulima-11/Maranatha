@@ -197,10 +197,9 @@
     });
   }
 
-  /* ---------- Contact form validation ---------- */
-  const form = document.getElementById('cof');
-  if (form) {
-    const inputs = [...form.querySelectorAll('input, textarea')];
+  /* ---------- Form validation (contact + audition) ---------- */
+  document.querySelectorAll('form[data-validate]').forEach(form => {
+    const inputs = [...form.querySelectorAll('input, textarea, select')];
     const wrap = el => el.closest('.fld') || el;
     const showErr = (el, msg) => {
       const w = wrap(el);
@@ -219,33 +218,31 @@
       const m = w.querySelector('.fmsg');
       if (m) m.remove();
     };
+    const msgFor = el => el.tagName === 'SELECT' ? 'Please choose an option.' : 'Please fill in this field.';
 
     inputs.forEach(el => el.addEventListener('input', () => clearErr(el)));
 
     form.addEventListener('submit', e => {
       e.preventDefault();
       let ok = true;
-      const name = form.querySelector('[name="name"]');
-      const email = form.querySelector('[name="email"]');
-      const subject = form.querySelector('[name="subject"]');
-      const message = form.querySelector('[name="message"]');
-      const check = (el, msg) => {
-        if (!el.value.trim()) { showErr(el, msg); ok = false; }
-      };
-      check(name, 'Please enter your name.');
-      check(email, 'Please enter your email.');
-      check(subject, 'Please enter a subject.');
-      check(message, 'Please enter a message.');
-      if (email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
-        showErr(email, 'Please enter a valid email address.');
-        ok = false;
-      }
+      form.querySelectorAll('[required]').forEach(el => {
+        const v = el.value.trim();
+        if (!v) {
+          showErr(el, msgFor(el));
+          ok = false;
+        } else if (el.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+          showErr(el, 'Please enter a valid email address.');
+          ok = false;
+        }
+      });
       if (!ok) return;
       form.reset();
-      const okEl = document.getElementById('formOk');
-      okEl.classList.add('show');
-      okEl.setAttribute('role', 'status');
-      setTimeout(() => okEl.classList.remove('show'), 5000);
+      const okEl = form.querySelector('.form-ok');
+      if (okEl) {
+        okEl.classList.add('show');
+        okEl.setAttribute('role', 'status');
+        setTimeout(() => okEl.classList.remove('show'), 5000);
+      }
     });
   }
 
