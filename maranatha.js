@@ -162,6 +162,7 @@
   const lbImg = document.getElementById('lbImg');
   const lbCap = document.getElementById('lbCap');
   let lbIndex = 0;
+  let lbLastFocus = null;
 
   function updateLb() {
     if (!gamEls[lbIndex]) return;
@@ -173,14 +174,19 @@
     if (lbCap) lbCap.textContent = (lbIndex + 1) + ' / ' + gamEls.length;
   }
   function openLb(i) {
+    lbLastFocus = document.activeElement;
     lbIndex = (i + gamEls.length) % gamEls.length;
     updateLb();
     lb.classList.add('open');
+    lb.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    document.getElementById('lbX').focus();
   }
   function closeLb() {
     lb.classList.remove('open');
+    lb.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    if (lbLastFocus && lbLastFocus.focus) lbLastFocus.focus();
   }
 
   if (lb && gamEls.length) {

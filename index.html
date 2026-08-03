@@ -55,6 +55,7 @@
 <script src="maranatha.js" defer></script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <script>document.documentElement.className += ' js';</script>
 
 <!-- TOP BAR -->
@@ -100,6 +101,8 @@
   <a href="#contact">Contact</a>
 </div>
 
+<main id="main">
+
 <!-- HERO -->
 <section class="hero" id="home">
   <div class="hbg"></div>
@@ -124,6 +127,7 @@
 <!-- FEATURES -->
 <div class="fsw">
   <div class="sw">
+    <h2 class="sr-only">Why Maranatha Choir</h2>
     <div class="fsi rev-stagger">
       <div class="fsb"><div class="fsic">&#127925;</div><div><h3>Choir Ministry</h3><p>Faith, service and worship in every song we lift up.</p></div></div>
       <div class="fsb"><div class="fsic">&#127942;</div><div><h3>Award Winning</h3><p>Celebrating achievements and milestones together.</p></div></div>
@@ -428,7 +432,7 @@
           </div>
           <div class="cfr">
             <div class="fld">
-              <select name="voice" required>
+              <select name="voice" aria-label="Voice part" required>
                 <option value="">Voice part&#8230;</option>
                 <option>Soprano</option>
                 <option>Alto</option>
@@ -437,7 +441,7 @@
               </select>
             </div>
             <div class="fld">
-              <select name="experience" required>
+              <select name="experience" aria-label="Singing experience" required>
                 <option value="">Experience&#8230;</option>
                 <option>Beginner</option>
                 <option>Intermediate</option>
@@ -548,6 +552,8 @@
     </div>
   </div>
 </div>
+
+</main>
 
 <!-- FOOTER -->
 <footer>
