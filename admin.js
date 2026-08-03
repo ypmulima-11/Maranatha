@@ -117,12 +117,22 @@
     gh('/repos/' + repo).then(res => {
       $('admSignIn').disabled = false;
       if (!res.ok) {
+        const hint = {
+          401: 'The token is invalid or expired.',
+          403: 'The token cannot access this repository \u2014 check the repository permissions.',
+          404: 'Repository not found, or the token has no access to it.'
+        }[res.status] || 'GitHub returned error ' + res.status + '.';
+        const ghMsg = res.body && res.body.message ? ' (' + res.body.message + ')' : '';
         msg.className = 'adm-msg err';
-        msg.textContent = 'Could not access ' + repo + '. Check the name and that the token has access (error ' + res.status + ').';
+        msg.textContent = 'Could not access ' + repo + '. ' + hint + ghMsg;
         return;
       }
       localStorage.setItem(LS_KEY, JSON.stringify({ repo: repo, token: token }));
       openWorkspace();
+    }).catch(err => {
+      $('admSignIn').disabled = false;
+      msg.className = 'adm-msg err';
+      msg.textContent = 'Could not reach GitHub from this page (' + err.message + '). If you opened admin.html from disk, open the live admin page instead: https://ypmulima-11.github.io/Maranatha/admin.html';
     });
   }
 
@@ -140,6 +150,9 @@
         return false;
       }
       return true;
+    }).catch(err => {
+      setStatus('admStatus', 'Could not reach GitHub from this page (' + err.message + '). Try the live admin page instead.', 'err');
+      return false;
     });
   }
 
