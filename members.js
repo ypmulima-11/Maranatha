@@ -36,6 +36,32 @@
     $('resetView').hidden = false;
   }
 
+  /* ---------- Timeout guard: never hang silently on a dead request ---------- */
+
+  function withTimeout(p, ms) {
+    return Promise.race([
+      p,
+      new Promise((resolve, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+    ]);
+  }
+
+  const NET_ERR_MSG = 'Could not reach the Supabase server (request timed out). Check your internet connection, disable ad-blockers for this page, or try again in a private window.';
+
+  async function authCall(fn, msg, ms) {
+    try {
+      return await withTimeout(fn(), ms || 20000);
+    } catch (err) {
+      if (err && err.message === 'timeout') {
+        msg.className = 'mp-msg err';
+        msg.textContent = NET_ERR_MSG;
+      } else {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'Something went wrong: ' + (err && err.message ? err.message : err);
+      }
+      return { error: true };
+    }
+  }
+
   /* ---------- Auth actions ---------- */
 
   async function signIn(e) {
@@ -50,7 +76,12 @@
     }
     msg.className = 'mp-msg';
     msg.textContent = 'Signing in\u2026';
-    const { error } = await supabase.auth.signInWithPassword({ email: email, password: password });
+    const res = await authCall(
+      () => supabase.auth.signInWithPassword({ email: email, password: password }),
+      msg
+    );
+    if (res.error) return;
+    const error = res.error;
     if (error) {
       msg.className = 'mp-msg err';
       msg.textContent = error.message === 'Invalid login credentials'
@@ -85,11 +116,16 @@
     msg.className = 'mp-msg';
     msg.textContent = 'Creating account\u2026';
 
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: { data: { full_name: name, voice_part: part } }
-    });
+    const res = await authCall(
+      () => supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: { data: { full_name: name, voice_part: part } }
+      }),
+      msg
+    );
+    if (res.error) return;
+    const { data, error } = res;
 
     if (error) {
       msg.className = 'mp-msg err';
@@ -118,9 +154,12 @@
     }
     msg.className = 'mp-msg';
     msg.textContent = 'Sending reset email\u2026';
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.href
-    });
+    const res = await authCall(
+      () => supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href }),
+      msg
+    );
+    if (res.error) return;
+    const error = res.error;
     msg.className = 'mp-msg ' + (error ? 'err' : 'ok');
     msg.textContent = error
       ? error.message
@@ -138,7 +177,12 @@
     }
     msg.className = 'mp-msg';
     msg.textContent = 'Updating password\u2026';
-    const { error } = await supabase.auth.updateUser({ password: pass });
+    const res = await authCall(
+      () => supabase.auth.updateUser({ password: pass }),
+      msg
+    );
+    if (res.error) return;
+    const error = res.error;
     msg.className = 'mp-msg ' + (error ? 'err' : 'ok');
     msg.textContent = error
       ? error.message
