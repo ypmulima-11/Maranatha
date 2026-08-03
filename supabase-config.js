@@ -27,8 +27,8 @@
    ===================================================================== */
 
 const SUPABASE_CONFIG = {
-  url: 'https://YOUR-PROJECT-REF.supabase.co',
-  anonKey: 'YOUR-ANON-PUBLIC-KEY'
+  url: 'https://ojgutyougbyfbdoobtue.supabase.co',
+  anonKey: 'sb_publishable_eNGRMIp7q-Z6hh-bAskO5g_I0rkG7oZ'
 };
 
 const SUPABASE_READY =
