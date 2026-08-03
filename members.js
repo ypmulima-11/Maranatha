@@ -120,7 +120,7 @@
       () => supabase.auth.signUp({
         email: email,
         password: password,
-        options: { data: { full_name: name, voice_part: part } }
+        options: { emailRedirectTo: window.location.href, data: { full_name: name, voice_part: part } }
       }),
       msg
     );
