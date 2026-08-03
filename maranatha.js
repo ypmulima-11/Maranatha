@@ -141,8 +141,132 @@
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  /* ---------- Music player (visual demo) ---------- */
-  document.querySelectorAll('.muc').forEach(card => {
+  /* ---------- Audio player (Web Audio demo) ---------- */
+  const NOTE_F = {
+    C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+    C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880.00
+  };
+  const TRACKS = [
+    { title: 'Bwana ni Mchungaji', sub: 'Hymn · Live Demo', seq: ['C4', 'E4', 'G4', 'G4', 'A4', 'G4', 'E4', 'C4', 'D4', 'E4', 'F4', 'E4', 'D4', 'C4'] },
+    { title: 'Mungu ni Mwema', sub: 'Praise · Studio Demo', seq: ['G4', 'A4', 'B4', 'C5', 'C5', 'B4', 'A4', 'G4'] },
+    { title: 'Neema ya Bwana', sub: 'Worship · Live Demo', seq: ['E4', 'G4', 'B4', 'E5', 'D5', 'B4', 'G4'] },
+    { title: 'Shangwe na Furaha', sub: 'Hymn · Studio Demo', seq: ['C5', 'D5', 'C5', 'A4', 'G4', 'E4', 'G4', 'A4', 'C4', 'E4', 'G4', 'C5'] }
+  ];
+  const STEP = 0.26;
+
+  const plrEq = document.getElementById('plrEq');
+  const plrName = document.getElementById('plrName');
+  const plrSub = document.getElementById('plrSub');
+  const plrBtn = document.getElementById('plrBtn');
+  const plrFill = document.getElementById('plrFill');
+  const plrCur = document.getElementById('plrCur');
+  const plrDur = document.getElementById('plrDur');
+
+  let actx = null, master = null;
+  let trackIdx = 0, state = 'stopped';
+  let timer = null, nextTime = 0, pos = 0, noteIndex = 0;
+
+  function ensureCtx() {
+    if (!actx) {
+      actx = new (window.AudioContext || window.webkitAudioContext)();
+      master = actx.createGain();
+      master.gain.value = 0.18;
+      master.connect(actx.destination);
+    }
+    if (actx.state === 'suspended') actx.resume();
+    return actx;
+  }
+  function playNote(t, name) {
+    const f = NOTE_F[name];
+    if (!f) return;
+    const o = actx.createOscillator();
+    const g = actx.createGain();
+    o.type = 'triangle';
+    o.frequency.value = f;
+    const d = STEP * 0.92;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.9, t + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.001, t + d);
+    o.connect(g);
+    g.connect(master);
+    o.start(t);
+    o.stop(t + d + 0.02);
+  }
+  function fmt(s) {
+    const m = Math.floor(s / 60);
+    const ss = Math.floor(s % 60);
+    return m + ':' + String(ss).padStart(2, '0');
+  }
+  function syncLabels() {
+    const t = TRACKS[trackIdx];
+    if (plrName) plrName.textContent = t.title;
+    if (plrSub) plrSub.textContent = t.sub;
+    if (plrDur) plrDur.textContent = fmt(t.seq.length * STEP);
+    if (plrFill) plrFill.style.width = '0%';
+    if (plrCur) plrCur.textContent = '0:00';
+  }
+  function setUI(playing) {
+    plrBtn.innerHTML = playing ? '&#10073;&#10073;' : '&#9654;';
+    plrBtn.setAttribute('aria-label', playing ? 'Pause demo song' : 'Play demo song');
+    if (plrEq) plrEq.classList.toggle('playing', playing);
+    document.querySelectorAll('.muc').forEach((c, ci) =>
+      c.classList.toggle('playing', playing && ci === trackIdx)
+    );
+  }
+  function schedule() {
+    timer = setTimeout(schedule, 60);
+    const seq = TRACKS[trackIdx].seq;
+    const total = seq.length * STEP;
+    while (nextTime < actx.currentTime + 0.08) {
+      const n = seq[noteIndex % seq.length];
+      playNote(nextTime, n);
+      noteIndex = (noteIndex + 1) % seq.length;
+      nextTime += STEP;
+      pos += STEP;
+      if (plrFill) plrFill.style.width = ((pos % total) / total * 100) + '%';
+      if (plrCur) plrCur.textContent = fmt(pos % total);
+    }
+  }
+  function stopSched() {
+    if (timer) { clearTimeout(timer); timer = null; }
+  }
+  function begin(i) {
+    stopSched();
+    ensureCtx();
+    trackIdx = i;
+    noteIndex = 0;
+    pos = 0;
+    nextTime = actx.currentTime + 0.08;
+    syncLabels();
+    state = 'playing';
+    schedule();
+    setUI(true);
+  }
+  function pauseSong() {
+    stopSched();
+    if (master && actx) master.gain.setTargetAtTime(0, actx.currentTime, 0.02);
+    state = 'paused';
+    setUI(false);
+  }
+  function resumeSong() {
+    ensureCtx();
+    if (master) master.gain.setTargetAtTime(0.18, actx.currentTime, 0.02);
+    nextTime = actx.currentTime + 0.06;
+    state = 'playing';
+    schedule();
+    setUI(true);
+  }
+
+  if (plrBtn) {
+    plrBtn.addEventListener('click', () => {
+      if (state === 'playing') pauseSong();
+      else if (state === 'paused') resumeSong();
+      else begin(trackIdx);
+    });
+    syncLabels();
+  }
+
+  document.querySelectorAll('.muc').forEach((card, i) => {
     const btn = card.querySelector('.pc');
     if (!btn) return;
     btn.setAttribute('role', 'button');
@@ -150,9 +274,8 @@
     btn.addEventListener('click', e => {
       e.preventDefault();
       e.stopPropagation();
-      const wasPlaying = card.classList.contains('playing');
-      document.querySelectorAll('.muc.playing').forEach(c => c.classList.remove('playing'));
-      if (!wasPlaying) card.classList.add('playing');
+      if (i === trackIdx && state === 'playing') pauseSong();
+      else begin(i);
     });
   });
 
