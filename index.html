@@ -52,10 +52,11 @@
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="maranatha.css">
+<script src="i18n.js" defer></script>
 <script src="maranatha.js" defer></script>
 </head>
 <body>
-<a class="skip" href="#main">Skip to content</a>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
 <script>document.documentElement.className += ' js';</script>
 
 <!-- TOP BAR -->
@@ -75,32 +76,32 @@
     <span class="nn">Maranatha Choir</span>
   </div>
   <div class="nl">
-    <a href="#home">Home</a>
-    <a href="#about">About</a>
-    <a href="#works">Works</a>
-    <a href="#events">Events</a>
-    <a href="#team">Team</a>
-    <a href="#gallery">Gallery</a>
-    <a href="members.html">Members</a>
-    <a href="#join" class="nc-cta">Join Us</a>
+    <a href="#home" data-i18n="nav.home">Home</a>
+    <a href="#about" data-i18n="nav.about">About</a>
+    <a href="#works" data-i18n="nav.works">Works</a>
+    <a href="#events" data-i18n="nav.events">Events</a>
+    <a href="#team" data-i18n="nav.team">Team</a>
+    <a href="#gallery" data-i18n="nav.gallery">Gallery</a>
+    <a href="members.html" data-i18n="nav.members">Members</a>
+    <a href="#join" class="nc-cta" data-i18n="nav.join">Join Us</a>
   </div>
   <button class="nm-btn" id="nmBtn" aria-label="Open menu" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
 </nav>
 <div class="nm-menu" id="nmMenu">
-  <a href="#home">Home</a>
-  <a href="#about">About</a>
-  <a href="#works">Works</a>
-  <a href="#events">Events</a>
-  <a href="#news">News</a>
-  <a href="#members">Members</a>
-  <a href="#team">Team</a>
-  <a href="#gallery">Gallery</a>
-  <a href="members.html">Member Portal</a>
-  <a href="#join" class="nc-cta">Join Us</a>
-  <a href="#donate">Donate</a>
-  <a href="#contact">Contact</a>
+  <a href="#home" data-i18n="nav.home">Home</a>
+  <a href="#about" data-i18n="nav.about">About</a>
+  <a href="#works" data-i18n="nav.works">Works</a>
+  <a href="#events" data-i18n="nav.events">Events</a>
+  <a href="#news" data-i18n="nw.label">News</a>
+  <a href="#members" data-i18n="nav.members">Members</a>
+  <a href="#team" data-i18n="nav.team">Team</a>
+  <a href="#gallery" data-i18n="nav.gallery">Gallery</a>
+  <a href="members.html" data-i18n="nav.portal">Member Portal</a>
+  <a href="#join" class="nc-cta" data-i18n="nav.join">Join Us</a>
+  <a href="#donate" data-i18n="nav.donate">Donate</a>
+  <a href="#contact" data-i18n="nav.contact">Contact</a>
 </div>
 
 <main id="main">
@@ -111,17 +112,17 @@
   <div class="hring"></div>
   <div class="hc">
     <div class="hlbl">Dar es Salaam · Tanzania</div>
-    <h1>Singing His Praise<br>with <em>One Voice</em></h1>
-    <p class="hsub">Maranatha Choir — a Catholic choir based in Dar es Salaam, Tanzania.<br>Worship, discipline, friendship and musical excellence.</p>
+    <h1><span data-i18n="hero.h1a">Singing His Praise</span><br><span data-i18n="hero.h1b">with</span> <em><span data-i18n="hero.h1c">One Voice</span></em></h1>
+    <p class="hsub"><span data-i18n="hero.sub1">Maranatha Choir — a Catholic choir based in Dar es Salaam, Tanzania.</span><br><span data-i18n="hero.sub2">Worship, discipline, friendship and musical excellence.</span></p>
     <div class="hbtns">
-      <a href="#about" class="bg">Discover our story</a>
-      <a href="#works" class="bo">&#9654; Listen to our music</a>
+      <a href="#about" class="bg" data-i18n="hero.bt1">Discover our story</a>
+      <a href="#works" class="bo" data-i18n="hero.bt2">&#9654; Listen to our music</a>
     </div>
     <div class="hstats">
-      <div><span>50+</span><div class="hsl">Members</div></div>
-      <div><span>10+</span><div class="hsl">Years</div></div>
-      <div><span>100+</span><div class="hsl">Performances</div></div>
-      <div><span>4</span><div class="hsl">Albums</div></div>
+      <div><span>50+</span><div class="hsl" data-i18n="hero.stat1">Members</div></div>
+      <div><span>10+</span><div class="hsl" data-i18n="hero.stat2">Years</div></div>
+      <div><span>100+</span><div class="hsl" data-i18n="hero.stat3">Performances</div></div>
+      <div><span>4</span><div class="hsl" data-i18n="hero.stat4">Albums</div></div>
     </div>
   </div>
 </section>
@@ -131,10 +132,10 @@
   <div class="sw">
     <h2 class="sr-only">Why Maranatha Choir</h2>
     <div class="fsi rev-stagger">
-      <div class="fsb"><div class="fsic">&#127925;</div><div><h3>Choir Ministry</h3><p>Faith, service and worship in every song we lift up.</p></div></div>
-      <div class="fsb"><div class="fsic">&#127942;</div><div><h3>Award Winning</h3><p>Celebrating achievements and milestones together.</p></div></div>
-      <div class="fsb"><div class="fsic">&#128247;</div><div><h3>Media Focused</h3><p>Videos, photos and stories from our journey.</p></div></div>
-      <div class="fsb"><div class="fsic">&#128101;</div><div><h3>Strong Community</h3><p>Friendship, prayer and spiritual growth through music.</p></div></div>
+      <div class="fsb"><div class="fsic">&#127925;</div><div><h3 data-i18n="feat.h1">Choir Ministry</h3><p data-i18n="feat.b1">Faith, service and worship in every song we lift up.</p></div></div>
+      <div class="fsb"><div class="fsic">&#127942;</div><div><h3 data-i18n="feat.h2">Award Winning</h3><p data-i18n="feat.b2">Celebrating achievements and milestones together.</p></div></div>
+      <div class="fsb"><div class="fsic">&#128247;</div><div><h3 data-i18n="feat.h3">Media Focused</h3><p data-i18n="feat.b3">Videos, photos and stories from our journey.</p></div></div>
+      <div class="fsb"><div class="fsic">&#128101;</div><div><h3 data-i18n="feat.h4">Strong Community</h3><p data-i18n="feat.b4">Friendship, prayer and spiritual growth through music.</p></div></div>
     </div>
   </div>
 </div>
@@ -144,21 +145,21 @@
   <div class="sw">
     <div class="ag reveal">
       <div class="atxt">
-        <div class="slbl">Welcome to Maranatha</div>
-        <h2 class="stit">So much more than just a choir</h2>
-        <p class="ssub">A spirit-filled choir dedicated to enhancing worship and serving the community through music.</p>
-        <p>Maranatha Choir is a dedicated choir based in Dar es Salaam, Tanzania. Founded on the belief that music is a powerful form of prayer, we strive to lead our congregation into deeper worship and encounter with God.</p>
-        <p>Our members come from diverse backgrounds — all united by faith and a deep love of sacred music. We minister at Sunday services, feast days, special celebrations, and community events throughout the year.</p>
+        <div class="slbl" data-i18n="about.label">Welcome to Maranatha</div>
+        <h2 class="stit" data-i18n="about.title">So much more than just a choir</h2>
+        <p class="ssub" data-i18n="about.sub">A spirit-filled choir dedicated to enhancing worship and serving the community through music.</p>
+        <p data-i18n="about.p1">Maranatha Choir is a dedicated choir based in Dar es Salaam, Tanzania. Founded on the belief that music is a powerful form of prayer, we strive to lead our congregation into deeper worship and encounter with God.</p>
+        <p data-i18n="about.p2">Our members come from diverse backgrounds — all united by faith and a deep love of sacred music. We minister at Sunday services, feast days, special celebrations, and community events throughout the year.</p>
         <div class="astats">
-          <div><div class="sn" data-count="50">0+</div><div class="sk">Active members</div></div>
-          <div><div class="sn" data-count="10">0+</div><div class="sk">Years serving</div></div>
-          <div><div class="sn" data-count="100">0+</div><div class="sk">Performances</div></div>
+          <div><div class="sn" data-count="50">0+</div><div class="sk" data-i18n="about.s1">Active members</div></div>
+          <div><div class="sn" data-count="10">0+</div><div class="sk" data-i18n="about.s2">Years serving</div></div>
+          <div><div class="sn" data-count="100">0+</div><div class="sk" data-i18n="about.s3">Performances</div></div>
         </div>
       </div>
       <div class="avis">
         <!-- REPLACE placeholder below with your photo file path -->
         <img src="images/about-choir.jpg" alt="Maranatha Choir Group" onerror="this.style.display='none'">
-        <div class="abdg">Est. Dar es Salaam</div>
+        <div class="abdg" data-i18n="about.badge">Est. Dar es Salaam</div>
       </div>
     </div>
   </div>
@@ -168,16 +169,16 @@
 <div class="valw" id="values">
   <div class="sw">
     <div class="vali">
-      <div class="slbl">What we value</div>
-      <h2 class="stit">A ministry of song, discipline and prayer</h2>
-      <p class="ssub">Maranatha does more than sing. We engage our minds and souls in everything we do, always at service to our community.</p>
+      <div class="slbl" data-i18n="val.label">What we value</div>
+      <h2 class="stit" data-i18n="val.title">A ministry of song, discipline and prayer</h2>
+      <p class="ssub" data-i18n="val.sub">Maranatha does more than sing. We engage our minds and souls in everything we do, always at service to our community.</p>
       <div class="valg rev-stagger">
-        <div class="valc"><div class="valic">&#128330;</div><h3>Everyone is Welcome</h3><p>A welcoming Catholic choir community for singers, supporters and worshippers.</p></div>
-        <div class="valc"><div class="valic">&#127925;</div><h3>Live Events & Masses</h3><p>Live masses, church celebrations, performances and special worship events.</p></div>
-        <div class="valc"><div class="valic">&#127942;</div><h3>Awards & Recognition</h3><p>Milestones such as Best Choir of the Year and other notable achievements.</p></div>
-        <div class="valc"><div class="valic">&#128218;</div><h3>Music & Library</h3><p>Recordings, documents, archives and a growing library of sacred songs.</p></div>
-        <div class="valc"><div class="valic">&#129309;</div><h3>Strong Community</h3><p>Friendship, discipline, prayer life and spiritual growth through music ministry.</p></div>
-        <div class="valc"><div class="valic">&#127911;</div><h3>Leadership & Service</h3><p>Dedicated leaders, team structure and service to the parish and beyond.</p></div>
+        <div class="valc"><div class="valic">&#128330;</div><h3 data-i18n="val.c1">Everyone is Welcome</h3><p data-i18n="val.c1p">A welcoming Catholic choir community for singers, supporters and worshippers.</p></div>
+        <div class="valc"><div class="valic">&#127925;</div><h3 data-i18n="val.c2">Live Events & Masses</h3><p data-i18n="val.c2p">Live masses, church celebrations, performances and special worship events.</p></div>
+        <div class="valc"><div class="valic">&#127942;</div><h3 data-i18n="val.c3">Awards & Recognition</h3><p data-i18n="val.c3p">Milestones such as Best Choir of the Year and other notable achievements.</p></div>
+        <div class="valc"><div class="valic">&#128218;</div><h3 data-i18n="val.c4">Music & Library</h3><p data-i18n="val.c4p">Recordings, documents, archives and a growing library of sacred songs.</p></div>
+        <div class="valc"><div class="valic">&#129309;</div><h3 data-i18n="val.c5">Strong Community</h3><p data-i18n="val.c5p">Friendship, discipline, prayer life and spiritual growth through music ministry.</p></div>
+        <div class="valc"><div class="valic">&#127911;</div><h3 data-i18n="val.c6">Leadership & Service</h3><p data-i18n="val.c6p">Dedicated leaders, team structure and service to the parish and beyond.</p></div>
       </div>
     </div>
   </div>
@@ -187,24 +188,24 @@
 <div class="stw" id="stories">
   <div class="sw">
     <div class="sti">
-      <div class="slbl">Our stories</div>
-      <h2 class="stit">The voices behind the music</h2>
-      <p class="ssub">Mission, testimony and the human side of Maranatha Choir.</p>
+      <div class="slbl" data-i18n="st.label">Our stories</div>
+      <h2 class="stit" data-i18n="st.title">The voices behind the music</h2>
+      <p class="ssub" data-i18n="st.sub">Mission, testimony and the human side of Maranatha Choir.</p>
       <div class="stg rev-stagger">
         <div class="stc">
           <div class="stq">&#8220;</div>
-          <p>Singing with Maranatha is more than performance. It is prayer, family and a joyful way to serve God every week.</p>
-          <div class="stm"><div class="sta">CD</div><div><div class="stn">Choir Director</div><div class="str">Soprano & Leadership</div></div></div>
+          <p data-i18n="st.q1">Singing with Maranatha is more than performance. It is prayer, family and a joyful way to serve God every week.</p>
+          <div class="stm"><div class="sta">CD</div><div><div class="stn" data-i18n="st.n1">Choir Director</div><div class="str" data-i18n="st.r1">Soprano & Leadership</div></div></div>
         </div>
         <div class="stc">
           <div class="stq">&#8220;</div>
-          <p>From our first practice to the Christmas Gala, this choir has become my second family. The harmony is in the people.</p>
-          <div class="stm"><div class="sta">AM</div><div><div class="stn">Asst. Music Director</div><div class="str">Music & Rehearsals</div></div></div>
+          <p data-i18n="st.q2">From our first practice to the Christmas Gala, this choir has become my second family. The harmony is in the people.</p>
+          <div class="stm"><div class="sta">AM</div><div><div class="stn" data-i18n="st.n2">Asst. Music Director</div><div class="str" data-i18n="st.r2">Music & Rehearsals</div></div></div>
         </div>
         <div class="stc">
           <div class="stq">&#8220;</div>
-          <p>Every Sunday we prepare our hearts together. That discipline and prayer life is what makes our worship special.</p>
-          <div class="stm"><div class="sta">SL</div><div><div class="stn">Section Leader</div><div class="str">Soprano Lead</div></div></div>
+          <p data-i18n="st.q3">Every Sunday we prepare our hearts together. That discipline and prayer life is what makes our worship special.</p>
+          <div class="stm"><div class="sta">SL</div><div><div class="stn" data-i18n="st.n3">Section Leader</div><div class="str" data-i18n="st.r3">Soprano Lead</div></div></div>
         </div>
       </div>
     </div>
@@ -215,12 +216,12 @@
 <div class="muw" id="works">
   <div class="sw">
     <div class="mui">
-      <div class="slbl">Our works</div>
-      <h2 class="stit">Music & Recordings</h2>
-      <p class="ssub">Listen to our recordings and watch live performances from our services and concerts.</p>
+      <div class="slbl" data-i18n="mu.label">Our works</div>
+      <h2 class="stit" data-i18n="mu.title">Music & Recordings</h2>
+      <p class="ssub" data-i18n="mu.sub">Listen to our recordings and watch live performances from our services and concerts.</p>
       <!-- Song list is rendered from content.json (editable in admin.html) -->
       <div class="mug rev-stagger" id="muList"></div>
-      <div class="gact"><a href="#contact" class="bg" style="display:inline-block">Request our full song list</a></div>
+      <div class="gact"><a href="#contact" class="bg" style="display:inline-block" data-i18n="mu.cta">Request our full song list</a></div>
       <div class="plr">
         <div class="plr-eq" id="plrEq" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
         <div class="plr-i">
@@ -233,7 +234,7 @@
           <div class="plr-t"><span id="plrCur">0:00</span><span id="plrDur">0:00</span></div>
         </div>
       </div>
-      <div class="plr-note">Demo playback for preview only — replace with your real recordings whenever you are ready.</div>
+      <div class="plr-note" data-i18n="plr.note">Demo playback for preview only — replace with your real recordings whenever you are ready.</div>
     </div>
   </div>
 </div>
@@ -242,24 +243,24 @@
 <div class="evw" id="events">
   <div class="sw">
     <div class="evi">
-      <div class="slbl">Calendar</div>
-      <h2 class="stit">Upcoming Events</h2>
-      <p class="ssub">Join us for worship, concerts, and community celebrations throughout the year.</p>
+      <div class="slbl" data-i18n="ev.label">Calendar</div>
+      <h2 class="stit" data-i18n="ev.title">Upcoming Events</h2>
+      <p class="ssub" data-i18n="ev.sub">Join us for worship, concerts, and community celebrations throughout the year.</p>
       <div class="cd">
-        <div class="cdl">Next event in</div>
+        <div class="cdl" data-i18n="ev.next">Next event in</div>
         <div class="cdg">
-          <div class="cdx"><span id="cdD">--</span><small>Days</small></div>
-          <div class="cdx"><span id="cdH">--</span><small>Hours</small></div>
-          <div class="cdx"><span id="cdM">--</span><small>Minutes</small></div>
-          <div class="cdx"><span id="cdS">--</span><small>Seconds</small></div>
+          <div class="cdx"><span id="cdD">--</span><small data-i18n="ev.d">Days</small></div>
+          <div class="cdx"><span id="cdH">--</span><small data-i18n="ev.h">Hours</small></div>
+          <div class="cdx"><span id="cdM">--</span><small data-i18n="ev.m">Minutes</small></div>
+          <div class="cdx"><span id="cdS">--</span><small data-i18n="ev.s">Seconds</small></div>
         </div>
         <div class="cdt" id="cdTitle"></div>
       </div>
       <!-- Events are rendered from content.json (editable in admin.html) -->
       <div class="evg rev-stagger" id="evList"></div>
       <div class="evv">
-        <div class="slbl">Media highlights</div>
-        <h3 class="evvh">Recent performances</h3>
+        <div class="slbl" data-i18n="ev.med">Media highlights</div>
+        <h3 class="evvh" data-i18n="ev.rp">Recent performances</h3>
         <!-- Videos are rendered from content.json (editable in admin.html) -->
         <div class="vidg rev-stagger" id="vidList"></div>
       </div>
@@ -271,9 +272,9 @@
 <div class="nww" id="news">
   <div class="sw">
     <div class="nwi">
-      <div class="slbl">News & updates</div>
-      <h2 class="stit">From the choir life</h2>
-      <p class="ssub">Announcements, recaps and community updates from Maranatha Choir.</p>
+      <div class="slbl" data-i18n="nw.label">News & updates</div>
+      <h2 class="stit" data-i18n="nw.title">From the choir life</h2>
+      <p class="ssub" data-i18n="nw.sub">Announcements, recaps and community updates from Maranatha Choir.</p>
       <!-- News are rendered from content.json (editable in admin.html) -->
       <div class="nwg rev-stagger" id="nwList"></div>
     </div>
@@ -284,9 +285,9 @@
 <div class="tmw" id="team">
   <div class="sw">
     <div class="tmi">
-      <div class="slbl">Leadership</div>
-      <h2 class="stit">Meet the Team</h2>
-      <p class="ssub">The dedicated people who lead, organize, and inspire Maranatha Choir.</p>
+      <div class="slbl" data-i18n="tm.label">Leadership</div>
+      <h2 class="stit" data-i18n="tm.title">Meet the Team</h2>
+      <p class="ssub" data-i18n="tm.sub">The dedicated people who lead, organize, and inspire Maranatha Choir.</p>
       <!-- Team is rendered from content.json (editable in admin.html) -->
       <div class="tmg rev-stagger" id="tmList"></div>
     </div>
@@ -297,9 +298,9 @@
 <div class="msw" id="members">
   <div class="sw">
     <div class="msi">
-      <div class="slbl">Members</div>
-      <h2 class="stit">Our voices</h2>
-      <p class="ssub">The singers who bring our harmony to life — grouped by voice part.</p>
+      <div class="slbl" data-i18n="ms.label">Members</div>
+      <h2 class="stit" data-i18n="ms.title">Our voices</h2>
+      <p class="ssub" data-i18n="ms.sub">The singers who bring our harmony to life — grouped by voice part.</p>
       <!-- Members are rendered from content.json (editable in admin.html) -->
       <div class="msg rev-stagger" id="msList"></div>
     </div>
@@ -310,12 +311,12 @@
 <div class="gaw" id="gallery">
   <div class="sw">
     <div class="gai">
-      <div class="slbl">Memories</div>
-      <h2 class="stit">Gallery</h2>
-      <p class="ssub">Moments captured from our performances, celebrations, and choir life.</p>
+      <div class="slbl" data-i18n="ga.label">Memories</div>
+      <h2 class="stit" data-i18n="ga.title">Gallery</h2>
+      <p class="ssub" data-i18n="ga.sub">Moments captured from our performances, celebrations, and choir life.</p>
       <!-- Gallery is rendered from content.json (editable in admin.html) -->
       <div class="gag rev-stagger" id="gaList"></div>
-      <div class="gact"><a href="#contact" class="bg" style="display:inline-block">Share your photos with us</a></div>
+      <div class="gact"><a href="#contact" class="bg" style="display:inline-block" data-i18n="ga.cta">Share your photos with us</a></div>
     </div>
   </div>
 </div>
@@ -324,28 +325,28 @@
 <div class="jow" id="join">
   <div class="sw">
     <div class="joi">
-      <div class="slbl">Join us</div>
-      <h2 class="stit">Audition & become a member</h2>
-      <p class="ssub">We welcome new voices from our parish and beyond. Bring a love for worship music — experience is great to have, but not required.</p>
+      <div class="slbl" data-i18n="jo.label">Join us</div>
+      <h2 class="stit" data-i18n="jo.title">Audition & become a member</h2>
+      <p class="ssub" data-i18n="jo.sub">We welcome new voices from our parish and beyond. Bring a love for worship music — experience is great to have, but not required.</p>
       <div class="jog">
         <div class="jinfo">
-          <div class="jrow"><div class="jib">&#127925;</div><div><div class="jl">Voice parts</div><div class="jv">Soprano · Alto · Tenor · Bass</div></div></div>
-          <div class="jrow"><div class="jib">&#9200;</div><div><div class="jl">Rehearsals</div><div class="jv">Thursdays · 6:30 PM</div></div></div>
-          <div class="jrow"><div class="jib">&#128205;</div><div><div class="jl">Venue</div><div class="jv">Parish Hall, Dar es Salaam</div></div></div>
+          <div class="jrow"><div class="jib">&#127925;</div><div><div class="jl" data-i18n="jo.vp">Voice parts</div><div class="jv" data-i18n="jo.vpv">Soprano · Alto · Tenor · Bass</div></div></div>
+          <div class="jrow"><div class="jib">&#9200;</div><div><div class="jl" data-i18n="jo.reh">Rehearsals</div><div class="jv" data-i18n="jo.rehv">Thursdays · 6:30 PM</div></div></div>
+          <div class="jrow"><div class="jib">&#128205;</div><div><div class="jl" data-i18n="jo.ven">Venue</div><div class="jv" data-i18n="jo.venv">Parish Hall, Dar es Salaam</div></div></div>
           <div class="jop">
-            <div class="jl">We are currently opening for</div>
+            <div class="jl" data-i18n="jo.open">We are currently opening for</div>
             <div class="pops"><span>Soprano</span><span>Alto</span><span>Tenor</span><span>Bass</span></div>
           </div>
         </div>
         <form class="jof" id="joForm" data-validate novalidate>
           <div class="cfr">
-            <div class="fld"><input type="text" name="name" placeholder="Full name" required /></div>
-            <div class="fld"><input type="email" name="email" placeholder="Email address" required /></div>
+            <div class="fld"><input type="text" name="name" placeholder="Full name" data-i18n-ph="jo.name" required /></div>
+            <div class="fld"><input type="email" name="email" placeholder="Email address" data-i18n-ph="jo.email" required /></div>
           </div>
           <div class="cfr">
             <div class="fld">
-              <select name="voice" aria-label="Voice part" required>
-                <option value="">Voice part&#8230;</option>
+              <select name="voice" aria-label="Voice part" data-i18n-aria="jo.vpart" required>
+                <option value="" data-i18n="jo.vpart">Voice part&#8230;</option>
                 <option>Soprano</option>
                 <option>Alto</option>
                 <option>Tenor</option>
@@ -353,17 +354,17 @@
               </select>
             </div>
             <div class="fld">
-              <select name="experience" aria-label="Singing experience" required>
-                <option value="">Experience&#8230;</option>
-                <option>Beginner</option>
-                <option>Intermediate</option>
-                <option>Advanced</option>
+              <select name="experience" aria-label="Singing experience" data-i18n-aria="jo.exp" required>
+                <option value="" data-i18n="jo.exp">Experience&#8230;</option>
+                <option data-i18n="jo.beg">Beginner</option>
+                <option data-i18n="jo.mid">Intermediate</option>
+                <option data-i18n="jo.adv">Advanced</option>
               </select>
             </div>
           </div>
-          <div class="fld"><textarea name="message" placeholder="Tell us a little about yourself..."></textarea></div>
-          <div class="form-ok" id="joFormOk">Thank you! Your audition request has been received. We'll be in touch.</div>
-          <button type="submit">Apply to audition &#8594;</button>
+          <div class="fld"><textarea name="message" placeholder="Tell us a little about yourself..." data-i18n-ph="jo.msg"></textarea></div>
+          <div class="form-ok" id="joFormOk" data-i18n="jo.ok">Thank you! Your audition request has been received. We'll be in touch.</div>
+          <button type="submit" data-i18n="jo.btn">Apply to audition &#8594;</button>
         </form>
       </div>
     </div>
@@ -374,27 +375,27 @@
 <div class="dow" id="donate">
   <div class="sw">
     <div class="doi">
-      <div class="slbl">Support our ministry</div>
-      <h2 class="stit">Donate & Support</h2>
-      <p class="ssub">Your generosity keeps our music ministry alive — from choir robes and instruments to transport and event costs.</p>
+      <div class="slbl" data-i18n="do.label">Support our ministry</div>
+      <h2 class="stit" data-i18n="do.title">Donate & Support</h2>
+      <p class="ssub" data-i18n="do.sub">Your generosity keeps our music ministry alive — from choir robes and instruments to transport and event costs.</p>
       <div class="dog rev-stagger">
         <div class="dgc">
-          <div class="ddl">Supporter</div>
+          <div class="ddl" data-i18n="do.c1">Supporter</div>
           <div class="dam">TZS 10,000</div>
-          <p>Covers rehearsal materials, sheet music printing and transport for one week.</p>
-          <a class="ddon" href="#contact">Donate</a>
+          <p data-i18n="do.c1p">Covers rehearsal materials, sheet music printing and transport for one week.</p>
+          <a class="ddon" href="#contact" data-i18n="do.donate">Donate</a>
         </div>
         <div class="dgc feat">
-          <div class="ddl">Patron</div>
+          <div class="ddl" data-i18n="do.c2">Patron</div>
           <div class="dam">TZS 50,000</div>
-          <p>Helps fund new instruments, choir robes and our annual concert production.</p>
-          <a class="ddon" href="#contact">Donate</a>
+          <p data-i18n="do.c2p">Helps fund new instruments, choir robes and our annual concert production.</p>
+          <a class="ddon" href="#contact" data-i18n="do.donate">Donate</a>
         </div>
         <div class="dgc">
-          <div class="ddl">Benefactor</div>
+          <div class="ddl" data-i18n="do.c3">Benefactor</div>
           <div class="dam">Custom</div>
-          <p>Partner with us for special projects, recordings, media and community outreach.</p>
-          <a class="ddon" href="#contact">Talk to us</a>
+          <p data-i18n="do.c3p">Partner with us for special projects, recordings, media and community outreach.</p>
+          <a class="ddon" href="#contact" data-i18n="do.talk">Talk to us</a>
         </div>
       </div>
     </div>
@@ -405,12 +406,12 @@
 <div class="ctaw">
   <div class="sw">
     <div class="ctai reveal">
-      <div class="slbl">Start your journey</div>
-      <h2 class="stit">Join our family of voices</h2>
-      <p class="ssub">Whether you sing, play an instrument, or simply love worship music, there is a place for you at Maranatha Choir.</p>
+      <div class="slbl" data-i18n="cta.label">Start your journey</div>
+      <h2 class="stit" data-i18n="cta.title">Join our family of voices</h2>
+      <p class="ssub" data-i18n="cta.sub">Whether you sing, play an instrument, or simply love worship music, there is a place for you at Maranatha Choir.</p>
       <div class="hbtns">
-        <a href="#contact" class="bg">Join the choir</a>
-        <a href="#events" class="bo">See upcoming events</a>
+        <a href="#contact" class="bg" data-i18n="cta.bt1">Join the choir</a>
+        <a href="#events" class="bo" data-i18n="cta.bt2">See upcoming events</a>
       </div>
     </div>
   </div>
@@ -420,16 +421,16 @@
 <div class="cow" id="contact">
   <div class="sw">
     <div class="coi">
-      <div class="slbl">Get in touch</div>
-      <h2 class="stit">Contact Us</h2>
-      <p class="ssub">Reach out for bookings, collaborations, or general enquiries. We'd love to hear from you.</p>
+      <div class="slbl" data-i18n="co.label">Get in touch</div>
+      <h2 class="stit" data-i18n="co.title">Contact Us</h2>
+      <p class="ssub" data-i18n="co.sub">Reach out for bookings, collaborations, or general enquiries. We'd love to hear from you.</p>
       <div class="cog reveal">
         <div>
-          <div class="coit"><div class="coib">&#128205;</div><div><div class="col">Location</div><div class="cov">Dar es Salaam, Tanzania</div></div></div>
-          <div class="coit"><div class="coib">&#9993;</div><div><div class="col">Email</div><div class="cov">info@maranathachoir.co.tz</div></div></div>
-          <div class="coit"><div class="coib">&#9742;</div><div><div class="col">Phone</div><div class="cov">+255 700 000 000</div></div></div>
+          <div class="coit"><div class="coib">&#128205;</div><div><div class="col" data-i18n="co.loc">Location</div><div class="cov" data-i18n="co.locv">Dar es Salaam, Tanzania</div></div></div>
+          <div class="coit"><div class="coib">&#9993;</div><div><div class="col" data-i18n="co.em">Email</div><div class="cov">info@maranathachoir.co.tz</div></div></div>
+          <div class="coit"><div class="coib">&#9742;</div><div><div class="col" data-i18n="co.phone">Phone</div><div class="cov">+255 700 000 000</div></div></div>
           <div class="sos">
-            <div class="sosl">Follow us</div>
+            <div class="sosl" data-i18n="co.follow">Follow us</div>
             <div class="sosi">
               <a class="sosb" href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" rel="noopener">
                 <span class="sosic">&#9654;</span>
@@ -448,13 +449,13 @@
         </div>
         <form class="cof" id="cof" data-validate novalidate>
           <div class="cfr">
-            <div class="fld"><input type="text" name="name" placeholder="Your name" required /></div>
-            <div class="fld"><input type="email" name="email" placeholder="Email address" required /></div>
+            <div class="fld"><input type="text" name="name" placeholder="Your name" data-i18n-ph="co.name" required /></div>
+            <div class="fld"><input type="email" name="email" placeholder="Email address" data-i18n-ph="co.email" required /></div>
           </div>
-          <div class="fld"><input type="text" name="subject" placeholder="Subject" required /></div>
-          <div class="fld"><textarea name="message" placeholder="Your message..." required></textarea></div>
-          <div class="form-ok" id="formOk">Thank you! Your message has been sent. We'll be in touch soon.</div>
-          <button type="submit">Send message &#8594;</button>
+          <div class="fld"><input type="text" name="subject" placeholder="Subject" data-i18n-ph="co.subj" required /></div>
+          <div class="fld"><textarea name="message" placeholder="Your message..." data-i18n-ph="co.msg" required></textarea></div>
+          <div class="form-ok" id="formOk" data-i18n="co.ok">Thank you! Your message has been sent. We'll be in touch soon.</div>
+          <button type="submit" data-i18n="co.send">Send message &#8594;</button>
         </form>
       </div>
       <div class="mapw">
@@ -472,7 +473,7 @@
   <div class="fwrap">
     <div class="fcol fbrand">
       <div class="nb"><div class="nc">M</div><span class="nn">Maranatha Choir</span></div>
-      <p>Kwaya ya Maranatha — a ministry of song, discipline and prayer in the Catholic community of Dar es Salaam, Tanzania.</p>
+      <p data-i18n="ft.p">Kwaya ya Maranatha — a ministry of song, discipline and prayer in the Catholic community of Dar es Salaam, Tanzania.</p>
       <div class="coso">
         <a class="cosb" href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" rel="noopener" title="YouTube">&#9654;</a>
         <a class="cosb" href="https://www.instagram.com/kwaya_ya_maranatha_udsm" target="_blank" rel="noopener" title="Instagram">&#9678;</a>
@@ -480,26 +481,26 @@
       </div>
     </div>
     <div class="fcol">
-      <h4>Quick Links</h4>
-      <a href="#home">Home</a>
-      <a href="#news">News</a>
-      <a href="#members">Members</a>
-      <a href="members.html">Member Portal</a>
-      <a href="#events">Events</a>
-      <a href="#join">Join Us</a>
-      <a href="#donate">Donate</a>
-      <a href="#contact">Contact</a>
+      <h4 data-i18n="ft.ql">Quick Links</h4>
+      <a href="#home" data-i18n="nav.home">Home</a>
+      <a href="#news" data-i18n="nw.label">News</a>
+      <a href="#members" data-i18n="nav.members">Members</a>
+      <a href="members.html" data-i18n="nav.portal">Member Portal</a>
+      <a href="#events" data-i18n="nav.events">Events</a>
+      <a href="#join" data-i18n="nav.join">Join Us</a>
+      <a href="#donate" data-i18n="nav.donate">Donate</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
     </div>
     <div class="fcol">
-      <h4>Music & Media</h4>
-      <a href="#works">Our Recordings</a>
+      <h4 data-i18n="ft.mm">Music & Media</h4>
+      <a href="#works" data-i18n="ft.mm1">Our Recordings</a>
       <a href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" rel="noopener">YouTube</a>
       <a href="https://www.instagram.com/kwaya_ya_maranatha_udsm" target="_blank" rel="noopener">Instagram</a>
       <a href="https://www.tiktok.com/@maranatha_choir_udsm" target="_blank" rel="noopener">TikTok</a>
     </div>
     <div class="fcol">
-      <h4>Contact</h4>
-      <span>Dar es Salaam, Tanzania</span>
+      <h4 data-i18n="ft.c">Contact</h4>
+      <span data-i18n="co.locv">Dar es Salaam, Tanzania</span>
       <a href="mailto:info@maranathachoir.co.tz">info@maranathachoir.co.tz</a>
       <a href="tel:+255700000000">+255 700 000 000</a>
     </div>
@@ -507,13 +508,13 @@
   <div class="fnews">
     <div class="fnews-in">
       <div>
-        <h4>Stay in tune</h4>
-        <p>Get our concert dates, news and recordings in your inbox.</p>
+        <h4 data-i18n="ft.stay">Stay in tune</h4>
+        <p data-i18n="ft.stayp">Get our concert dates, news and recordings in your inbox.</p>
       </div>
       <form class="fnews-form" data-validate novalidate>
-        <div class="fld"><input type="email" name="email" placeholder="Your email address" required /></div>
-        <button type="submit">Subscribe</button>
-        <div class="form-ok">Thank you for subscribing!</div>
+        <div class="fld"><input type="email" name="email" placeholder="Your email address" data-i18n-ph="ft.subph" required /></div>
+        <button type="submit" data-i18n="ft.sub">Subscribe</button>
+        <div class="form-ok" data-i18n="ft.ok">Thank you for subscribing!</div>
       </form>
     </div>
   </div>
@@ -524,17 +525,17 @@
 
 <!-- LIGHTBOX -->
 <div class="lb" id="lb" aria-hidden="true">
-  <button class="lb-x" id="lbX" aria-label="Close">&times;</button>
-  <button class="lb-n lb-prev" id="lbPrev" aria-label="Previous image">&lsaquo;</button>
+  <button class="lb-x" id="lbX" aria-label="Close" data-i18n-aria="lb.close">&times;</button>
+  <button class="lb-n lb-prev" id="lbPrev" aria-label="Previous image" data-i18n-aria="lb.prev">&lsaquo;</button>
   <div class="lb-imgw">
     <img id="lbImg" src="" alt="">
     <iframe class="lb-frame" id="lbFrame" src="" allowfullscreen title="Gallery video"></iframe>
     <div class="lbcap" id="lbCap"></div>
   </div>
-  <button class="lb-n lb-next" id="lbNext" aria-label="Next image">&rsaquo;</button>
+  <button class="lb-n lb-next" id="lbNext" aria-label="Next image" data-i18n-aria="lb.next">&rsaquo;</button>
 </div>
 
-<button class="totop" id="totop" aria-label="Back to top">&uarr;</button>
+<button class="totop" id="totop" aria-label="Back to top" data-i18n-aria="totop">&uarr;</button>
 
 </body>
 </html>

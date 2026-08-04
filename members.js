@@ -6,8 +6,11 @@
   /* ---------- Member portal (Supabase auth + dashboard) ---------- */
 
   class MemberPortal {
-    static ROLE_LABEL = { member: 'Member', leader: 'Leader', admin: 'Admin' };
     static NET_ERR_MSG = 'Could not reach the Supabase server (request timed out). Check your internet connection, disable ad-blockers for this page, or try again in a private window.';
+
+    static roleLabel(role) {
+      return I18n.t('portal.role.' + role);
+    }
 
     constructor() {
       this.supabase = null;
@@ -269,13 +272,13 @@
       $('mpGreet').textContent = 'Habari, ' + this.profile.full_name;
       $('mpSub').textContent =
         (this.profile.title ? this.profile.title + ' \u00b7 ' : '') +
-        'Signed in as ' + MemberPortal.ROLE_LABEL[this.profile.role];
+        'Signed in as ' + MemberPortal.roleLabel(this.profile.role);
 
       $('mpProfile').innerHTML = '';
       [
         ['Name', this.profile.full_name],
         ['Email', this.profile.email],
-        ['Access level', MemberPortal.ROLE_LABEL[this.profile.role]],
+        ['Access level', MemberPortal.roleLabel(this.profile.role)],
         ['Title', this.profile.title || '\u2014'],
         ['Voice part', this.profile.voice_part || '\u2014'],
         ['Member since', this.profile.created_at ? new Date(this.profile.created_at).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }) : '\u2014']
@@ -324,7 +327,7 @@
         const who = document.createElement('div');
         who.className = 'mp-mwho';
         const n = document.createElement('div');
-        n.textContent = m.full_name + (m.id === this.profile.id ? ' (you)' : '');
+        n.textContent = m.full_name + (m.id === this.profile.id ? ' ' + I18n.t('portal.you') : '');
         const em = document.createElement('div');
         em.className = 'mp-date';
         em.textContent = m.email;
@@ -335,7 +338,7 @@
         ['member', 'leader', 'admin'].forEach(r => {
           const o = document.createElement('option');
           o.value = r;
-          o.textContent = MemberPortal.ROLE_LABEL[r];
+          o.textContent = MemberPortal.roleLabel(r);
           if (m.role === r) o.selected = true;
           sel.appendChild(o);
         });
@@ -404,8 +407,14 @@
     /* ---------- Wire up + boot ---------- */
 
     init() {
+      I18n.init('portal');
+
       document.querySelectorAll('.mp-tab').forEach(b =>
         b.addEventListener('click', () => this.switchTab(b.dataset.view))
+      );
+
+      document.querySelectorAll('#tblang button').forEach(b =>
+        b.addEventListener('click', () => I18n.set(b.dataset.lang))
       );
 
       $('signinForm').addEventListener('submit', e => this.onSignIn(e));

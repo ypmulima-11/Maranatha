@@ -39,10 +39,17 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
   background: var(--g9); border: 2px solid var(--au); color: var(--al);
   display: flex; align-items: center; justify-content: center; font-weight: 700;
 }
-.mp-nav { display: flex; gap: 1.2rem; }
+.mp-nav { display: flex; align-items: center; gap: 1.2rem; }
 .mp-nav a { color: rgba(255,255,255,.75); text-decoration: none; font-size: 13px; }
 .mp-nav a:hover { color: var(--al); }
 .mp-nav-admin { color: var(--al) !important; }
+.tblang { display: flex; align-items: center; gap: 6px; }
+.tblang span { opacity: .45; font-size: 13px; }
+.tblang button {
+  background: none; border: 1px solid rgba(255,255,255,.3); color: rgba(255,255,255,.75);
+  border-radius: 6px; padding: 2px 8px; cursor: pointer; font-size: 12px;
+}
+.tblang button.on { background: var(--au); border-color: var(--au); color: #fff; font-weight: 600; }
 
 /* ---------- Buttons ---------- */
 .mp-btn {

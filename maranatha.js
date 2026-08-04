@@ -306,14 +306,7 @@
     bindLanguage() {
       const langBtns = [...document.querySelectorAll('#tblang button')];
       langBtns.forEach(b => {
-        b.addEventListener('click', () => {
-          langBtns.forEach(x => {
-            x.classList.remove('on');
-            x.setAttribute('aria-pressed', 'false');
-          });
-          b.classList.add('on');
-          b.setAttribute('aria-pressed', 'true');
-        });
+        b.addEventListener('click', () => I18n.set(b.dataset.lang));
       });
     }
 
@@ -761,6 +754,7 @@
     }
 
     async boot() {
+      I18n.init();
       this.nav.bindAll();
       FormValidator.bindAll();
       this.renderer.renderAll(SiteContent.DEFAULT);
