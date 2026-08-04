@@ -152,9 +152,44 @@
         const mt = (ev.place || '') + (ev.time ? ' \u00b7 ' + ev.time : '');
         b.appendChild(El.make('div', 'evmt', mt));
         if (ev.tag) b.appendChild(El.make('span', 'evtg', ev.tag));
+        const cal = SectionRenderer.buildCal(ev);
+        if (cal) {
+          const a = El.make('a', 'evcal', 'Add to calendar \u21d7');
+          a.href = cal;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          b.appendChild(a);
+        }
         card.appendChild(b);
         return card;
       }));
+    }
+
+    static buildCal(ev) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ev.date || '');
+      if (!m) return '';
+      let startH = 12, startMin = 0;
+      const tm = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec((ev.time || '').trim());
+      if (tm) {
+        let h = parseInt(tm[1], 10);
+        const min = parseInt(tm[2], 10);
+        if (tm[3].toUpperCase() === 'PM' && h < 12) h += 12;
+        if (tm[3].toUpperCase() === 'AM' && h === 12) h = 0;
+        startH = h;
+        startMin = min;
+      }
+      const pad = n => String(n).padStart(2, '0');
+      const fmt = dt => dt.getFullYear() + pad(dt.getMonth() + 1) + pad(dt.getDate()) +
+        'T' + pad(dt.getHours()) + pad(dt.getMinutes()) + '00';
+      const start = new Date(+m[1], +m[2] - 1, +m[3], startH, startMin);
+      const end = new Date(start.getTime() + 2 * 3600000);
+      const p = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: ev.title || 'Maranatha Choir event',
+        dates: fmt(start) + '/' + fmt(end),
+        location: ev.place || ''
+      });
+      return 'https://calendar.google.com/calendar/render?' + p.toString();
     }
 
     renderVideos(list) {
@@ -232,6 +267,8 @@
           const img = document.createElement('img');
           img.src = item.src || '';
           img.alt = item.cap || 'Choir gallery photo';
+          img.loading = 'lazy';
+          img.decoding = 'async';
           img.onerror = function () { this.style.display = 'none'; };
           card.appendChild(img);
         }
@@ -734,8 +771,46 @@
           }
         });
         if (!ok) return;
-        this.form.reset();
+
         const okEl = this.form.querySelector('.form-ok');
+        const table = this.form.dataset.sbTable;
+        const honeypot = this.form.querySelector('input[name="website"]');
+
+        if (table && window.supabase && SUPABASE_READY) {
+          if (honeypot && honeypot.value.trim()) {
+            this.form.reset();
+            return;
+          }
+          const payload = {};
+          this.form.querySelectorAll('[name]').forEach(inp => {
+            if (inp.name === 'website') return;
+            payload[inp.dataset.sb || inp.name] = inp.value.trim();
+          });
+          const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+          const req = table === 'newsletter_subs'
+            ? sb.from(table).upsert(payload, { onConflict: 'email', ignoreDuplicates: true })
+            : sb.from(table).insert(payload);
+          req.then(r => {
+            if (r.error) {
+              console.error('Form save failed:', r.error);
+              if (okEl) {
+                okEl.classList.add('show');
+                okEl.textContent = 'Could not send right now \u2014 please try again later.';
+                setTimeout(() => okEl.classList.remove('show'), 6000);
+              }
+              return;
+            }
+            this.form.reset();
+            if (okEl) {
+              okEl.classList.add('show');
+              okEl.setAttribute('role', 'status');
+              setTimeout(() => okEl.classList.remove('show'), 5000);
+            }
+          });
+          return;
+        }
+
+        this.form.reset();
         if (okEl) {
           okEl.classList.add('show');
           okEl.setAttribute('role', 'status');

@@ -301,6 +301,13 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
   font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px;
   border: 1px solid var(--g1);
 }
+.evcal {
+  display: inline-block; margin-top: 10px; margin-left: 8px;
+  font-size: 11px; font-weight: 600; color: var(--g5);
+  text-decoration: none; border-bottom: 1px dashed currentColor;
+}
+.evcal:hover { color: var(--au); }
+.hp { display: none !important; }
 .evv { margin-top: 1rem; }
 .evvh { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; margin-bottom: 1.4rem; }
 .vidg { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; }

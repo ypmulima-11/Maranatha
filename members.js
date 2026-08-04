@@ -309,6 +309,7 @@
 
       if (isAdmin) {
         this.loadAdminMembers();
+        this.loadAdminInbox();
         const form = $('adminResourceForm');
         if (form) form.style.display = '';
       }
@@ -365,6 +366,76 @@
         row.appendChild(sel);
         box.appendChild(row);
       });
+    }
+
+    /* ---------- Admin: inbox (auditions + contact messages) ---------- */
+
+    async loadAdminInbox() {
+      const empty = document.createElement('p');
+      empty.className = 'mp-empty';
+      empty.textContent = I18n.t('portal.empty');
+
+      const box = $('adminAuditions');
+      if (box) {
+        box.innerHTML = '';
+        const { data, error } = await this.supabase
+          .from('auditions').select('*').order('created_at', { ascending: false }).limit(30);
+        if (error) { console.warn('auditions:', error); }
+        const list = data || [];
+        if (!list.length) { box.appendChild(empty.cloneNode(true)); }
+        list.forEach(a => {
+          const card = document.createElement('div');
+          card.className = 'mp-item';
+          const h = document.createElement('h3');
+          h.textContent = a.name + (a.voice_part ? ' \u2014 ' + a.voice_part : '');
+          card.appendChild(h);
+          const p = document.createElement('p');
+          p.textContent = a.email + (a.experience ? ' \u00b7 ' + a.experience : '');
+          card.appendChild(p);
+          if (a.message) {
+            const m = document.createElement('p');
+            m.textContent = a.message;
+            card.appendChild(m);
+          }
+          if (a.created_at) {
+            const d = document.createElement('div');
+            d.className = 'mp-date';
+            d.textContent = new Date(a.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            card.appendChild(d);
+          }
+          box.appendChild(card);
+        });
+      }
+
+      const mBox = $('adminMsgs');
+      if (mBox) {
+        mBox.innerHTML = '';
+        const { data, error } = await this.supabase
+          .from('contact_msgs').select('*').order('created_at', { ascending: false }).limit(30);
+        if (error) { console.warn('contact_msgs:', error); }
+        const list = data || [];
+        if (!list.length) { mBox.appendChild(empty); }
+        list.forEach(m => {
+          const card = document.createElement('div');
+          card.className = 'mp-item';
+          const h = document.createElement('h3');
+          h.textContent = m.subject || '(no subject)';
+          card.appendChild(h);
+          const p = document.createElement('p');
+          p.textContent = m.name + ' \u00b7 ' + m.email;
+          card.appendChild(p);
+          const body = document.createElement('p');
+          body.textContent = m.message;
+          card.appendChild(body);
+          if (m.created_at) {
+            const d = document.createElement('div');
+            d.className = 'mp-date';
+            d.textContent = new Date(m.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            card.appendChild(d);
+          }
+          mBox.appendChild(card);
+        });
+      }
     }
 
     /* ---------- Admin: add a resource ---------- */

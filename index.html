@@ -52,6 +52,8 @@
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="maranatha.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+<script src="supabase-config.js" defer></script>
 <script src="i18n.js" defer></script>
 <script src="maranatha.js" defer></script>
 </head>
@@ -338,14 +340,14 @@
             <div class="pops"><span>Soprano</span><span>Alto</span><span>Tenor</span><span>Bass</span></div>
           </div>
         </div>
-        <form class="jof" id="joForm" data-validate novalidate>
+        <form class="jof" id="joForm" data-validate data-sb-table="auditions" novalidate>
           <div class="cfr">
             <div class="fld"><input type="text" name="name" placeholder="Full name" data-i18n-ph="jo.name" required /></div>
             <div class="fld"><input type="email" name="email" placeholder="Email address" data-i18n-ph="jo.email" required /></div>
           </div>
           <div class="cfr">
             <div class="fld">
-              <select name="voice" aria-label="Voice part" data-i18n-aria="jo.vpart" required>
+              <select name="voice" data-sb="voice_part" aria-label="Voice part" data-i18n-aria="jo.vpart" required>
                 <option value="" data-i18n="jo.vpart">Voice part&#8230;</option>
                 <option>Soprano</option>
                 <option>Alto</option>
@@ -363,6 +365,7 @@
             </div>
           </div>
           <div class="fld"><textarea name="message" placeholder="Tell us a little about yourself..." data-i18n-ph="jo.msg"></textarea></div>
+          <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="form-ok" id="joFormOk" data-i18n="jo.ok">Thank you! Your audition request has been received. We'll be in touch.</div>
           <button type="submit" data-i18n="jo.btn">Apply to audition &#8594;</button>
         </form>
@@ -447,13 +450,14 @@
             </div>
           </div>
         </div>
-        <form class="cof" id="cof" data-validate novalidate>
+        <form class="cof" id="cof" data-validate data-sb-table="contact_msgs" novalidate>
           <div class="cfr">
             <div class="fld"><input type="text" name="name" placeholder="Your name" data-i18n-ph="co.name" required /></div>
             <div class="fld"><input type="email" name="email" placeholder="Email address" data-i18n-ph="co.email" required /></div>
           </div>
           <div class="fld"><input type="text" name="subject" placeholder="Subject" data-i18n-ph="co.subj" required /></div>
           <div class="fld"><textarea name="message" placeholder="Your message..." data-i18n-ph="co.msg" required></textarea></div>
+          <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="form-ok" id="formOk" data-i18n="co.ok">Thank you! Your message has been sent. We'll be in touch soon.</div>
           <button type="submit" data-i18n="co.send">Send message &#8594;</button>
         </form>
@@ -511,8 +515,9 @@
         <h4 data-i18n="ft.stay">Stay in tune</h4>
         <p data-i18n="ft.stayp">Get our concert dates, news and recordings in your inbox.</p>
       </div>
-      <form class="fnews-form" data-validate novalidate>
+      <form class="fnews-form" data-validate data-sb-table="newsletter_subs" novalidate>
         <div class="fld"><input type="email" name="email" placeholder="Your email address" data-i18n-ph="ft.subph" required /></div>
+        <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
         <button type="submit" data-i18n="ft.sub">Subscribe</button>
         <div class="form-ok" data-i18n="ft.ok">Thank you for subscribing!</div>
       </form>

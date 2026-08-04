@@ -148,3 +148,74 @@ where not exists (select 1 from public.resources r where r.title = v.title);
 --
 --    update public.profiles set role = 'admin' where email = 'you@example.com';
 -- ------------------------------------------------------------
+
+-- ============================================================
+-- 8) PUBLIC FORMS DATA — auditions, contact messages, newsletter
+--    Run this whole section once (it is safe to re-run).
+--    Anyone can submit; only admins can read.
+-- ============================================================
+
+-- Audition applications (Join Us form)
+create table if not exists public.auditions (
+  id bigint generated always as identity primary key,
+  name text not null,
+  email text not null,
+  voice_part text not null default '',
+  experience text not null default '',
+  message text not null default '',
+  status text not null default 'new' check (status in ('new','contacted','accepted','declined')),
+  created_at timestamptz not null default now()
+);
+
+alter table public.auditions enable row level security;
+
+create policy "anyone can submit an audition" on public.auditions
+  for insert to anon, authenticated
+  with check (true);
+
+create policy "admins read auditions" on public.auditions
+  for select to authenticated
+  using ((select role from public.profiles where id = auth.uid()) = 'admin');
+
+-- Contact messages (Contact form)
+create table if not exists public.contact_msgs (
+  id bigint generated always as identity primary key,
+  name text not null,
+  email text not null,
+  subject text not null default '',
+  message text not null,
+  is_read boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+alter table public.contact_msgs enable row level security;
+
+create policy "anyone can send a message" on public.contact_msgs
+  for insert to anon, authenticated
+  with check (true);
+
+create policy "admins read messages" on public.contact_msgs
+  for select to authenticated
+  using ((select role from public.profiles where id = auth.uid()) = 'admin');
+
+-- Newsletter subscribers (footer form)
+create table if not exists public.newsletter_subs (
+  id bigint generated always as identity primary key,
+  email text not null unique,
+  created_at timestamptz not null default now()
+);
+
+alter table public.newsletter_subs enable row level security;
+
+create policy "anyone can subscribe" on public.newsletter_subs
+  for insert to anon, authenticated
+  with check (true);
+
+create policy "admins read subscribers" on public.newsletter_subs
+  for select to authenticated
+  using ((select role from public.profiles where id = auth.uid()) = 'admin');
+
+-- Explicit grants (harmless; covers fresh tables in the public schema)
+grant select, insert on public.auditions to anon, authenticated;
+grant select, insert on public.contact_msgs to anon, authenticated;
+grant select, insert on public.newsletter_subs to anon, authenticated;
