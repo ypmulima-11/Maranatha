@@ -108,6 +108,16 @@
   </div>
 </section>
 
+<!-- ============ PENDING APPROVAL ============ -->
+<section class="mp-auth" id="pendingView" hidden>
+  <div class="mp-card">
+    <h1 data-i18n="portal.pend.title">Account awaiting approval</h1>
+    <p class="mp-hint" data-i18n="portal.pend.sub">An admin must approve your registration before you can use the portal. If you joined with an invite link, check that you signed up with the same email the invite was sent to.</p>
+    <div class="mp-msg" id="pvMsg" role="status"></div>
+    <button type="button" class="mp-btn big" id="pvOut" data-i18n="portal.out">Sign out</button>
+  </div>
+</section>
+
 <!-- ============ DASHBOARD ============ -->
 <section class="mp-dash" id="dashView" hidden>
   <div class="mp-dash-in">
@@ -123,6 +133,21 @@
     <div class="mp-note" data-i18n="portal.note">Accounts, access levels and resources are stored in the choir's Supabase database and protected by server-side row-level security.</div>
 
     <div class="mp-grid">
+
+      <div class="mp-card2 mp-card-wide">
+        <h2 data-i18n="portal.next">Next event</h2>
+        <div class="mp-list" id="mpNextEvent"></div>
+      </div>
+
+      <div class="mp-card2">
+        <h2 data-i18n="portal.anno">Announcements</h2>
+        <div class="mp-list" id="mpAnnounce"></div>
+      </div>
+
+      <div class="mp-card2">
+        <h2 data-i18n="portal.events">Upcoming events</h2>
+        <div class="mp-list" id="mpEvents"></div>
+      </div>
 
       <div class="mp-card2">
         <h2 data-i18n="portal.profile">My profile</h2>
@@ -146,6 +171,33 @@
 
         <h3 class="mp-sec" data-i18n="portal.manage">Manage members</h3>
         <div class="mp-mrow-list" id="adminMembers"></div>
+
+        <h3 class="mp-sec" data-i18n="portal.pending">Pending registrations</h3>
+        <div class="mp-mrow-list" id="adminPending"></div>
+
+        <h3 class="mp-sec" data-i18n="portal.invite">Invite a member</h3>
+        <form class="mp-res-form" id="adminInviteForm" novalidate>
+          <label class="mp-field"><span data-i18n="portal.invite.email">Member's email</span>
+            <input type="email" id="ivEmail" placeholder="you@example.com" autocomplete="off">
+          </label>
+          <label class="mp-field"><span data-i18n="portal.invite.role">Access level</span>
+            <select id="ivRole">
+              <option value="member" data-i18n="portal.role.member">Member</option>
+              <option value="leader" data-i18n="portal.role.leader">Leader</option>
+              <option value="section_leader" data-i18n="portal.role.section_leader">Section Leader</option>
+            </select>
+          </label>
+          <p class="mp-hint" data-i18n="portal.invite.note">Share this link with the member. They sign up through it and are activated automatically after confirming their email.</p>
+          <div class="mp-msg" id="ivMsg" role="status"></div>
+          <button type="submit" class="mp-btn" data-i18n="portal.invite.btn">Create invite link</button>
+        </form>
+        <div class="mp-invbox" id="mpInviteBox" hidden>
+          <div class="mp-date" data-i18n="portal.invite.link">Invite link</div>
+          <div class="mp-invrow">
+            <code id="mpInviteLink"></code>
+            <button type="button" class="mp-btn small" id="mpInviteCopy" data-i18n="portal.invite.copy">Copy</button>
+          </div>
+        </div>
 
         <h3 class="mp-sec" data-i18n="portal.addres">Add a resource</h3>
         <form class="mp-res-form" id="adminResourceForm" novalidate>

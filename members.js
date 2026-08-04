@@ -29,19 +29,29 @@
     showAuth() {
       $('dashView').hidden = true;
       $('resetView').hidden = true;
+      $('pendingView').hidden = true;
       $('authView').hidden = false;
     }
 
     showDash() {
       $('resetView').hidden = true;
       $('authView').hidden = true;
+      $('pendingView').hidden = true;
       $('dashView').hidden = false;
     }
 
     showReset() {
       $('authView').hidden = true;
       $('dashView').hidden = true;
+      $('pendingView').hidden = true;
       $('resetView').hidden = false;
+    }
+
+    showPending() {
+      $('resetView').hidden = true;
+      $('authView').hidden = true;
+      $('dashView').hidden = true;
+      $('pendingView').hidden = false;
     }
 
     /* ---------- Timeout guard: never hang silently on a dead request ---------- */
@@ -198,11 +208,22 @@
     }
 
     async signOut() {
+      this.profile = null;
       await this.supabase.auth.signOut();
       this.showAuth();
     }
 
     /* ---------- Dashboard data ---------- */
+
+    pickLang(en, sw) {
+      return (I18n.lang === 'sw' && sw) ? sw : en;
+    }
+
+    fmtWhen(iso) {
+      return new Date(iso).toLocaleString('en-GB', {
+        weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+      });
+    }
 
     async loadDashboard() {
       const { data: userData } = await this.supabase.auth.getUser();
@@ -225,11 +246,40 @@
       }
       this.profile = prof;
 
+      if (prof && prof.status !== 'active') {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('invite');
+        const pvMsg = $('pvMsg');
+        if (prof.status === 'pending' && code) {
+          const { data: claim, error: claimErr } = await this.supabase
+            .rpc('claim_invite', { p_code: code });
+          if (!claimErr && (claim === 'activated' || claim === 'already-active')) {
+            if (pvMsg) {
+              pvMsg.className = 'mp-msg ok';
+              pvMsg.textContent = I18n.t('portal.invite.activating');
+            }
+            await this.loadDashboard();
+            return;
+          }
+          if (pvMsg && claimErr) {
+            pvMsg.className = 'mp-msg err';
+            pvMsg.textContent = claimErr.message || '';
+          }
+        } else if (pvMsg && prof.status === 'rejected') {
+          pvMsg.className = 'mp-msg err';
+          pvMsg.textContent = I18n.t('portal.pend.rejected');
+        }
+        this.showPending();
+        return;
+      }
+
       const { data: res } = await this.supabase
         .from('resources').select('*').order('created_at', { ascending: true });
       this.resources = res || [];
 
       this.renderDashboard();
+      this.loadEvents();
+      this.loadAnnouncements();
     }
 
     /* ---------- Rendering ---------- */
@@ -310,8 +360,249 @@
       if (isAdmin) {
         this.loadAdminMembers();
         this.loadAdminInbox();
+        this.loadAdminPending();
         const form = $('adminResourceForm');
         if (form) form.style.display = '';
+      }
+    }
+
+    /* ---------- Events + RSVP ---------- */
+
+    makeEventCard(ev, mine) {
+      const card = document.createElement('div');
+      card.className = 'mp-item';
+      const h = document.createElement('h3');
+      h.textContent = this.pickLang(ev.title_en, ev.title_sw) || 'Untitled';
+      card.appendChild(h);
+      const d = document.createElement('div');
+      d.className = 'mp-date';
+      d.textContent = this.fmtWhen(ev.start_time) + (ev.location ? ' \u00b7 ' + ev.location : '');
+      card.appendChild(d);
+      if (ev.is_mandatory) {
+        const m = document.createElement('div');
+        m.className = 'mp-badge leader';
+        m.textContent = I18n.t('portal.rsvp.mandatory');
+        card.appendChild(m);
+      }
+      const desc = this.pickLang(ev.description_en, ev.description_sw);
+      if (desc) {
+        const p = document.createElement('p');
+        p.textContent = desc;
+        card.appendChild(p);
+      }
+      const rw = document.createElement('div');
+      rw.className = 'mp-rsvp';
+      const lbl = document.createElement('span');
+      lbl.textContent = I18n.t('portal.rsvp') + ':';
+      rw.appendChild(lbl);
+      ['attending', 'not_attending', 'maybe'].forEach(s => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'mp-btn small' + (mine === s ? ' on' : '');
+        b.textContent = I18n.t('portal.rsvp.' + s);
+        b.addEventListener('click', () => this.setRsvp(ev, s));
+        rw.appendChild(b);
+      });
+      card.appendChild(rw);
+      return card;
+    }
+
+    async setRsvp(ev, status) {
+      const { error } = await this.supabase.from('event_rsvps').upsert(
+        {
+          event_id: ev.id,
+          member_id: this.profile.id,
+          status: status,
+          updated_at: new Date().toISOString()
+        },
+        { onConflict: 'event_id,member_id' }
+      );
+      if (error) {
+        window.alert(I18n.t('portal.rsvp.err') + '\n' + error.message);
+        return;
+      }
+      this.loadEvents();
+    }
+
+    async loadEvents() {
+      if (!this.profile) return;
+      const { data: evs, error } = await this.supabase
+        .from('events')
+        .select('*')
+        .gte('start_time', new Date().toISOString())
+        .order('start_time', { ascending: true })
+        .limit(20);
+      if (error) console.warn('events:', error);
+
+      const { data: rsvps } = await this.supabase
+        .from('event_rsvps').select('event_id, status');
+      const mine = {};
+      (rsvps || []).forEach(r => { mine[r.event_id] = r.status; });
+
+      const nextBox = $('mpNextEvent');
+      const listBox = $('mpEvents');
+      if (!nextBox || !listBox) return;
+      nextBox.innerHTML = '';
+      listBox.innerHTML = '';
+      const list = evs || [];
+      if (!list.length) {
+        const e = document.createElement('p');
+        e.className = 'mp-empty';
+        e.textContent = I18n.t('portal.noevents');
+        nextBox.appendChild(e);
+        listBox.appendChild(e.cloneNode(true));
+        return;
+      }
+      nextBox.appendChild(this.makeEventCard(list[0], mine[list[0].id]));
+      list.forEach(ev => listBox.appendChild(this.makeEventCard(ev, mine[ev.id])));
+    }
+
+    /* ---------- Announcements ---------- */
+
+    async loadAnnouncements() {
+      const box = $('mpAnnounce');
+      if (!box) return;
+      const { data, error } = await this.supabase
+        .from('announcements')
+        .select('*')
+        .order('is_pinned', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (error) console.warn('announcements:', error);
+      box.innerHTML = '';
+      const list = data || [];
+      if (!list.length) {
+        const e = document.createElement('p');
+        e.className = 'mp-empty';
+        e.textContent = I18n.t('portal.noanno');
+        box.appendChild(e);
+        return;
+      }
+      list.forEach(a => {
+        const card = document.createElement('div');
+        card.className = 'mp-item' + (a.is_pinned ? ' mp-pinned' : '');
+        const h = document.createElement('h3');
+        h.textContent = this.pickLang(a.title_en, a.title_sw);
+        card.appendChild(h);
+        const body = this.pickLang(a.content_en, a.content_sw);
+        if (body) {
+          const p = document.createElement('p');
+          p.textContent = body;
+          card.appendChild(p);
+        }
+        const d = document.createElement('div');
+        d.className = 'mp-date';
+        d.textContent = new Date(a.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        card.appendChild(d);
+        box.appendChild(card);
+      });
+    }
+
+    /* ---------- Admin: pending registrations + invites ---------- */
+
+    async setMemberStatus(email, status) {
+      const { error } = await this.supabase.rpc('admin_set_status', {
+        p_email: email,
+        p_status: status
+      });
+      if (error) {
+        window.alert(I18n.t('portal.status.err') + '\n' + error.message);
+        return;
+      }
+      this.loadAdminPending();
+    }
+
+    async loadAdminPending() {
+      const box = $('adminPending');
+      if (!box) return;
+      const { data } = await this.supabase
+        .from('profiles').select('*').eq('status', 'pending').order('created_at');
+      box.innerHTML = '';
+      const list = data || [];
+      if (!list.length) {
+        const e = document.createElement('p');
+        e.className = 'mp-empty';
+        e.textContent = I18n.t('portal.pending.none');
+        box.appendChild(e);
+        return;
+      }
+      list.forEach(m => {
+        const row = document.createElement('div');
+        row.className = 'mp-mrow';
+        const who = document.createElement('div');
+        who.className = 'mp-mwho';
+        const n = document.createElement('div');
+        n.textContent = m.full_name;
+        const em = document.createElement('div');
+        em.className = 'mp-date';
+        em.textContent = m.email + (m.voice_part ? ' \u00b7 ' + m.voice_part : '');
+        who.appendChild(n);
+        who.appendChild(em);
+        row.appendChild(who);
+        const ok = document.createElement('button');
+        ok.type = 'button';
+        ok.className = 'mp-btn small';
+        ok.textContent = I18n.t('portal.approve');
+        ok.addEventListener('click', () => this.setMemberStatus(m.email, 'active'));
+        const no = document.createElement('button');
+        no.type = 'button';
+        no.className = 'mp-btn small danger';
+        no.textContent = I18n.t('portal.reject');
+        no.addEventListener('click', () => this.setMemberStatus(m.email, 'rejected'));
+        row.appendChild(ok);
+        row.appendChild(no);
+        box.appendChild(row);
+      });
+    }
+
+    async onInvite(e) {
+      e.preventDefault();
+      const msg = $('ivMsg');
+      const email = $('ivEmail').value.trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'Enter a valid email address.';
+        return;
+      }
+      msg.className = 'mp-msg';
+      msg.textContent = 'Creating invite link\u2026';
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+      let code = '';
+      for (let i = 0; i < 12; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      const { error } = await this.supabase.from('invites').insert({
+        code: code,
+        email: email,
+        role: $('ivRole').value
+      });
+      if (error) {
+        msg.className = 'mp-msg err';
+        msg.textContent = I18n.t('portal.invite.err') + '\n' + error.message;
+        return;
+      }
+      $('mpInviteLink').textContent =
+        window.location.origin + window.location.pathname + '?invite=' + code;
+      $('mpInviteBox').hidden = false;
+      msg.textContent = '';
+      $('ivEmail').value = '';
+    }
+
+    copyInvite() {
+      const link = $('mpInviteLink').textContent;
+      const done = () => {
+        const b = $('mpInviteCopy');
+        const orig = b.textContent;
+        b.textContent = I18n.t('portal.invite.copied');
+        setTimeout(() => { b.textContent = orig; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(done).catch(() => {});
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = link;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (err) { /* ignore */ }
+        document.body.removeChild(ta);
       }
     }
 
@@ -336,7 +627,7 @@
         who.appendChild(em);
         row.appendChild(who);
         const sel = document.createElement('select');
-        ['member', 'leader', 'admin'].forEach(r => {
+        ['member', 'leader', 'section_leader', 'admin'].forEach(r => {
           const o = document.createElement('option');
           o.value = r;
           o.textContent = MemberPortal.roleLabel(r);
@@ -485,7 +776,10 @@
       );
 
       document.querySelectorAll('#tblang button').forEach(b =>
-        b.addEventListener('click', () => I18n.set(b.dataset.lang))
+        b.addEventListener('click', () => {
+          I18n.set(b.dataset.lang);
+          if (this.profile && !$('dashView').hidden) this.loadDashboard();
+        })
       );
 
       $('signinForm').addEventListener('submit', e => this.onSignIn(e));
@@ -493,7 +787,10 @@
       $('siForgot').addEventListener('click', e => this.onForgotPassword(e));
       $('resetForm').addEventListener('submit', e => this.onResetPassword(e));
       $('mpOut').addEventListener('click', () => this.signOut());
+      $('pvOut').addEventListener('click', () => this.signOut());
       $('adminResourceForm').addEventListener('submit', e => this.addResource(e));
+      $('adminInviteForm').addEventListener('submit', e => this.onInvite(e));
+      $('mpInviteCopy').addEventListener('click', () => this.copyInvite());
 
       if (!window.supabase || !SUPABASE_READY) {
         this.showSetupBanner();

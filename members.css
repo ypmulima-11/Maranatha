@@ -142,7 +142,25 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 .mp-item h3 { font-size: 14px; margin-bottom: 4px; }
 .mp-item p { font-size: 13px; color: var(--mut); }
 .mp-item .mp-date { font-size: 11px; color: #9aa88a; margin-top: 6px; }
+.mp-pinned { border-color: #e0c98c; background: #fffdf4; }
+.mp-card-wide { grid-column: 1 / -1; }
 .mp-empty { color: var(--mut); font-size: 13px; font-style: italic; }
+
+/* ---------- Events: RSVP buttons ---------- */
+.mp-rsvp { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.mp-rsvp span { font-size: 11px; color: var(--mut); text-transform: uppercase; letter-spacing: .05em; }
+.mp-btn.small { padding: 4px 10px; font-size: 12px; }
+.mp-btn.small.on { background: var(--au); border-color: var(--au); color: #fff; }
+.mp-btn.danger { background: transparent; border-color: #d98a8a; color: #b03a3a; }
+.mp-btn.danger:hover { background: #fbecec; border-color: #b03a3a; color: #b03a3a; }
+
+/* ---------- Admin: invite box ---------- */
+.mp-invbox { margin-top: 10px; border: 1px dashed #e0c98c; border-radius: 8px; padding: 10px 12px; background: #fffdf4; }
+.mp-invrow { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+.mp-invrow code {
+  flex: 1; min-width: 0; font-size: 12px; word-break: break-all;
+  background: #f5f7f0; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px;
+}
 
 .mp-pro { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
 .mp-pro .mp-k { font-size: 11px; color: var(--mut); text-transform: uppercase; letter-spacing: .05em; }
