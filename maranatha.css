@@ -55,10 +55,10 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
   overflow: hidden; background: var(--g9);
 }
 .nc img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.nn { color: #fff; font-family: 'Playfair Display', serif; font-size: 18px; }
+.nn { color: #fff; font-family: 'Playfair Display', serif; font-size: 20px; }
 .nl { display: flex; align-items: center; gap: 1.7rem; }
 .nl a {
-  color: var(--g1); font-size: 13.5px; transition: color .2s;
+  color: var(--g1); font-size: 15px; transition: color .2s;
   padding-bottom: 3px; border-bottom: 1.5px solid transparent;
 }
 .nl a:hover { color: var(--al); border-bottom-color: var(--au); }
@@ -67,6 +67,8 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
   background: var(--au) !important; color: var(--g9) !important;
   padding: 8px 20px; border-radius: 6px; font-weight: 600 !important;
   border-bottom: none !important;
+  display: inline-flex; align-items: center; justify-content: center;
+  text-align: center; white-space: nowrap; line-height: 1.2;
 }
 .nc-cta:hover { background: #EF9F27 !important; }
 .nm-btn {
