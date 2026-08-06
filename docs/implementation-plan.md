@@ -8,9 +8,9 @@
 
 | Area | Status | Notes |
 |------|--------|-------|
-| Public site (single page) | ✅ | Home, about, works, events w/ countdown, news, team, members, gallery w/ lightbox, join form, donate tiers, contact |
+| Public site (multi-page) | ✅ | index (home), about, works, events w/ countdown, team, gallery w/ lightbox, members, join (audition + donate + contact) |
 | Bilingual EN/SW | ✅ | `i18n.js` `I18n` class, `data-i18n` attributes, persisted choice, portal included |
-| Member portal | ✅ | `members.html` — Supabase email+password auth, email confirmation, password reset |
+| Member portal | ✅ | `portal.html` — Supabase email+password auth, email confirmation, password reset |
 | Roles | ✅ | `member` / `leader` / `admin` — admin manages roles via portal dropdown |
 | Member resources | ✅ | Role-gated text resources (member/leader/admin) via portal |
 | Public forms stored | ✅ | Auditions, contact messages, newsletter → Supabase tables with RLS (needs section 8 of SQL run) |
@@ -141,7 +141,7 @@ CREATE TABLE translations (
 | Join Us (form → Supabase) | ✅ |
 | Donate (tiers; payment button → needs user's PayPal/M-Pesa) | 🟡 |
 | contact (form → Supabase) | ✅ |
-| Member portal (`members.html`) | ✅ |
+| Member portal (`portal.html`) | ✅ |
 | Admin CMS (`admin.html`) | ✅ |
 
 ### Member pages (planned)
@@ -154,8 +154,15 @@ Admin dashboard (stats) · Manage members (grouped view, approve/reject) · Mana
 
 ```
 Maranatha/                          # live repo
-├── index.html                      # public site (single page) ✅
-├── members.html                    # portal (auth, dashboard, admin inbox) ✅
+├── index.html                      # Home (hero, features, news, CTA) ✅
+├── about.html                      # about + values + stories ✅
+├── works.html                      # music/recordings + demo player ✅
+├── events.html                     # events + countdown + media highlights ✅
+├── team.html                       # leadership ✅
+├── gallery.html                    # gallery + lightbox ✅
+├── members.html                    # public roster by voice part ✅
+├── join.html                       # audition form + donate + contact ✅
+├── portal.html                     # portal (auth, dashboard, admin inbox) ✅
 ├── admin.html                      # content CMS (GitHub API) ✅
 ├── maranatha.css / admin.css / members.css ✅
 ├── maranatha.js                    # SiteApp, SectionRenderer, NavUI, DemoPlayer, … ✅

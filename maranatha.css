@@ -810,3 +810,14 @@ footer { background: #070f04; border-top: 1px solid rgba(255,255,255,.05); }
   .lb-next { right: 10px; }
   .totop { bottom: 16px; right: 16px; }
 }
+
+/* ---------- MULTI-PAGE COMPACT HERO ---------- */
+.hero.ph { min-height: 76vh; padding: 8rem 2rem 4.5rem; }
+.hero.ph .hsub { margin-bottom: 0; }
+.ph-h { font-family: 'Playfair Display', serif; font-weight: 400; color: #fff; font-size: clamp(34px, 5.5vw, 56px); line-height: 1.15; margin-bottom: 1rem; animation: fadeUp .7s ease both .25s; }
+@media (max-width: 768px) { .hero.ph { min-height: 84vh; padding: 7rem 1.2rem 3.5rem; } }
+
+.lvw { text-align: center; margin-top: 1.2rem; font-size: 14px; color: var(--g1); }
+.jportal { margin-top: 1.6rem; }
+.jportal a { color: var(--au); font-weight: 600; text-decoration: underline; }
+.jportal a:hover { color: #EF9F27; }

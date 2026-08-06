@@ -52,9 +52,9 @@
   class SiteContent {
     static DEFAULT = {
       news: [
-        { date: '2026-07-28', title: 'Rehearsals continue every Thursday', body: 'Our regular rehearsals take place every Thursday at 6:30 PM in the parish hall. New voices are always welcome.', linkText: 'Join us', linkHref: '#join' },
+        { date: '2026-07-28', title: 'Rehearsals continue every Thursday', body: 'Our regular rehearsals take place every Thursday at 6:30 PM in the parish hall. New voices are always welcome.', linkText: 'Join us', linkHref: 'join.html' },
         { date: '2026-07-19', title: 'Thanks for the Annual Concert', body: 'We are grateful to everyone who attended and supported our Annual Concert. Highlights are now on our YouTube channel.', linkText: 'Watch highlights', linkHref: 'https://www.youtube.com/@kwayayamaranatha-udsm3802' },
-        { date: '2026-07-05', title: 'Follow our social media', body: 'Stay up to date with our performances by following us on YouTube, Instagram and TikTok.', linkText: 'Follow us', linkHref: '#contact' }
+        { date: '2026-07-05', title: 'Follow our social media', body: 'Stay up to date with our performances by following us on YouTube, Instagram and TikTok.', linkText: 'Follow us', linkHref: 'join.html#contact' }
       ],
       events: [
         { date: '2026-08-16', time: '9:00 AM', place: 'Parish Church', title: 'Sunday Mass Performance', tag: 'Liturgy' },
@@ -68,12 +68,12 @@
         { title: 'Christmas Carol Gala', sub: 'Main Auditorium · 2024', href: 'https://www.youtube.com/@kwayayamaranatha-udsm3802' }
       ],
       team: [
-        { initials: 'CD', name: 'Choir Director', role: 'Director & Conductor' },
-        { initials: 'AM', name: 'Asst. Music Dir.', role: 'Music Director' },
-        { initials: 'KP', name: 'Keyboard Player', role: 'Instrumentalist' },
-        { initials: 'SL', name: 'Section Leader', role: 'Soprano Lead' },
+        { initials: 'CP', name: 'Chairperson', role: 'Leadership & coordination' },
+        { initials: 'DC', name: 'Deputy Chairperson', role: 'Lead Choir Master' },
+        { initials: 'SC', name: 'Secretary', role: 'Administration & records' },
+        { initials: 'AS', name: 'Assistant Secretary', role: 'Administration support' },
         { initials: 'TR', name: 'Treasurer', role: 'Finance' },
-        { initials: 'SE', name: 'Secretary', role: 'Administration' }
+        { initials: 'AC', name: 'Assistant Choir Master', role: 'Choir conduct & support' }
       ],
       members: [
         { part: 'Soprano', initials: 'EM', name: 'E. Mwaijande', role: 'Soprano Lead' },

@@ -15,7 +15,7 @@
       (it is by default).
    7. Authentication → URL Configuration:
         - Site URL:  https://ypmulima-11.github.io/Maranatha
-        - Redirect URLs: add https://ypmulima-11.github.io/Maranatha/members.html
+        - Redirect URLs: add https://ypmulima-11.github.io/Maranatha/portal.html
       (this makes the password-reset email return to the portal)
    8. Deploy (git commit + push). The portal switches on automatically.
    9. Sign up your first account on the portal, then in the SQL Editor

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join Us — Maranatha Choir</title>
+<meta name="description" content="Join Maranatha Choir — audition application, donations and contact for bookings, collaborations and general enquiries.">
+<meta name="author" content="Maranatha Choir">
+<meta name="theme-color" content="#0d2a04">
+<link rel="canonical" href="https://ypmulima-11.github.io/Maranatha/join.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Maranatha Choir">
+<meta property="og:title" content="Join Us — Maranatha Choir">
+<meta property="og:description" content="Join Maranatha Choir — auditions, donations and contact.">
+<meta property="og:url" content="https://ypmulima-11.github.io/Maranatha/join.html">
+<meta property="og:image" content="https://ypmulima-11.github.io/Maranatha/images/og-cover.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Join Us — Maranatha Choir">
+<meta name="twitter:description" content="Join Maranatha Choir — auditions, donations and contact.">
+<meta name="twitter:image" content="https://ypmulima-11.github.io/Maranatha/images/og-cover.jpg">
+<link rel="icon" type="image/jpeg" href="images/choir-logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="maranatha.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+<script src="supabase-config.js" defer></script>
+<script src="i18n.js" defer></script>
+<script src="maranatha.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+<script>document.documentElement.className += ' js';</script>
+
+<!-- TOP BAR -->
+<div class="tb">
+  <span class="tb-mail">&#9993; <a href="mailto:info@maranathachoir.co.tz">info@maranathachoir.co.tz</a></span>
+  <div class="tblang" id="tblang">
+    <button type="button" class="on" data-lang="en" aria-pressed="true">EN</button>
+    <span>|</span>
+    <button type="button" data-lang="sw" aria-pressed="false">SW</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nb">
+    <div class="nc"><img src="images/choir-logo.jpg" alt="Maranatha Choir logo" width="42" height="42"></div>
+    <span class="nn">Maranatha Choir</span>
+  </div>
+  <div class="nl">
+    <a href="index.html" data-i18n="nav.home">Home</a>
+    <a href="about.html" data-i18n="nav.about">About</a>
+    <a href="works.html" data-i18n="nav.works">Works</a>
+    <a href="events.html" data-i18n="nav.events">Events</a>
+    <a href="team.html" data-i18n="nav.team">Team</a>
+    <a href="gallery.html" data-i18n="nav.gallery">Gallery</a>
+    <a href="members.html" data-i18n="nav.members">Members</a>
+    <a href="join.html" class="nc-cta active" data-i18n="nav.join">Join Us</a>
+  </div>
+  <button class="nm-btn" id="nmBtn" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="nm-menu" id="nmMenu">
+  <a href="index.html" data-i18n="nav.home">Home</a>
+  <a href="about.html" data-i18n="nav.about">About</a>
+  <a href="works.html" data-i18n="nav.works">Works</a>
+  <a href="events.html" data-i18n="nav.events">Events</a>
+  <a href="index.html#news" data-i18n="nw.label">News</a>
+  <a href="members.html" data-i18n="nav.members">Members</a>
+  <a href="team.html" data-i18n="nav.team">Team</a>
+  <a href="gallery.html" data-i18n="nav.gallery">Gallery</a>
+  <a href="portal.html" data-i18n="nav.portal">Member Portal</a>
+  <a href="join.html" class="nc-cta" data-i18n="nav.join">Join Us</a>
+  <a href="join.html#donate" data-i18n="nav.donate">Donate</a>
+  <a href="join.html#contact" data-i18n="nav.contact">Contact</a>
+</div>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero ph" id="join">
+  <div class="hbg"></div>
+  <div class="hring"></div>
+  <div class="hc">
+    <div class="hlbl" data-i18n="jo.label">Join us</div>
+    <h1 class="ph-h" data-i18n="jo.title">Audition & become a member</h1>
+    <p class="hsub" data-i18n="jo.sub">We welcome new voices from our parish and beyond. Bring a love for worship music — experience is great to have, but not required.</p>
+  </div>
+</section>
+
+<!-- JOIN US -->
+<div class="jow">
+  <div class="sw">
+    <div class="joi">
+      <div class="jog">
+        <div class="jinfo">
+          <div class="jrow"><div class="jib">&#127925;</div><div><div class="jl" data-i18n="jo.vp">Voice parts</div><div class="jv" data-i18n="jo.vpv">Soprano · Alto · Tenor · Bass</div></div></div>
+          <div class="jrow"><div class="jib">&#9200;</div><div><div class="jl" data-i18n="jo.reh">Rehearsals</div><div class="jv" data-i18n="jo.rehv">Thursdays · 6:30 PM</div></div></div>
+          <div class="jrow"><div class="jib">&#128205;</div><div><div class="jl" data-i18n="jo.ven">Venue</div><div class="jv" data-i18n="jo.venv">Parish Hall, Dar es Salaam</div></div></div>
+          <div class="jop">
+            <div class="jl" data-i18n="jo.open">We are currently opening for</div>
+            <div class="pops"><span>Soprano</span><span>Alto</span><span>Tenor</span><span>Bass</span></div>
+          </div>
+          <div class="jportal"><a href="portal.html" data-i18n="nav.portal">&#8594; Already a member? Visit the Member Portal</a></div>
+        </div>
+        <form class="jof" id="joForm" data-validate data-sb-table="auditions" novalidate>
+          <div class="cfr">
+            <div class="fld"><input type="text" name="name" placeholder="Full name" data-i18n-ph="jo.name" required /></div>
+            <div class="fld"><input type="email" name="email" placeholder="Email address" data-i18n-ph="jo.email" required /></div>
+          </div>
+          <div class="cfr">
+            <div class="fld">
+              <select name="voice" data-sb="voice_part" aria-label="Voice part" data-i18n-aria="jo.vpart" required>
+                <option value="" data-i18n="jo.vpart">Voice part&#8230;</option>
+                <option>Soprano</option>
+                <option>Alto</option>
+                <option>Tenor</option>
+                <option>Bass</option>
+              </select>
+            </div>
+            <div class="fld">
+              <select name="experience" aria-label="Singing experience" data-i18n-aria="jo.exp" required>
+                <option value="" data-i18n="jo.exp">Experience&#8230;</option>
+                <option data-i18n="jo.beg">Beginner</option>
+                <option data-i18n="jo.mid">Intermediate</option>
+                <option data-i18n="jo.adv">Advanced</option>
+              </select>
+            </div>
+          </div>
+          <div class="fld"><textarea name="message" placeholder="Tell us a little about yourself..." data-i18n-ph="jo.msg"></textarea></div>
+          <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="form-ok" id="joFormOk" data-i18n="jo.ok">Thank you! Your audition request has been received. We'll be in touch.</div>
+          <button type="submit" data-i18n="jo.btn">Apply to audition &#8594;</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DONATE -->
+<div class="dow" id="donate">
+  <div class="sw">
+    <div class="doi">
+      <div class="slbl" data-i18n="do.label">Support our ministry</div>
+      <h2 class="stit" data-i18n="do.title">Donate & Support</h2>
+      <p class="ssub" data-i18n="do.sub">Your generosity keeps our music ministry alive — from choir robes and instruments to transport and event costs.</p>
+      <div class="dog rev-stagger">
+        <div class="dgc">
+          <div class="ddl" data-i18n="do.c1">Supporter</div>
+          <div class="dam">TZS 10,000</div>
+          <p data-i18n="do.c1p">Covers rehearsal materials, sheet music printing and transport for one week.</p>
+          <a class="ddon" href="#contact" data-i18n="do.donate">Donate</a>
+        </div>
+        <div class="dgc feat">
+          <div class="ddl" data-i18n="do.c2">Patron</div>
+          <div class="dam">TZS 50,000</div>
+          <p data-i18n="do.c2p">Helps fund new instruments, choir robes and our annual concert production.</p>
+          <a class="ddon" href="#contact" data-i18n="do.donate">Donate</a>
+        </div>
+        <div class="dgc">
+          <div class="ddl" data-i18n="do.c3">Benefactor</div>
+          <div class="dam">Custom</div>
+          <p data-i18n="do.c3p">Partner with us for special projects, recordings, media and community outreach.</p>
+          <a class="ddon" href="#contact" data-i18n="do.talk">Talk to us</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="cow" id="contact">
+  <div class="sw">
+    <div class="coi">
+      <div class="slbl" data-i18n="co.label">Get in touch</div>
+      <h2 class="stit" data-i18n="co.title">Contact Us</h2>
+      <p class="ssub" data-i18n="co.sub">Reach out for bookings, collaborations, or general enquiries. We'd love to hear from you.</p>
+      <div class="cog reveal">
+        <div>
+          <div class="coit"><div class="coib">&#128205;</div><div><div class="col" data-i18n="co.loc">Location</div><div class="cov" data-i18n="co.locv">Dar es Salaam, Tanzania</div></div></div>
+          <div class="coit"><div class="coib">&#9993;</div><div><div class="col" data-i18n="co.em">Email</div><div class="cov">info@maranathachoir.co.tz</div></div></div>
+          <div class="coit"><div class="coib">&#9742;</div><div><div class="col" data-i18n="co.phone">Phone</div><div class="cov">+255 700 000 000</div></div></div>
+          <div class="sos">
+            <div class="sosl" data-i18n="co.follow">Follow us</div>
+            <div class="sosi">
+              <a class="sosb" href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" rel="noopener">
+                <span class="sosic">&#9654;</span>
+                <span class="sosx"><span class="sosn">YouTube</span><span class="sosh">@kwayayamaranatha-udsm3802</span></span>
+              </a>
+              <a class="sosb" href="https://www.instagram.com/kwaya_ya_maranatha_udsm" target="_blank" rel="noopener">
+                <span class="sosic">&#9678;</span>
+                <span class="sosx"><span class="sosn">Instagram</span><span class="sosh">@kwaya_ya_maranatha_udsm</span></span>
+              </a>
+              <a class="sosb" href="https://www.tiktok.com/@maranatha_choir_udsm" target="_blank" rel="noopener">
+                <span class="sosic">&#9835;</span>
+                <span class="sosx"><span class="sosn">TikTok</span><span class="sosh">@maranatha_choir_udsm</span></span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <form class="cof" id="cof" data-validate data-sb-table="contact_msgs" novalidate>
+          <div class="cfr">
+            <div class="fld"><input type="text" name="name" placeholder="Your name" data-i18n-ph="co.name" required /></div>
+            <div class="fld"><input type="email" name="email" placeholder="Email address" data-i18n-ph="co.email" required /></div>
+          </div>
+          <div class="fld"><input type="text" name="subject" placeholder="Subject" data-i18n-ph="co.subj" required /></div>
+          <div class="fld"><textarea name="message" placeholder="Your message..." data-i18n-ph="co.msg" required></textarea></div>
+          <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="form-ok" id="formOk" data-i18n="co.ok">Thank you! Your message has been sent. We'll be in touch soon.</div>
+          <button type="submit" data-i18n="co.send">Send message &#8594;</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fwrap">
+    <div class="fcol fbrand">
+      <div class="nb"><div class="nc"><img src="images/choir-logo.jpg" alt="Maranatha Choir logo" width="42" height="42"></div><span class="nn">Maranatha Choir</span></div>
+      <p data-i18n="ft.p">Kwaya ya Maranatha — a ministry of song, discipline and prayer in the Catholic community of Dar es Salaam, Tanzania.</p>
+      <div class="coso">
+        <a class="cosb" href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" rel="noopener" title="YouTube">&#9654;</a>
+        <a class="cosb" href="https://www.instagram.com/kwaya_ya_maranatha_udsm" target="_blank" rel="noopener" title="Instagram">&#9678;</a>
+        <a class="cosb" href="https://www.tiktok.com/@maranatha_choir_udsm" target="_blank" rel="noopener" title="TikTok">&#9835;</a>
+      </div>
+    </div>
+    <div class="fcol">
+      <h4 data-i18n="ft.ql">Quick Links</h4>
+      <a href="index.html" data-i18n="nav.home">Home</a>
+      <a href="index.html#news" data-i18n="nw.label">News</a>
+      <a href="members.html" data-i18n="nav.members">Members</a>
+      <a href="portal.html" data-i18n="nav.portal">Member Portal</a>
+      <a href="events.html" data-i18n="nav.events">Events</a>
+      <a href="join.html" data-i18n="nav.join">Join Us</a>
+      <a href="join.html#donate" data-i18n="nav.donate">Donate</a>
+      <a href="join.html#contact" data-i18n="nav.contact">Contact</a>
+    </div>
+    <div class="fcol">
+      <h4 data-i18n="ft.mm">Music & Media</h4>
+      <a href="works.html" data-i18n="ft.mm1">Our Recordings</a>
+      <a href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://www.instagram.com/kwaya_ya_maranatha_udsm" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.tiktok.com/@maranatha_choir_udsm" target="_blank" rel="noopener">TikTok</a>
+    </div>
+    <div class="fcol">
+      <h4 data-i18n="ft.c">Contact</h4>
+      <span data-i18n="co.locv">Dar es Salaam, Tanzania</span>
+      <a href="mailto:info@maranathachoir.co.tz">info@maranathachoir.co.tz</a>
+      <a href="tel:+255700000000">+255 700 000 000</a>
+    </div>
+  </div>
+  <div class="fnews">
+    <div class="fnews-in">
+      <div>
+        <h4 data-i18n="ft.stay">Stay in tune</h4>
+        <p data-i18n="ft.stayp">Get our concert dates, news and recordings in your inbox.</p>
+      </div>
+      <form class="fnews-form" data-validate data-sb-table="newsletter_subs" novalidate>
+        <div class="fld"><input type="email" name="email" placeholder="Your email address" data-i18n-ph="ft.subph" required /></div>
+        <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button type="submit" data-i18n="ft.sub">Subscribe</button>
+        <div class="form-ok" data-i18n="ft.ok">Thank you for subscribing!</div>
+      </form>
+    </div>
+  </div>
+  <div class="fbot">
+    <span>&#169; 2026 Maranatha Choir &middot; Dar es Salaam, Tanzania. All rights reserved. &middot; <a href="admin.html">Admin</a></span>
+  </div>
+</footer>
+
+<button class="totop" id="totop" aria-label="Back to top" data-i18n-aria="totop">&uarr;</button>
+
+</body>
+</html>

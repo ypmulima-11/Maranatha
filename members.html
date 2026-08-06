@@ -3,231 +3,161 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-<title>Member Portal — Maranatha Choir</title>
+<title>Members — Maranatha Choir</title>
+<meta name="description" content="Meet the voices of Maranatha Choir — our singers grouped by voice part. Join our Catholic choir in Dar es Salaam, Tanzania.">
+<meta name="author" content="Maranatha Choir">
+<meta name="theme-color" content="#0d2a04">
+<link rel="canonical" href="https://ypmulima-11.github.io/Maranatha/members.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Maranatha Choir">
+<meta property="og:title" content="Members — Maranatha Choir">
+<meta property="og:description" content="Meet the voices of Maranatha Choir — our singers grouped by voice part.">
+<meta property="og:url" content="https://ypmulima-11.github.io/Maranatha/members.html">
+<meta property="og:image" content="https://ypmulima-11.github.io/Maranatha/images/og-cover.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Members — Maranatha Choir">
+<meta name="twitter:description" content="Meet the voices of Maranatha Choir — our singers grouped by voice part.">
+<meta name="twitter:image" content="https://ypmulima-11.github.io/Maranatha/images/og-cover.jpg">
 <link rel="icon" type="image/jpeg" href="images/choir-logo.jpg">
-<link rel="stylesheet" href="members.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="maranatha.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
-<script src="i18n.js" defer></script>
 <script src="supabase-config.js" defer></script>
-<script src="members.js" defer></script>
+<script src="i18n.js" defer></script>
+<script src="maranatha.js" defer></script>
 </head>
 <body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+<script>document.documentElement.className += ' js';</script>
 
-<header class="mp-h">
-  <div class="mp-h-in">
-    <a class="mp-brand" href="index.html">
-      <span class="mp-logo"><img src="images/choir-logo.jpg" alt="Maranatha Choir logo" width="34" height="34"></span>
-      <span>Maranatha <em>Member Portal</em></span>
-    </a>
-    <nav class="mp-nav">
-      <div class="tblang" id="tblang">
-        <button type="button" class="on" data-lang="en" aria-pressed="true">EN</button>
-        <span>|</span>
-        <button type="button" data-lang="sw" aria-pressed="false">SW</button>
-      </div>
-      <a href="index.html" data-i18n="portal.back">Back to site</a>
-      <a href="admin.html" class="mp-nav-admin" id="mpNavAdmin" hidden data-i18n="portal.admin">Admin panel</a>
-    </nav>
+<!-- TOP BAR -->
+<div class="tb">
+  <span class="tb-mail">&#9993; <a href="mailto:info@maranathachoir.co.tz">info@maranathachoir.co.tz</a></span>
+  <div class="tblang" id="tblang">
+    <button type="button" class="on" data-lang="en" aria-pressed="true">EN</button>
+    <span>|</span>
+    <button type="button" data-lang="sw" aria-pressed="false">SW</button>
   </div>
-</header>
-
-<!-- ============ SETUP NOTICE ============ -->
-<div class="mp-banner" id="setupBanner" hidden>
-  <h3>Supabase is not configured yet</h3>
-  <p>This portal needs a free Supabase project to store accounts and resources. To finish the setup:</p>
-  <ol>
-    <li>Open <code>supabase-config.js</code> in the site files — the full step-by-step instructions are at the top of that file.</li>
-    <li>Paste your project URL and anon key into it.</li>
-    <li>Run <code>supabase-setup.sql</code> once in the Supabase SQL editor.</li>
-    <li>Commit and push — the login below switches on automatically.</li>
-  </ol>
 </div>
 
-<!-- ============ AUTH ============ -->
-<section class="mp-auth" id="authView">
-  <div class="mp-card">
-    <div class="mp-tabs" role="tablist">
-      <button type="button" class="mp-tab on" id="tabSignin" data-view="signin" data-i18n="portal.tab1">Sign in</button>
-      <button type="button" class="mp-tab" id="tabSignup" data-view="signup" data-i18n="portal.tab2">Create account</button>
+<!-- NAV -->
+<nav>
+  <div class="nb">
+    <div class="nc"><img src="images/choir-logo.jpg" alt="Maranatha Choir logo" width="42" height="42"></div>
+    <span class="nn">Maranatha Choir</span>
+  </div>
+  <div class="nl">
+    <a href="index.html" data-i18n="nav.home">Home</a>
+    <a href="about.html" data-i18n="nav.about">About</a>
+    <a href="works.html" data-i18n="nav.works">Works</a>
+    <a href="events.html" data-i18n="nav.events">Events</a>
+    <a href="team.html" data-i18n="nav.team">Team</a>
+    <a href="gallery.html" data-i18n="nav.gallery">Gallery</a>
+    <a href="members.html" class="active" data-i18n="nav.members">Members</a>
+    <a href="join.html" class="nc-cta" data-i18n="nav.join">Join Us</a>
+  </div>
+  <button class="nm-btn" id="nmBtn" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="nm-menu" id="nmMenu">
+  <a href="index.html" data-i18n="nav.home">Home</a>
+  <a href="about.html" data-i18n="nav.about">About</a>
+  <a href="works.html" data-i18n="nav.works">Works</a>
+  <a href="events.html" data-i18n="nav.events">Events</a>
+  <a href="index.html#news" data-i18n="nw.label">News</a>
+  <a href="members.html" data-i18n="nav.members">Members</a>
+  <a href="team.html" data-i18n="nav.team">Team</a>
+  <a href="gallery.html" data-i18n="nav.gallery">Gallery</a>
+  <a href="portal.html" data-i18n="nav.portal">Member Portal</a>
+  <a href="join.html" class="nc-cta" data-i18n="nav.join">Join Us</a>
+  <a href="join.html#donate" data-i18n="nav.donate">Donate</a>
+  <a href="join.html#contact" data-i18n="nav.contact">Contact</a>
+</div>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero ph" id="members">
+  <div class="hbg"></div>
+  <div class="hring"></div>
+  <div class="hc">
+    <div class="hlbl" data-i18n="ms.label">Members</div>
+    <h1 class="ph-h" data-i18n="ms.title">Our voices</h1>
+    <p class="hsub" data-i18n="ms.sub">The singers who bring our harmony to life — grouped by voice part.</p>
+  </div>
+</section>
+
+<!-- MEMBERS -->
+<div class="msw">
+  <div class="sw">
+    <div class="msi">
+      <!-- Members are rendered from content.json (editable in admin.html) -->
+      <div class="msg rev-stagger" id="msList"></div>
     </div>
-
-    <form class="mp-form on" id="signinForm" novalidate>
-      <h1 data-i18n="portal.wb">Welcome back</h1>
-      <p class="mp-hint" data-i18n="portal.sihint">Sign in to access member resources, leadership materials and admin tools.</p>
-      <label class="mp-field"><span data-i18n="portal.email">Email</span>
-        <input type="email" id="siEmail" placeholder="you@example.com" autocomplete="email">
-      </label>
-      <label class="mp-field"><span data-i18n="portal.pass">Password</span>
-        <input type="password" id="siPass" placeholder="Your password" data-i18n-ph="portal.passph" autocomplete="current-password">
-      </label>
-      <div class="mp-msg" id="siMsg" role="status"></div>
-      <button type="submit" class="mp-btn big" data-i18n="portal.sibtn">Sign in</button>
-      <p class="mp-hint mp-center"><button type="button" class="mp-link" id="siForgot" data-i18n="portal.forgot">Forgot password?</button> <span data-i18n="portal.forgothint">— we'll email you a reset link.</span></p>
-    </form>
-
-    <form class="mp-form" id="signupForm" novalidate>
-      <h1 data-i18n="portal.su1">Create your account</h1>
-      <p class="mp-hint" data-i18n="portal.suhint">Accounts are stored securely in the choir's Supabase database. Everyone starts as a <b>Member</b>; leaders and admins are assigned by an admin after sign-up.</p>
-      <label class="mp-field"><span data-i18n="portal.fullname">Full name</span>
-        <input type="text" id="suName" placeholder="e.g. E. Mwaijande" autocomplete="name">
-      </label>
-      <label class="mp-field"><span data-i18n="portal.email">Email</span>
-        <input type="email" id="suEmail" placeholder="you@example.com" autocomplete="email">
-      </label>
-      <label class="mp-field"><span data-i18n="portal.supass">Password (at least 6 characters)</span>
-        <input type="password" id="suPass" placeholder="Choose a password" data-i18n-ph="portal.supassph" autocomplete="new-password">
-      </label>
-      <label class="mp-field"><span data-i18n="portal.supart">Voice part (optional)</span>
-        <select id="suPart">
-          <option value="" data-i18n="portal.none">Not selected</option>
-          <option>Soprano</option>
-          <option>Alto</option>
-          <option>Tenor</option>
-          <option>Bass</option>
-        </select>
-      </label>
-      <div class="mp-msg" id="suMsg" role="status"></div>
-      <button type="submit" class="mp-btn big" data-i18n="portal.subtn">Create account</button>
-    </form>
   </div>
-</section>
+</div>
 
-<!-- ============ PASSWORD RESET ============ -->
-<section class="mp-auth" id="resetView" hidden>
-  <div class="mp-card">
-    <form class="mp-form on" id="resetForm" novalidate>
-      <h1 data-i18n="portal.rs1">Set a new password</h1>
-      <p class="mp-hint" data-i18n="portal.rshint">Choose a new password for your account.</p>
-      <label class="mp-field"><span data-i18n="portal.rslabel">New password (at least 6 characters)</span>
-        <input type="password" id="rsPass" placeholder="New password" data-i18n-ph="portal.rspassph" autocomplete="new-password">
-      </label>
-      <div class="mp-msg" id="rsMsg" role="status"></div>
-      <button type="submit" class="mp-btn big" data-i18n="portal.rsbtn">Update password</button>
-    </form>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fwrap">
+    <div class="fcol fbrand">
+      <div class="nb"><div class="nc"><img src="images/choir-logo.jpg" alt="Maranatha Choir logo" width="42" height="42"></div><span class="nn">Maranatha Choir</span></div>
+      <p data-i18n="ft.p">Kwaya ya Maranatha — a ministry of song, discipline and prayer in the Catholic community of Dar es Salaam, Tanzania.</p>
+      <div class="coso">
+        <a class="cosb" href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" rel="noopener" title="YouTube">&#9654;</a>
+        <a class="cosb" href="https://www.instagram.com/kwaya_ya_maranatha_udsm" target="_blank" rel="noopener" title="Instagram">&#9678;</a>
+        <a class="cosb" href="https://www.tiktok.com/@maranatha_choir_udsm" target="_blank" rel="noopener" title="TikTok">&#9835;</a>
+      </div>
+    </div>
+    <div class="fcol">
+      <h4 data-i18n="ft.ql">Quick Links</h4>
+      <a href="index.html" data-i18n="nav.home">Home</a>
+      <a href="index.html#news" data-i18n="nw.label">News</a>
+      <a href="members.html" data-i18n="nav.members">Members</a>
+      <a href="portal.html" data-i18n="nav.portal">Member Portal</a>
+      <a href="events.html" data-i18n="nav.events">Events</a>
+      <a href="join.html" data-i18n="nav.join">Join Us</a>
+      <a href="join.html#donate" data-i18n="nav.donate">Donate</a>
+      <a href="join.html#contact" data-i18n="nav.contact">Contact</a>
+    </div>
+    <div class="fcol">
+      <h4 data-i18n="ft.mm">Music & Media</h4>
+      <a href="works.html" data-i18n="ft.mm1">Our Recordings</a>
+      <a href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://www.instagram.com/kwaya_ya_maranatha_udsm" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.tiktok.com/@maranatha_choir_udsm" target="_blank" rel="noopener">TikTok</a>
+    </div>
+    <div class="fcol">
+      <h4 data-i18n="ft.c">Contact</h4>
+      <span data-i18n="co.locv">Dar es Salaam, Tanzania</span>
+      <a href="mailto:info@maranathachoir.co.tz">info@maranathachoir.co.tz</a>
+      <a href="tel:+255700000000">+255 700 000 000</a>
+    </div>
   </div>
-</section>
-
-<!-- ============ PENDING APPROVAL ============ -->
-<section class="mp-auth" id="pendingView" hidden>
-  <div class="mp-card">
-    <h1 data-i18n="portal.pend.title">Account awaiting approval</h1>
-    <p class="mp-hint" data-i18n="portal.pend.sub">An admin must approve your registration before you can use the portal. If you joined with an invite link, check that you signed up with the same email the invite was sent to.</p>
-    <div class="mp-msg" id="pvMsg" role="status"></div>
-    <button type="button" class="mp-btn big" id="pvOut" data-i18n="portal.out">Sign out</button>
-  </div>
-</section>
-
-<!-- ============ DASHBOARD ============ -->
-<section class="mp-dash" id="dashView" hidden>
-  <div class="mp-dash-in">
-
-    <div class="mp-welcome">
+  <div class="fnews">
+    <div class="fnews-in">
       <div>
-        <div class="mp-greet" id="mpGreet"></div>
-        <div class="mp-sub" id="mpSub"></div>
+        <h4 data-i18n="ft.stay">Stay in tune</h4>
+        <p data-i18n="ft.stayp">Get our concert dates, news and recordings in your inbox.</p>
       </div>
-      <button type="button" class="mp-btn ghost" id="mpOut" data-i18n="portal.out">Sign out</button>
-    </div>
-
-    <div class="mp-note" data-i18n="portal.note">Accounts, access levels and resources are stored in the choir's Supabase database and protected by server-side row-level security.</div>
-
-    <div class="mp-grid">
-
-      <div class="mp-card2 mp-card-wide">
-        <h2 data-i18n="portal.next">Next event</h2>
-        <div class="mp-list" id="mpNextEvent"></div>
-      </div>
-
-      <div class="mp-card2">
-        <h2 data-i18n="portal.anno">Announcements</h2>
-        <div class="mp-list" id="mpAnnounce"></div>
-      </div>
-
-      <div class="mp-card2">
-        <h2 data-i18n="portal.events">Upcoming events</h2>
-        <div class="mp-list" id="mpEvents"></div>
-      </div>
-
-      <div class="mp-card2">
-        <h2 data-i18n="portal.profile">My profile</h2>
-        <div class="mp-pro" id="mpProfile"></div>
-      </div>
-
-      <div class="mp-card2">
-        <h2 data-i18n="portal.mres">Member resources</h2>
-        <div class="mp-list" id="mpMemberInfo"></div>
-      </div>
-
-      <div class="mp-card2" id="mpLeaderCard" hidden>
-        <h2><span data-i18n="portal.lres">Leader resources</span> <span class="mp-badge leader">Leader</span></h2>
-        <div class="mp-list" id="mpLeaderInfo"></div>
-      </div>
-
-      <div class="mp-card2" id="mpAdminCard" hidden>
-        <h2><span data-i18n="portal.ares">Admin resources</span> <span class="mp-badge admin">Admin</span></h2>
-        <div class="mp-list" id="mpAdminInfo"></div>
-        <p class="mp-hint"><a class="mp-link" href="admin.html" data-i18n="portal.adminlink">Open the admin dashboard &rarr;</a> to edit the site content.</p>
-
-        <h3 class="mp-sec" data-i18n="portal.manage">Manage members</h3>
-        <div class="mp-mrow-list" id="adminMembers"></div>
-
-        <h3 class="mp-sec" data-i18n="portal.pending">Pending registrations</h3>
-        <div class="mp-mrow-list" id="adminPending"></div>
-
-        <h3 class="mp-sec" data-i18n="portal.invite">Invite a member</h3>
-        <form class="mp-res-form" id="adminInviteForm" novalidate>
-          <label class="mp-field"><span data-i18n="portal.invite.email">Member's email</span>
-            <input type="email" id="ivEmail" placeholder="you@example.com" autocomplete="off">
-          </label>
-          <label class="mp-field"><span data-i18n="portal.invite.role">Access level</span>
-            <select id="ivRole">
-              <option value="member" data-i18n="portal.role.member">Member</option>
-              <option value="leader" data-i18n="portal.role.leader">Leader</option>
-              <option value="section_leader" data-i18n="portal.role.section_leader">Section Leader</option>
-            </select>
-          </label>
-          <p class="mp-hint" data-i18n="portal.invite.note">Share this link with the member. They sign up through it and are activated automatically after confirming their email.</p>
-          <div class="mp-msg" id="ivMsg" role="status"></div>
-          <button type="submit" class="mp-btn" data-i18n="portal.invite.btn">Create invite link</button>
-        </form>
-        <div class="mp-invbox" id="mpInviteBox" hidden>
-          <div class="mp-date" data-i18n="portal.invite.link">Invite link</div>
-          <div class="mp-invrow">
-            <code id="mpInviteLink"></code>
-            <button type="button" class="mp-btn small" id="mpInviteCopy" data-i18n="portal.invite.copy">Copy</button>
-          </div>
-        </div>
-
-        <h3 class="mp-sec" data-i18n="portal.addres">Add a resource</h3>
-        <form class="mp-res-form" id="adminResourceForm" novalidate>
-          <label class="mp-field"><span data-i18n="portal.title">Title</span>
-            <input type="text" id="arTitle" placeholder="e.g. Practice plan — Sunday">
-          </label>
-          <label class="mp-field"><span data-i18n="portal.body">Body</span>
-            <textarea id="arBody" rows="3" placeholder="Write the content..." data-i18n-ph="portal.bodyph"></textarea>
-          </label>
-          <label class="mp-field"><span data-i18n="portal.shown">Shown to</span>
-            <select id="arAudience">
-              <option value="member" data-i18n="portal.all">All members</option>
-              <option value="leader" data-i18n="portal.leaders">Leaders only</option>
-              <option value="admin" data-i18n="portal.admins">Admins only</option>
-            </select>
-          </label>
-          <div class="mp-msg" id="arMsg" role="status"></div>
-          <button type="submit" class="mp-btn" data-i18n="portal.addbtn">Add resource</button>
-        </form>
-
-        <h3 class="mp-sec" data-i18n="portal.aud">Audition requests</h3>
-        <div class="mp-list" id="adminAuditions"></div>
-
-        <h3 class="mp-sec" data-i18n="portal.msg">Contact messages</h3>
-        <div class="mp-list" id="adminMsgs"></div>
-      </div>
-
+      <form class="fnews-form" data-validate data-sb-table="newsletter_subs" novalidate>
+        <div class="fld"><input type="email" name="email" placeholder="Your email address" data-i18n-ph="ft.subph" required /></div>
+        <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button type="submit" data-i18n="ft.sub">Subscribe</button>
+        <div class="form-ok" data-i18n="ft.ok">Thank you for subscribing!</div>
+      </form>
     </div>
   </div>
-</section>
+  <div class="fbot">
+    <span>&#169; 2026 Maranatha Choir &middot; Dar es Salaam, Tanzania. All rights reserved. &middot; <a href="admin.html">Admin</a></span>
+  </div>
+</footer>
+
+<button class="totop" id="totop" aria-label="Back to top" data-i18n-aria="totop">&uarr;</button>
 
 </body>
 </html>
