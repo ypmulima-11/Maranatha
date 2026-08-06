@@ -775,7 +775,7 @@
         b.addEventListener('click', () => this.switchTab(b.dataset.view))
       );
 
-      document.querySelectorAll('#tblang button').forEach(b =>
+      document.querySelectorAll('.tblang button').forEach(b =>
         b.addEventListener('click', () => {
           I18n.set(b.dataset.lang);
           if (this.profile && !$('dashView').hidden) this.loadDashboard();

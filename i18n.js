@@ -178,6 +178,9 @@
       },
       portal: {
         en: {
+          'portal.label': 'Member access',
+          'portal.title': 'Member Portal',
+          'portal.sub': 'Sign in to manage your membership, RSVP to events and access resources — leaders and admins get extra tools.',
           'portal.role.member': 'Member',
           'portal.role.leader': 'Leader',
           'portal.role.section_leader': 'Section Leader',
@@ -217,6 +220,9 @@
           'portal.status.err': 'Could not update member status.'
         },
         sw: {
+          'portal.label': 'Ufikiaji wa wanachama',
+          'portal.title': 'Portal ya Wanachama',
+          'portal.sub': 'Ingia ili kusimamia uanachama wako, uthibitishe matukio na kupata rasilimali — viongozi na admin wanapata zana za ziada.',
           'portal.back': 'Rudi kwenye tovuti',
           'portal.admin': 'Panel ya Admin',
           'portal.tab1': 'Ingia',
@@ -311,9 +317,13 @@
     }
 
     static lookup(key) {
-      const d = I18n.DICTS[I18n.scope] || {};
-      const k = d[I18n.lang] || {};
-      return Object.prototype.hasOwnProperty.call(k, key) ? k[key] : undefined;
+      const scopes = [I18n.scope, ...Object.keys(I18n.DICTS).filter(s => s !== I18n.scope)];
+      for (const sc of scopes) {
+        const d = I18n.DICTS[sc] || {};
+        const k = d[I18n.lang] || {};
+        if (Object.prototype.hasOwnProperty.call(k, key)) return k[key];
+      }
+      return undefined;
     }
 
     static t(key) {
