@@ -63,7 +63,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 }
 .nl a:hover { color: var(--al); border-bottom-color: var(--au); }
 .nl a.active { color: var(--al); border-bottom-color: var(--au); }
-.nc-cta {
+.nl a.nc-cta, .nc-cta {
   background: var(--au) !important; color: var(--g9) !important;
   padding: 8px 20px; border-radius: 6px; font-weight: 600 !important;
   border-bottom: none !important;
