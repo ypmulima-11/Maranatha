@@ -106,6 +106,18 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
   border-radius: 8px; padding: 9px 12px; font-size: 13px; margin-bottom: 12px;
 }
 
+.mp-or {
+  display: flex; align-items: center; gap: 10px; margin: 14px 0 10px;
+  color: var(--mut); font-size: 12px;
+}
+.mp-or::before, .mp-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.mp-btn.google {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; background: #fff; color: var(--ink); border-color: var(--line);
+}
+.mp-btn.google:hover { border-color: var(--au); color: var(--au); }
+.mp-btn.google svg { width: 18px; height: 18px; flex-shrink: 0; }
+
 .mp-msg { margin-bottom: 12px; font-size: 13px; min-height: 18px; }
 .mp-msg.err { color: var(--err); }
 .mp-msg.ok { color: var(--ok); }

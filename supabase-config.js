@@ -22,6 +22,23 @@
       run:  update public.profiles set role = 'admin' where email = 'you@example.com';
       That account becomes the site admin.
 
+   SIGN IN WITH GOOGLE (optional, ~5 extra minutes):
+   A. In Google Cloud Console (console.cloud.google.com): create a project,
+      enable the "Google+ API" or "Google Auth" (OAuth consent screen) with
+      user type "External", add your Google account as a test user.
+   B.  Create OAuth client ID → type "Web application":
+        Authorized redirect URI:
+        https://ojgutyougbyfbdoobtue.supabase.co/auth/v1/callback
+      Copy the Client ID and Client Secret.
+   C. In Supabase → Authentication → Providers → Google → Enable, paste the
+      Client ID + Client Secret, Save. Also add your Google account (and any
+      other emails) to "Additional redirect URLs" if prompted.
+   D. In Google Cloud → OAuth consent screen → Publishing status: make the app
+      "In production" (or keep trusted test users). The "Continue with Google"
+      button on the Members page then works.
+   NS. Google sign-ups are created as Members and start with status "pending",
+       just like email sign-ups, until an admin approves them.
+
    The anon key is safe to ship in the website — all real protection
    is enforced by Supabase Row Level Security on the server.
    ===================================================================== */

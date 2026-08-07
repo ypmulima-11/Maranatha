@@ -233,6 +233,8 @@
           'portal.pass': 'Nenosiri',
           'portal.passph': 'Nenosiri lako',
           'portal.sibtn': 'Ingia',
+          'portal.google': 'Endelea kwa Google',
+          'portal.or': 'au',
           'portal.forgot': 'Umesahau nenosiri?',
           'portal.forgothint': '\u2014 tutakutumia kiungo cha kuweka upya kwa barua pepe.',
           'portal.su1': 'Unda akaunti yako',

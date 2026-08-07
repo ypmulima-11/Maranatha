@@ -107,6 +107,26 @@
       }
     }
 
+    async onGoogleSignIn(e) {
+      e.preventDefault();
+      if (!this.supabase) return;
+      const msg = $('siMsg');
+      msg.className = 'mp-msg';
+      msg.textContent = 'Opening Google sign-in\u2026';
+      const res = await this.authCall(
+        () => this.supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: window.location.origin + window.location.pathname }
+        }),
+        msg
+      );
+      if (res.failed) return;
+      if (res.error) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'Could not start Google sign-in: ' + res.error.message;
+      }
+    }
+
     async onSignUp(e) {
       e.preventDefault();
       const msg = $('suMsg');
@@ -785,6 +805,8 @@
       $('signinForm').addEventListener('submit', e => this.onSignIn(e));
       $('signupForm').addEventListener('submit', e => this.onSignUp(e));
       $('siForgot').addEventListener('click', e => this.onForgotPassword(e));
+      const gBtn = $('googleBtn');
+      if (gBtn) gBtn.addEventListener('click', e => this.onGoogleSignIn(e));
       $('resetForm').addEventListener('submit', e => this.onResetPassword(e));
       $('mpOut').addEventListener('click', () => this.signOut());
       $('pvOut').addEventListener('click', () => this.signOut());
