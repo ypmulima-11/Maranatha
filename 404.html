@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <title>Redirecting…</title>
+  <style>
+    body { font-family: system-ui, sans-serif; text-align: center; padding: 3rem; color: #444; }
+  </style>
+</head>
+<body>
+  <p>Redirecting…</p>
+  <script>
+    (function () {
+      var q = new URLSearchParams(window.location.search);
+      var tok = q.get('token') || q.get('token_hash');
+      var type = q.get('type');
+      if (tok && type) {
+        q.delete('token');
+        q.set('token_hash', tok);
+        q.delete('redirect_to');
+        window.location.replace('members.html?' + q.toString());
+      } else {
+        window.location.replace('index.html');
+      }
+    })();
+  </script>
+</body>
+</html>
