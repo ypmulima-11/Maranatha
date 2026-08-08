@@ -131,7 +131,6 @@
       }
 
       msg.className = 'adm-msg';
-      msg.textContent = 'Checking credentials\u2026';
       $('admSignIn').disabled = true;
 
       this.github.api('/repos/' + this.repo).then(res => {
@@ -182,6 +181,7 @@
         $('admLogin').hidden = true;
         $('admMain').hidden = false;
         $('admOut').hidden = false;
+        $('admLogin').style.display = 'none';
         $('admRepo').textContent = this.repo;
         const parts = this.repo.split('/');
         $('admView').href = 'https://' + parts[0] + '.github.io/' + parts[1] + '/';
@@ -411,6 +411,7 @@
       $('admOut').hidden = true;
       $('admRepo').textContent = '';
       $('admLogin').hidden = false;
+      $('admLogin').style.display = '';
       $('admTok').value = '';
       $('admRepoIn').value = '';
     }

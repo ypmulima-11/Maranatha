@@ -92,7 +92,6 @@
         return;
       }
       msg.className = 'mp-msg';
-      msg.textContent = 'Signing in\u2026';
       const res = await this.authCall(
         () => this.supabase.auth.signInWithPassword({ email: email, password: password }),
         msg
@@ -111,8 +110,6 @@
       e.preventDefault();
       if (!this.supabase) return;
       const msg = $('siMsg');
-      msg.className = 'mp-msg';
-      msg.textContent = 'Opening Google sign-in\u2026';
       const res = await this.authCall(
         () => this.supabase.auth.signInWithOAuth({
           provider: 'google',
@@ -151,8 +148,6 @@
         return;
       }
       msg.className = 'mp-msg';
-      msg.textContent = 'Creating account\u2026';
-
       const res = await this.authCall(
         () => this.supabase.auth.signUp({
           email: email,
@@ -190,7 +185,6 @@
         return;
       }
       msg.className = 'mp-msg';
-      msg.textContent = 'Sending reset email\u2026';
       const res = await this.authCall(
         () => this.supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href }),
         msg
@@ -213,7 +207,6 @@
         return;
       }
       msg.className = 'mp-msg';
-      msg.textContent = 'Updating password\u2026';
       const res = await this.authCall(
         () => this.supabase.auth.updateUser({ password: pass }),
         msg
