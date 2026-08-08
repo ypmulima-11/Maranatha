@@ -24,31 +24,31 @@
   ],
   "events": [
     {
+      "title": "Sunday Mass Performance",
       "date": "2026-08-16",
       "time": "9:00 AM",
       "place": "Parish Church",
-      "title": "Sunday Mass Performance",
       "tag": "Liturgy"
     },
     {
+      "title": "Maranatha Annual Concert",
       "date": "2026-09-06",
       "time": "4:00 PM",
       "place": "Community Hall",
-      "title": "Maranatha Annual Concert",
       "tag": "Concert"
     },
     {
+      "title": "Special Worship Service",
       "date": "2026-10-11",
       "time": "9:00 AM",
       "place": "Parish Church",
-      "title": "Special Worship Service",
       "tag": "Liturgy"
     },
     {
+      "title": "Christmas Carol Gala",
       "date": "2026-12-20",
       "time": "5:00 PM",
       "place": "Main Auditorium",
-      "title": "Christmas Carol Gala",
       "tag": "Concert"
     }
   ],
@@ -70,28 +70,108 @@
     }
   ],
   "team": [
-    { "initials": "CP", "name": "Chairperson", "role": "Leadership & coordination" },
-    { "initials": "DC", "name": "Deputy Chairperson", "role": "Lead Choir Master" },
-    { "initials": "SC", "name": "Secretary", "role": "Administration & records" },
-    { "initials": "AS", "name": "Assistant Secretary", "role": "Administration support" },
-    { "initials": "TR", "name": "Treasurer", "role": "Finance" },
-    { "initials": "AC", "name": "Assistant Choir Master", "role": "Choir conduct & support" }
+    {
+      "initials": "CP",
+      "name": "Chairperson",
+      "role": "Leadership & coordination"
+    },
+    {
+      "initials": "DC",
+      "name": "Deputy Chairperson",
+      "role": "Lead Choir Master"
+    },
+    {
+      "initials": "SC",
+      "name": "Secretary",
+      "role": "Administration & records"
+    },
+    {
+      "initials": "AS",
+      "name": "Assistant Secretary",
+      "role": "Administration support"
+    },
+    {
+      "initials": "TR",
+      "name": "Treasurer",
+      "role": "Finance"
+    },
+    {
+      "initials": "AC",
+      "name": "Assistant Choir Master",
+      "role": "Choir conduct & support"
+    }
   ],
   "members": [
-    { "part": "Soprano", "initials": "EM", "name": "E. Mwaijande", "role": "Soprano Lead" },
-    { "part": "Soprano", "initials": "JT", "name": "J. Temu", "role": "Soprano" },
-    { "part": "Alto", "initials": "NK", "name": "N. Komba", "role": "Alto Lead" },
-    { "part": "Alto", "initials": "LR", "name": "L. Rweyemamu", "role": "Alto" },
-    { "part": "Tenor", "initials": "PM", "name": "P. Mwakalinga", "role": "Tenor Lead" },
-    { "part": "Tenor", "initials": "KK", "name": "K. Kimaro", "role": "Tenor" },
-    { "part": "Bass", "initials": "DN", "name": "D. Nyerere", "role": "Bass Lead" },
-    { "part": "Bass", "initials": "MU", "name": "M. Urio", "role": "Bass" }
+    {
+      "part": "Soprano",
+      "initials": "EM",
+      "name": "E. Mwaijande",
+      "role": "Soprano Lead"
+    },
+    {
+      "part": "Soprano",
+      "initials": "JT",
+      "name": "J. Temu",
+      "role": "Soprano"
+    },
+    {
+      "part": "Alto",
+      "initials": "NK",
+      "name": "N. Komba",
+      "role": "Alto Lead"
+    },
+    {
+      "part": "Alto",
+      "initials": "LR",
+      "name": "L. Rweyemamu",
+      "role": "Alto"
+    },
+    {
+      "part": "Tenor",
+      "initials": "PM",
+      "name": "P. Mwakalinga",
+      "role": "Tenor Lead"
+    },
+    {
+      "part": "Tenor",
+      "initials": "KK",
+      "name": "K. Kimaro",
+      "role": "Tenor"
+    },
+    {
+      "part": "Bass",
+      "initials": "DN",
+      "name": "D. Nyerere",
+      "role": "Bass Lead"
+    },
+    {
+      "part": "Bass",
+      "initials": "MU",
+      "name": "M. Urio",
+      "role": "Bass"
+    }
   ],
   "gallery": [
-    { "src": "images/gallery1.jpg", "cap": "Choir performance" },
-    { "src": "images/gallery2.jpg", "cap": "Choir performance" },
-    { "src": "images/gallery3.jpg", "cap": "Choir performance" },
-    { "src": "images/gallery4.jpg", "cap": "Choir performance" }
+    {
+      "src": "images/gallery1.jpg",
+      "cap": "Choir performance",
+      "video": ""
+    },
+    {
+      "src": "images/gallery2.jpg",
+      "cap": "Choir performance",
+      "video": ""
+    },
+    {
+      "src": "images/gallery3.jpg",
+      "cap": "Choir performance",
+      "video": ""
+    },
+    {
+      "src": "images/gallery4.jpg",
+      "cap": "Choir performance",
+      "video": ""
+    }
   ],
   "works": [
     {
