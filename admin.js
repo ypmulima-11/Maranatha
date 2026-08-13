@@ -3,25 +3,32 @@
 
   const $ = id => document.getElementById(id);
 
-  /* ---------- GitHub REST client ---------- */
+  /* ---------- API client: everything goes through the Edge Function ---------- */
 
-  class GitHubClient {
-    constructor(token) {
-      this.token = token || '';
+  class ApiClient {
+    constructor() {
+      this.fnUrl = '';
     }
 
-    setToken(token) {
-      this.token = token;
-    }
-
-    api(url, opts) {
-      opts = opts || {};
-      opts.headers = opts.headers || {};
-      opts.headers.Accept = 'application/vnd.github+json';
-      opts.headers.Authorization = 'Bearer ' + this.token;
-      return fetch('https://api.github.com' + url, opts).then(r =>
-        r.json().catch(() => ({})).then(body => ({ ok: r.ok, status: r.status, body }))
-      );
+    async call(action, data) {
+      const { data: { session } } = await window.supabase.auth.getSession();
+      if (!session) throw new Error('not signed in');
+      const res = await fetch(this.fnUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session.access_token
+        },
+        body: JSON.stringify(Object.assign({ action: action }, data || {}))
+      });
+      let body = null;
+      try { body = await res.json(); } catch (e) { body = null; }
+      if (!res.ok) {
+        let err = body && body.error ? body.error : ('HTTP ' + res.status);
+        if (res.status === 404) err = 'The admin helper service is not deployed yet. Deploy the "admin-github" Edge Function on Supabase.';
+        throw new Error(err);
+      }
+      return body;
     }
 
     static b64encode(s) {
@@ -36,7 +43,6 @@
   /* ---------- Admin application ---------- */
 
   class AdminApp {
-    static LS_KEY = 'maranathaAdmin';
     static FILE_PATH = 'content.json';
 
     static TABS = {
@@ -95,18 +101,9 @@
     };
 
     constructor() {
-      this.repo = '';
-      this.token = '';
       this.data = {};
-      this.github = new GitHubClient();
-    }
-
-    loadSaved() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(AdminApp.LS_KEY) || '{}');
-        if (saved.repo) this.repo = saved.repo;
-        if (saved.token) this.token = saved.token;
-      } catch (e) { /* ignore */ }
+      this.api = new ApiClient();
+      this.supabase = null;
     }
 
     setStatus(sel, msg, cls) {
@@ -116,77 +113,74 @@
       el.className = 'adm-status' + (cls ? ' ' + cls : '');
     }
 
-    signIn() {
-      const repoEl = $('admRepoIn');
-      const tokEl = $('admTok');
-      this.repo = repoEl.value.trim().replace(/^https?:\/\/github\.com\//, '').replace(/\/$/, '');
-      this.token = tokEl.value.trim();
-      this.github.setToken(this.token);
+    async signIn() {
+      const email = $('admEmail').value.trim().toLowerCase();
+      const password = $('admPass').value;
       const msg = $('admLoginMsg');
 
-      if (!/^[\w.-]+\/[\w.-]+$/.test(this.repo) || !this.token) {
+      if (!email || !password) {
         msg.className = 'adm-msg err';
-        msg.textContent = 'Enter both the repository (owner/repo) and your token.';
+        msg.textContent = 'Enter your email and password.';
+        return;
+      }
+      if (!window.supabase || !SUPABASE_READY) {
+        msg.className = 'adm-msg err';
+        msg.textContent = 'Supabase is not configured. Check supabase-config.js.';
         return;
       }
 
       msg.className = 'adm-msg';
       $('admSignIn').disabled = true;
 
-      this.github.api('/repos/' + this.repo).then(res => {
-        $('admSignIn').disabled = false;
-        if (!res.ok) {
-          const hint = {
-            401: 'The token is invalid or expired.',
-            403: 'The token cannot access this repository \u2014 check the repository permissions.',
-            404: 'Repository not found, or the token has no access to it.'
-          }[res.status] || 'GitHub returned error ' + res.status + '.';
-          const ghMsg = res.body && res.body.message ? ' (' + res.body.message + ')' : '';
+      try {
+        const { error } = await this.supabase.auth.signInWithPassword({ email: email, password: password });
+        if (error) {
           msg.className = 'adm-msg err';
-          msg.textContent = 'Could not access ' + this.repo + '. ' + hint + ghMsg;
+          msg.textContent = error.message === 'Invalid login credentials'
+            ? 'Incorrect email or password.'
+            : error.message;
+          $('admSignIn').disabled = false;
           return;
         }
-        localStorage.setItem(AdminApp.LS_KEY, JSON.stringify({ repo: this.repo, token: this.token }));
-        this.openWorkspace();
-      }).catch(err => {
-        $('admSignIn').disabled = false;
+      } catch (err) {
         msg.className = 'adm-msg err';
-        msg.textContent = 'Could not reach GitHub from this page (' + err.message + '). If you opened admin.html from disk, open the live admin page instead: https://ypmulima-11.github.io/Maranatha/admin.html';
-      });
+        msg.textContent = 'Could not reach Supabase (' + err.message + ').';
+        $('admSignIn').disabled = false;
+        return;
+      }
+
+      this.openWorkspace();
     }
 
-    fetchContent() {
+    async fetchContent() {
       this.setStatus('admStatus', 'Loading content\u2026', 'busy');
-      return this.github.api('/repos/' + this.repo + '/contents/' + AdminApp.FILE_PATH).then(res => {
-        if (!res.ok) {
-          this.setStatus('admStatus', 'Could not load content.json (error ' + res.status + ').', 'err');
-          return false;
-        }
-        try {
-          this.data = JSON.parse(GitHubClient.b64decode(res.body.content));
-        } catch (e) {
-          this.setStatus('admStatus', 'content.json is not valid JSON.', 'err');
-          return false;
-        }
+      try {
+        const res = await this.api.call('read');
+        this.data = JSON.parse(ApiClient.b64decode(res.content));
         return true;
-      }).catch(err => {
-        this.setStatus('admStatus', 'Could not reach GitHub from this page (' + err.message + '). Try the live admin page instead.', 'err');
+      } catch (err) {
+        this.setStatus('admStatus', 'Could not load content: ' + err.message, 'err');
         return false;
-      });
+      }
     }
 
-    openWorkspace() {
-      this.fetchContent().then(ok => {
-        if (!ok) return;
-        $('admLogin').hidden = true;
-        $('admMain').hidden = false;
-        $('admOut').hidden = false;
-        $('admLogin').style.display = 'none';
-        $('admRepo').textContent = this.repo;
-        const parts = this.repo.split('/');
-        $('admView').href = 'https://' + parts[0] + '.github.io/' + parts[1] + '/';
-        this.renderAll();
-      });
+    async openWorkspace() {
+      const msg = $('admLoginMsg');
+      const ok = await this.fetchContent();
+      if (!ok) {
+        msg.className = 'adm-msg err';
+        msg.textContent = 'Could not open the editor. Only accounts with the admin role are allowed \u2014 check the message above.';
+        try { await this.supabase.auth.signOut(); } catch (e) { /* ignore */ }
+        $('admSignIn').disabled = false;
+        return;
+      }
+      $('admLogin').hidden = true;
+      $('admMain').hidden = false;
+      $('admOut').hidden = false;
+      $('admLogin').style.display = 'none';
+      $('admRepo').textContent = 'Maranatha CMS';
+      $('admView').href = 'https://ypmulima-11.github.io/Maranatha/';
+      this.renderAll();
     }
 
     /* ---------- Tabs ---------- */
@@ -328,32 +322,16 @@
       const base64 = dataUrl.split(',')[1];
       const name = Date.now() + '-' + file.name.toLowerCase().replace(/[^a-z0-9.\-_]+/g, '-');
       const path = 'images/uploads/' + name;
-      const put = sha => {
-        const body = { message: 'Add image ' + name, content: base64 };
-        if (sha) body.sha = sha;
-        return this.github.api('/repos/' + this.repo + '/contents/' + path, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        });
-      };
-      put(null).then(res => {
-        if (res.status === 422) {
-          return this.github.api('/repos/' + this.repo + '/contents/' + path).then(existing => {
-            if (existing.ok) return put(existing.body.sha);
-            return res;
-          });
-        }
-        return res;
-      }).then(res => {
-        btn.disabled = false;
-        if (res.ok) {
+      this.api.call('upload', { path: path, content: base64 })
+        .then(() => {
+          btn.disabled = false;
           srcInput.value = path;
           msg.textContent = 'Uploaded \u2713 (will appear after you Save)';
-        } else {
-          msg.textContent = 'Upload failed (error ' + res.status + ').';
-        }
-      });
+        })
+        .catch(err => {
+          btn.disabled = false;
+          msg.textContent = 'Upload failed: ' + err.message;
+        });
     }
 
     /* ---------- Save ---------- */
@@ -362,58 +340,37 @@
       const body = {};
       Object.keys(AdminApp.TABS).forEach(t => { body[t] = this.collectTab(t); });
       const json = JSON.stringify(body, null, 2);
-      const b64 = GitHubClient.b64encode(json);
+      const b64 = ApiClient.b64encode(json);
 
       this.setStatus('admStatus', 'Publishing\u2026', 'busy');
       $('admSave').disabled = true;
       $('admReload').disabled = true;
 
-      this.github.api('/repos/' + this.repo + '/contents/' + AdminApp.FILE_PATH)
-        .then(res => {
-          if (!res.ok) throw new Error('read ' + res.status);
-          const putBody = {
-            message: 'Update site content',
-            content: b64,
-            sha: res.body.sha
-          };
-          return this.github.api('/repos/' + this.repo + '/contents/' + AdminApp.FILE_PATH, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(putBody)
-          });
-        })
-        .then(res => {
-          $('admSave').disabled = false;
-          $('admReload').disabled = false;
-          if (res.ok) {
-            this.data = body;
-            this.setStatus('admStatus', 'Saved \u2713 \u2014 the site republishes in about a minute.', 'ok');
-          } else {
-            this.setStatus('admStatus', 'Save failed (error ' + res.status + '). Check your token permissions.', 'err');
-          }
+      this.api.call('save', { content: b64 })
+        .then(() => {
+          this.data = body;
+          this.setStatus('admStatus', 'Saved \u2713 \u2014 the site republishes in about a minute.', 'ok');
         })
         .catch(err => {
+          this.setStatus('admStatus', 'Save failed: ' + err.message, 'err');
+        })
+        .finally(() => {
           $('admSave').disabled = false;
           $('admReload').disabled = false;
-          this.setStatus('admStatus', 'Save failed: ' + err.message, 'err');
         });
     }
 
     /* ---------- Sign out ---------- */
 
     signOut() {
-      localStorage.removeItem(AdminApp.LS_KEY);
-      this.token = '';
-      this.repo = '';
       this.data = {};
-      this.github.setToken('');
+      if (this.supabase) this.supabase.auth.signOut();
       $('admMain').hidden = true;
       $('admOut').hidden = true;
       $('admRepo').textContent = '';
       $('admLogin').hidden = false;
       $('admLogin').style.display = '';
-      $('admTok').value = '';
-      $('admRepoIn').value = '';
+      $('admPass').value = '';
     }
 
     /* ---------- Wire up + boot ---------- */
@@ -433,7 +390,7 @@
       );
 
       $('admSignIn').addEventListener('click', () => this.signIn());
-      $('admTok').addEventListener('keydown', e => { if (e.key === 'Enter') this.signIn(); });
+      $('admPass').addEventListener('keydown', e => { if (e.key === 'Enter') this.signIn(); });
 
       $('admReload').addEventListener('click', () => {
         this.fetchContent().then(ok => { if (ok) this.renderAll(); });
@@ -443,13 +400,18 @@
 
       $('admOut').addEventListener('click', () => this.signOut());
 
-      this.loadSaved();
-      if (this.repo && this.token) {
-        $('admRepoIn').value = this.repo;
-        $('admTok').value = this.token;
-        $('admLoginMsg').textContent = 'Restored saved session \u2014 signing in\u2026';
-        this.openWorkspace();
+      if (!window.supabase || !SUPABASE_READY) {
+        $('admLoginMsg').className = 'adm-msg err';
+        $('admLoginMsg').textContent = 'Supabase is not configured. Check supabase-config.js.';
+        return;
       }
+
+      this.supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+      this.api.fnUrl = SUPABASE_CONFIG.url.replace(/\/+$/, '') + '/functions/v1/admin-github';
+
+      this.supabase.auth.getSession().then(({ data }) => {
+        if (data.session) this.openWorkspace();
+      });
     }
   }
 

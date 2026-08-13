@@ -7,6 +7,8 @@
 <title>Maranatha Admin</title>
 <link rel="icon" type="image/jpeg" href="images/choir-logo.jpg">
 <link rel="stylesheet" href="admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+<script src="supabase-config.js" defer></script>
 <script src="admin.js" defer></script>
 </head>
 <body>
@@ -26,28 +28,17 @@
 <section class="adm-login" id="admLogin">
   <div class="adm-card">
     <h1>Admin sign in</h1>
-    <p class="adm-hint">Sign in with a GitHub token that has <b>Contents: Read and write</b> access to the Maranatha repository. Your edits are saved straight to the repo and GitHub Pages republishes the site automatically (about 1 minute).</p>
-    <label class="adm-field">Repository
-      <input type="text" id="admRepoIn" placeholder="owner/repository" autocomplete="off" spellcheck="false">
+    <p class="adm-hint">Sign in with your <b>member admin account</b> — the email you signed up with on the Members page. The GitHub connection is handled securely on the server; nothing is stored in this browser.</p>
+    <label class="adm-field">Email
+      <input type="email" id="admEmail" placeholder="you@example.com" autocomplete="email">
     </label>
-    <label class="adm-field">GitHub token
-      <input type="password" id="admTok" placeholder="github_pat_... or ghp_..." autocomplete="off">
+    <label class="adm-field">Password
+      <input type="password" id="admPass" placeholder="Your password" autocomplete="current-password">
     </label>
     <button type="button" class="adm-btn big" id="admSignIn">Sign in</button>
     <div class="adm-msg" id="admLoginMsg" role="status"></div>
+    <p class="adm-hint">Only accounts with the <b>admin</b> role can open the editor. Everyone else signs up as a Member on the Members page.</p>
     <p class="adm-hint">Tip: if sign-in fails here, open the page from the live site instead &mdash; <a class="adm-link" href="https://ypmulima-11.github.io/Maranatha/admin.html" target="_blank" rel="noopener">ypmulima-11.github.io/Maranatha/admin.html</a> (opening the file directly from disk can be blocked by the browser).</p>
-    <details class="adm-help">
-      <summary>How to create a token (once)</summary>
-      <ol>
-        <li>Open github.com and sign in as the repository owner.</li>
-        <li>Go to <b>Settings</b> &rarr; <b>Developer settings</b> &rarr; <b>Personal access tokens</b> &rarr; <b>Fine-grained tokens</b>.</li>
-        <li>Click <b>Generate new token</b>, give it a name, and set an expiry.</li>
-        <li>Under <b>Repository access</b>, choose <b>Only select repositories</b> and pick the Maranatha repo.</li>
-        <li>Under <b>Permissions &rarr; Repository permissions</b>, set <b>Contents</b> to <b>Read and write</b>.</li>
-        <li>Click <b>Generate token</b> and copy it here. You only need it once per browser.</li>
-      </ol>
-      <p class="adm-warn"><b>Security:</b> this token grants write access to your repository. It is stored only in this browser (localStorage) and never sent anywhere except GitHub. Sign out when you are done, and never use this page on a shared computer.</p>
-    </details>
   </div>
 </section>
 
