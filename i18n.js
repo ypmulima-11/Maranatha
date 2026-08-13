@@ -226,7 +226,7 @@
           'portal.back': 'Rudi kwenye tovuti',
           'portal.admin': 'Panel ya Admin',
           'portal.tab1': 'Ingia',
-          'portal.tab2': 'Unda akaunti',
+          'portal.tab2': 'Jisajili',
           'portal.wb': 'Karibu tena',
           'portal.sihint': 'Ingia ili upate rasilimali za wanachama, nyenzo za uongozi na zana za admin.',
           'portal.email': 'Barua pepe',
