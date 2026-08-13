@@ -816,14 +816,46 @@
 
       this.supabase.auth.onAuthStateChange((event) => {
         if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+          this.hasSession = true;
           this.showDash();
           this.loadDashboard();
         } else if (event === 'SIGNED_OUT') {
+          this.hasSession = false;
           this.showAuth();
         } else if (event === 'PASSWORD_RECOVERY') {
+          this.hasSession = true;
           this.showReset();
         }
       });
+
+      this.initIdleTimeout();
+    }
+
+    /* ---------- Auto sign-out after 10 min of inactivity ---------- */
+
+    initIdleTimeout() {
+      const IDLE_MS = 10 * 60 * 1000;
+      const bump = () => { this.lastActive = Date.now(); };
+      ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(ev =>
+        window.addEventListener(ev, bump, { passive: true })
+      );
+      this.lastActive = Date.now();
+      this.hasSession = false;
+      setInterval(() => {
+        if (!this.supabase || !this.hasSession) return;
+        if (Date.now() - this.lastActive > IDLE_MS) {
+          this.hasSession = false;
+          const msg = $('siMsg');
+          if (msg) {
+            msg.className = 'mp-msg';
+            msg.textContent = this.pickLang(
+              'Signed out automatically after 10 minutes of inactivity.',
+              'Kutoka kiotomatiki baada ya dakika 10 bila shughuli.'
+            );
+          }
+          this.supabase.auth.signOut();
+        }
+      }, 30000);
     }
   }
 
