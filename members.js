@@ -250,6 +250,165 @@
       });
     }
 
+    /* ---------- Profile field helpers ---------- */
+
+    fmtDob(iso) {
+      if (!iso) return '\u2014';
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return '\u2014';
+      return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    studyLabel(p) {
+      if (p.study_status === 'studying') {
+        let s = 'Current Studying';
+        if (p.course_program) s += ' \u00b7 ' + p.course_program;
+        if (p.university) s += ' \u00b7 ' + p.university;
+        if (p.expected_grad_year) s += ' \u00b7 class of ' + p.expected_grad_year;
+        return s;
+      }
+      if (p.study_status === 'alumni') {
+        let s = 'Alumni';
+        if (p.grad_year) s += ' \u00b7 class of ' + p.grad_year;
+        return s;
+      }
+      return '\u2014';
+    }
+
+    residenceLabel(p) {
+      if (p.residence_type === 'campus') return p.residence || 'UDSM Campus';
+      if (p.residence_type === 'off_campus') {
+        return p.residence ? 'Out of campus \u00b7 ' + p.residence : 'Out of campus';
+      }
+      return '\u2014';
+    }
+
+    /* ---------- Profile editing ---------- */
+
+    openProfileEdit() {
+      const p = this.profile;
+      if (!p) return;
+      $('pfName').value = p.full_name || '';
+      $('pfDob').value = p.dob || '';
+      $('pfPhone').value = p.phone || '';
+      $('pfEmail').value = p.email || '';
+      $('pfStudy').value = p.study_status || '';
+      $('pfCourse').value = p.course_program || '';
+      $('pfUni').value = p.university || '';
+      $('pfExpGrad').value = p.expected_grad_year || '';
+      $('pfGradYear').value = p.grad_year || '';
+      $('pfResType').value = p.residence_type || '';
+      $('pfHall').value = (p.residence_type === 'campus') ? (p.residence || '') : '';
+      $('pfPlace').value = (p.residence_type === 'off_campus') ? (p.residence || '') : '';
+      this.syncProfileForm();
+      $('pfMsg').className = 'mp-msg';
+      $('pfMsg').textContent = '';
+      $('mpProfileForm').hidden = false;
+      $('mpEditProfile').hidden = true;
+      $('pfName').focus();
+    }
+
+    syncProfileForm() {
+      $('pfStudying').hidden = $('pfStudy').value !== 'studying';
+      $('pfAlumni').hidden = $('pfStudy').value !== 'alumni';
+      $('pfResCampus').hidden = $('pfResType').value !== 'campus';
+      $('pfResOff').hidden = $('pfResType').value !== 'off_campus';
+    }
+
+    closeProfileEdit() {
+      $('mpProfileForm').hidden = true;
+      $('mpEditProfile').hidden = false;
+    }
+
+    async onSaveProfile(e) {
+      e.preventDefault();
+      const msg = $('pfMsg');
+      const name = $('pfName').value.trim();
+      const study = $('pfStudy').value;
+      const resType = $('pfResType').value;
+
+      if (!name) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'Enter your full name.';
+        return;
+      }
+
+      let course = '', university = '', expectedGrad = null, gradYear = null;
+      if (study === 'studying') {
+        course = $('pfCourse').value.trim();
+        university = $('pfUni').value;
+        expectedGrad = parseInt($('pfExpGrad').value, 10) || null;
+        if (!course) {
+          msg.className = 'mp-msg err';
+          msg.textContent = 'Enter the course you are studying.';
+          return;
+        }
+        if (!university) {
+          msg.className = 'mp-msg err';
+          msg.textContent = 'Choose your university.';
+          return;
+        }
+        if (!expectedGrad) {
+          msg.className = 'mp-msg err';
+          msg.textContent = 'Enter your expected year of graduation.';
+          return;
+        }
+      } else if (study === 'alumni') {
+        gradYear = parseInt($('pfGradYear').value, 10) || null;
+        if (!gradYear) {
+          msg.className = 'mp-msg err';
+          msg.textContent = 'Enter your year of graduation.';
+          return;
+        }
+      }
+
+      let residence = '';
+      if (resType === 'campus') {
+        residence = $('pfHall').value;
+        if (!residence) {
+          msg.className = 'mp-msg err';
+          msg.textContent = 'Choose your hall or hostel.';
+          return;
+        }
+      } else if (resType === 'off_campus') {
+        residence = $('pfPlace').value.trim();
+        if (!residence) {
+          msg.className = 'mp-msg err';
+          msg.textContent = 'Enter the name of the place.';
+          return;
+        }
+      }
+
+      msg.className = 'mp-msg';
+      msg.textContent = 'Saving\u2026';
+      const patch = {
+        full_name: name,
+        dob: $('pfDob').value || null,
+        phone: $('pfPhone').value.trim(),
+        study_status: study,
+        course_program: course,
+        university: university,
+        expected_grad_year: expectedGrad,
+        grad_year: gradYear,
+        residence_type: resType,
+        residence: residence
+      };
+      const res = await this.authCall(
+        () => this.supabase.from('profiles').update(patch).eq('id', this.profile.id),
+        msg
+      );
+      if (res.failed) return;
+      if (res.error) {
+        msg.className = 'mp-msg err';
+        msg.textContent = res.error.message;
+        return;
+      }
+      this.profile = Object.assign({}, this.profile, patch);
+      this.renderDashboard();
+      msg.className = 'mp-msg ok';
+      msg.textContent = 'Profile saved \u2713';
+    }
+
     async loadDashboard() {
       const { data: userData } = await this.supabase.auth.getUser();
       const user = userData && userData.user;
@@ -356,6 +515,10 @@
         ['Access level', MemberPortal.roleLabel(this.profile.role)],
         ['Title', this.profile.title || '\u2014'],
         ['Voice part', this.profile.voice_part || '\u2014'],
+        ['Date of birth', this.fmtDob(this.profile.dob)],
+        ['Phone', this.profile.phone || '\u2014'],
+        ['Study status', this.studyLabel(this.profile)],
+        ['Residence', this.residenceLabel(this.profile)],
         ['Member since', this.profile.created_at ? new Date(this.profile.created_at).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }) : '\u2014']
       ].forEach(r => {
         const k = document.createElement('div');
@@ -386,6 +549,8 @@
         this.loadAdminMembers();
         this.loadAdminInbox();
         this.loadAdminPending();
+        this.loadAdminResidence();
+        this.loadAdminBirthdays();
         const form = $('adminResourceForm');
         if (form) form.style.display = '';
       }
@@ -651,6 +816,21 @@
         who.appendChild(n);
         who.appendChild(em);
         row.appendChild(who);
+        const det = document.createElement('div');
+        det.className = 'mp-date';
+        det.hidden = true;
+        det.textContent = [
+          m.phone ? 'Phone: ' + m.phone : '',
+          m.dob ? 'Born: ' + this.fmtDob(m.dob) : '',
+          this.studyLabel(m),
+          this.residenceLabel(m)
+        ].filter(s => s && s !== '\u2014').join(' \u00b7 ') || 'No extra details yet';
+        const detBtn = document.createElement('button');
+        detBtn.type = 'button';
+        detBtn.className = 'mp-btn small';
+        detBtn.textContent = 'Profile';
+        detBtn.addEventListener('click', () => { det.hidden = !det.hidden; });
+        row.appendChild(detBtn);
         const sel = document.createElement('select');
         ['member', 'leader', 'section_leader', 'admin'].forEach(r => {
           const o = document.createElement('option');
@@ -680,7 +860,108 @@
           }
         });
         row.appendChild(sel);
+        row.appendChild(det);
         box.appendChild(row);
+      });
+    }
+
+    /* ---------- Admin: members grouped by residence and birthday month ---------- */
+
+    static HALLS = ['Hall 1','Hall 2','Hall 3','Hall 4','Hall 5','Hall 6','Hall 7','Magufuli Hostel','Coict Hostel','Mabibo Hostel'];
+
+    static MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    async loadAdminResidence() {
+      const box = $('adminResidence');
+      if (!box) return;
+      const { data } = await this.supabase
+        .from('profiles').select('full_name, email, residence_type, residence').order('full_name');
+      box.innerHTML = '';
+      const groups = {};
+      (data || []).forEach(m => {
+        const key = m.residence_type === 'campus' ? m.residence
+          : m.residence_type === 'off_campus' ? (m.residence || 'Out of campus (not specified)')
+          : null;
+        if (!key) return;
+        (groups[key] = groups[key] || []).push(m);
+      });
+      const keys = Object.keys(groups).sort((a, b) => {
+        const ia = MemberPortal.HALLS.indexOf(a);
+        const ib = MemberPortal.HALLS.indexOf(b);
+        return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b);
+      });
+      if (!keys.length) {
+        const e = document.createElement('p');
+        e.className = 'mp-empty';
+        e.textContent = 'No member has filled in a residence yet.';
+        box.appendChild(e);
+        return;
+      }
+      keys.forEach(key => {
+        const head = document.createElement('div');
+        head.className = 'mp-mwho';
+        const n = document.createElement('div');
+        n.textContent = key + ' \u00b7 ' + groups[key].length;
+        head.appendChild(n);
+        box.appendChild(head);
+        groups[key].forEach(m => {
+          const row = document.createElement('div');
+          row.className = 'mp-mrow';
+          const who = document.createElement('div');
+          who.className = 'mp-mwho';
+          const nm = document.createElement('div');
+          nm.textContent = m.full_name;
+          const em = document.createElement('div');
+          em.className = 'mp-date';
+          em.textContent = m.email;
+          who.appendChild(nm);
+          who.appendChild(em);
+          row.appendChild(who);
+          box.appendChild(row);
+        });
+      });
+    }
+
+    async loadAdminBirthdays() {
+      const box = $('adminBirthdays');
+      if (!box) return;
+      const { data } = await this.supabase
+        .from('profiles').select('full_name, dob').order('full_name');
+      box.innerHTML = '';
+      const groups = {};
+      (data || []).forEach(m => {
+        if (!m.dob) return;
+        const d = new Date(m.dob);
+        if (isNaN(d.getTime())) return;
+        const month = d.getMonth();
+        (groups[month] = groups[month] || []).push({ name: m.full_name, day: d.getDate() });
+      });
+      if (!Object.keys(groups).length) {
+        const e = document.createElement('p');
+        e.className = 'mp-empty';
+        e.textContent = 'No member has filled in a date of birth yet.';
+        box.appendChild(e);
+        return;
+      }
+      MemberPortal.MONTHS.forEach((monthName, month) => {
+        if (!groups[month]) return;
+        const head = document.createElement('div');
+        head.className = 'mp-mwho';
+        const n = document.createElement('div');
+        n.textContent = monthName + ' \u00b7 ' + groups[month].length;
+        head.appendChild(n);
+        box.appendChild(head);
+        groups[month].sort((a, b) => a.day - b.day).forEach(m => {
+          const row = document.createElement('div');
+          row.className = 'mp-mrow';
+          const who = document.createElement('div');
+          who.className = 'mp-mwho';
+          const nm = document.createElement('div');
+          nm.textContent = m.name + ' \u2014 ' + m.day + ' ' + monthName;
+          who.appendChild(nm);
+          row.appendChild(who);
+          box.appendChild(row);
+        });
       });
     }
 
@@ -818,6 +1099,11 @@
       $('adminResourceForm').addEventListener('submit', e => this.addResource(e));
       $('adminInviteForm').addEventListener('submit', e => this.onInvite(e));
       $('mpInviteCopy').addEventListener('click', () => this.copyInvite());
+      $('mpEditProfile').addEventListener('click', () => this.openProfileEdit());
+      $('pfCancel').addEventListener('click', () => this.closeProfileEdit());
+      $('mpProfileForm').addEventListener('submit', e => this.onSaveProfile(e));
+      $('pfStudy').addEventListener('change', () => this.syncProfileForm());
+      $('pfResType').addEventListener('change', () => this.syncProfileForm());
 
       if (!window.supabase || !SUPABASE_READY) {
         this.showSetupBanner();
