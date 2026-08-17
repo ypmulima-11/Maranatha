@@ -54,6 +54,18 @@
       $('pendingView').hidden = false;
     }
 
+    /* ---------- Hide public page content once signed in ---------- */
+
+    setMemberMode(on) {
+      document.querySelectorAll('.hero.ph, .msw, footer').forEach(el => {
+        el.style.display = on ? 'none' : '';
+      });
+      if (on) {
+        const portal = $('portal');
+        if (portal && portal.scrollIntoView) portal.scrollIntoView({ block: 'start' });
+      }
+    }
+
     /* ---------- Timeout guard: never hang silently on a dead request ---------- */
 
     withTimeout(p, ms) {
@@ -817,13 +829,16 @@
       this.supabase.auth.onAuthStateChange((event) => {
         if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
           this.hasSession = true;
+          this.setMemberMode(true);
           this.showDash();
           this.loadDashboard();
         } else if (event === 'SIGNED_OUT') {
           this.hasSession = false;
+          this.setMemberMode(false);
           this.showAuth();
         } else if (event === 'PASSWORD_RECOVERY') {
           this.hasSession = true;
+          this.setMemberMode(true);
           this.showReset();
         }
       });
