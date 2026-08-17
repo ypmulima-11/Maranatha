@@ -202,6 +202,91 @@
         </div>
       </section>
 
+      <!-- ============ COMPLETE / EDIT PROFILE ============ -->
+      <section class="mp-auth" id="profileView" hidden>
+        <div class="mp-card">
+          <div class="mp-form on">
+            <h1 id="pfTitle">Complete your profile</h1>
+            <p class="mp-hint" id="pfSub">Please fill in these details — they help the leaders organise groups and celebrations.</p>
+            <form class="mp-res-form" id="mpProfileForm" novalidate>
+              <label class="mp-field"><span>Full name</span>
+                <input type="text" id="pfName" autocomplete="name">
+              </label>
+              <label class="mp-field"><span>Date of birth</span>
+                <input type="date" id="pfDob">
+              </label>
+              <label class="mp-field"><span>Phone number</span>
+                <input type="tel" id="pfPhone" placeholder="e.g. +255 7xx xxx xxx" autocomplete="tel">
+              </label>
+              <label class="mp-field"><span>Email address (managed by Supabase)</span>
+                <input type="email" id="pfEmail" disabled>
+              </label>
+              <label class="mp-field"><span>Study status</span>
+                <select id="pfStudy">
+                  <option value="">Not selected</option>
+                  <option value="studying">Current Studying</option>
+                  <option value="alumni">Alumni</option>
+                </select>
+              </label>
+              <div id="pfStudying" hidden>
+                <label class="mp-field"><span>Course studying</span>
+                  <input type="text" id="pfCourse" placeholder="e.g. BSc. Computer Science">
+                </label>
+                <label class="mp-field"><span>University</span>
+                  <select id="pfUni">
+                    <option value="">Not selected</option>
+                    <option>University of Dar es Salaam</option>
+                    <option>Ardhi University</option>
+                    <option>Water Institute</option>
+                  </select>
+                </label>
+                <label class="mp-field"><span>Expected year of graduation</span>
+                  <input type="number" id="pfExpGrad" min="2026" max="2040" placeholder="e.g. 2028">
+                </label>
+              </div>
+              <div id="pfAlumni" hidden>
+                <label class="mp-field"><span>Year of graduation</span>
+                  <input type="number" id="pfGradYear" min="1960" max="2026" placeholder="e.g. 2023">
+                </label>
+              </div>
+              <label class="mp-field"><span>Place of residence</span>
+                <select id="pfResType">
+                  <option value="">Not selected</option>
+                  <option value="campus">UDSM Campus</option>
+                  <option value="off_campus">Out of UDSM Campus</option>
+                </select>
+              </label>
+              <div id="pfResCampus" hidden>
+                <label class="mp-field"><span>Hall / hostel</span>
+                  <select id="pfHall">
+                    <option value="">Not selected</option>
+                    <option>Hall 1</option>
+                    <option>Hall 2</option>
+                    <option>Hall 3</option>
+                    <option>Hall 4</option>
+                    <option>Hall 5</option>
+                    <option>Hall 6</option>
+                    <option>Hall 7</option>
+                    <option>Magufuli Hostel</option>
+                    <option>Coict Hostel</option>
+                    <option>Mabibo Hostel</option>
+                  </select>
+                </label>
+              </div>
+              <div id="pfResOff" hidden>
+                <label class="mp-field"><span>Name of the place</span>
+                  <input type="text" id="pfPlace" placeholder="e.g. Kigamboni, Mbezi Beach, Sinza...">
+                </label>
+              </div>
+              <div class="mp-msg" id="pfMsg" role="status"></div>
+              <button type="submit" class="mp-btn big">Save profile</button>
+              <button type="button" class="mp-btn ghost" id="pfCancel">Cancel</button>
+              <button type="button" class="mp-btn danger" id="pfOut" data-i18n="portal.out">Sign out</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
       <!-- ============ DASHBOARD ============ -->
       <section class="mp-dash" id="dashView" hidden>
         <div class="mp-dash-in">
@@ -235,81 +320,6 @@
               <h2 data-i18n="portal.profile">My profile</h2>
               <div class="mp-pro" id="mpProfile"></div>
               <button type="button" class="mp-btn" id="mpEditProfile">Edit profile</button>
-
-              <form class="mp-res-form" id="mpProfileForm" hidden novalidate>
-                <label class="mp-field"><span>Full name</span>
-                  <input type="text" id="pfName" autocomplete="name">
-                </label>
-                <label class="mp-field"><span>Date of birth</span>
-                  <input type="date" id="pfDob">
-                </label>
-                <label class="mp-field"><span>Phone number</span>
-                  <input type="tel" id="pfPhone" placeholder="e.g. +255 7xx xxx xxx" autocomplete="tel">
-                </label>
-                <label class="mp-field"><span>Email address (managed by Supabase)</span>
-                  <input type="email" id="pfEmail" disabled>
-                </label>
-                <label class="mp-field"><span>Study status</span>
-                  <select id="pfStudy">
-                    <option value="">Not selected</option>
-                    <option value="studying">Current Studying</option>
-                    <option value="alumni">Alumni</option>
-                  </select>
-                </label>
-                <div id="pfStudying" hidden>
-                  <label class="mp-field"><span>Course studying</span>
-                    <input type="text" id="pfCourse" placeholder="e.g. BSc. Computer Science">
-                  </label>
-                  <label class="mp-field"><span>University</span>
-                    <select id="pfUni">
-                      <option value="">Not selected</option>
-                      <option>University of Dar es Salaam</option>
-                      <option>Ardhi University</option>
-                      <option>Water Institute</option>
-                    </select>
-                  </label>
-                  <label class="mp-field"><span>Expected year of graduation</span>
-                    <input type="number" id="pfExpGrad" min="2026" max="2040" placeholder="e.g. 2028">
-                  </label>
-                </div>
-                <div id="pfAlumni" hidden>
-                  <label class="mp-field"><span>Year of graduation</span>
-                    <input type="number" id="pfGradYear" min="1960" max="2026" placeholder="e.g. 2023">
-                  </label>
-                </div>
-                <label class="mp-field"><span>Place of residence</span>
-                  <select id="pfResType">
-                    <option value="">Not selected</option>
-                    <option value="campus">UDSM Campus</option>
-                    <option value="off_campus">Out of UDSM Campus</option>
-                  </select>
-                </label>
-                <div id="pfResCampus" hidden>
-                  <label class="mp-field"><span>Hall / hostel</span>
-                    <select id="pfHall">
-                      <option value="">Not selected</option>
-                      <option>Hall 1</option>
-                      <option>Hall 2</option>
-                      <option>Hall 3</option>
-                      <option>Hall 4</option>
-                      <option>Hall 5</option>
-                      <option>Hall 6</option>
-                      <option>Hall 7</option>
-                      <option>Magufuli Hostel</option>
-                      <option>Coict Hostel</option>
-                      <option>Mabibo Hostel</option>
-                    </select>
-                  </label>
-                </div>
-                <div id="pfResOff" hidden>
-                  <label class="mp-field"><span>Name of the place</span>
-                    <input type="text" id="pfPlace" placeholder="e.g. Kigamboni, Mbezi Beach, Sinza...">
-                  </label>
-                </div>
-                <div class="mp-msg" id="pfMsg" role="status"></div>
-                <button type="submit" class="mp-btn">Save profile</button>
-                <button type="button" class="mp-btn ghost" id="pfCancel">Cancel</button>
-              </form>
             </div>
 
             <div class="mp-card2">

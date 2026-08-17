@@ -30,6 +30,7 @@
       $('dashView').hidden = true;
       $('resetView').hidden = true;
       $('pendingView').hidden = true;
+      $('profileView').hidden = true;
       $('authView').hidden = false;
     }
 
@@ -37,6 +38,7 @@
       $('resetView').hidden = true;
       $('authView').hidden = true;
       $('pendingView').hidden = true;
+      $('profileView').hidden = true;
       $('dashView').hidden = false;
     }
 
@@ -44,6 +46,7 @@
       $('authView').hidden = true;
       $('dashView').hidden = true;
       $('pendingView').hidden = true;
+      $('profileView').hidden = true;
       $('resetView').hidden = false;
     }
 
@@ -51,6 +54,7 @@
       $('resetView').hidden = true;
       $('authView').hidden = true;
       $('dashView').hidden = true;
+      $('profileView').hidden = true;
       $('pendingView').hidden = false;
     }
 
@@ -285,6 +289,33 @@
 
     /* ---------- Profile editing ---------- */
 
+    profileComplete(p) {
+      if (!p) return false;
+      if (!(p.dob && p.phone && p.study_status && p.residence_type)) return false;
+      if (p.study_status === 'studying') {
+        if (!(p.course_program && p.university && p.expected_grad_year)) return false;
+      } else if (p.study_status === 'alumni') {
+        if (!p.grad_year) return false;
+      }
+      if (p.residence_type === 'campus' && !p.residence) return false;
+      if (p.residence_type === 'off_campus' && !p.residence) return false;
+      return true;
+    }
+
+    openProfileForm(mandatory) {
+      $('authView').hidden = true;
+      $('dashView').hidden = true;
+      $('resetView').hidden = true;
+      $('pendingView').hidden = true;
+      $('profileView').hidden = false;
+      $('pfTitle').textContent = mandatory ? 'Complete your profile' : 'Edit your profile';
+      $('pfSub').textContent = mandatory
+        ? 'Please fill in these details first — they help the leaders organise groups and celebrations.'
+        : 'Update your details at any time.';
+      $('pfCancel').hidden = !!mandatory;
+      this.openProfileEdit();
+    }
+
     openProfileEdit() {
       const p = this.profile;
       if (!p) return;
@@ -404,9 +435,13 @@
         return;
       }
       this.profile = Object.assign({}, this.profile, patch);
-      this.renderDashboard();
-      msg.className = 'mp-msg ok';
-      msg.textContent = 'Profile saved \u2713';
+      this.closeProfileEdit();
+      if (this.profileComplete(this.profile)) {
+        this.showDash();
+        this.loadDashboard();
+      } else {
+        this.renderDashboard();
+      }
     }
 
     async loadDashboard() {
@@ -454,6 +489,11 @@
           pvMsg.textContent = I18n.t('portal.pend.rejected');
         }
         this.showPending();
+        return;
+      }
+
+      if (prof && !this.profileComplete(prof)) {
+        this.openProfileForm(true);
         return;
       }
 
@@ -1099,8 +1139,13 @@
       $('adminResourceForm').addEventListener('submit', e => this.addResource(e));
       $('adminInviteForm').addEventListener('submit', e => this.onInvite(e));
       $('mpInviteCopy').addEventListener('click', () => this.copyInvite());
-      $('mpEditProfile').addEventListener('click', () => this.openProfileEdit());
-      $('pfCancel').addEventListener('click', () => this.closeProfileEdit());
+      $('mpEditProfile').addEventListener('click', () => this.openProfileForm(false));
+      $('pfCancel').addEventListener('click', () => {
+        this.closeProfileEdit();
+        this.showDash();
+        this.loadDashboard();
+      });
+      $('pfOut').addEventListener('click', () => this.signOut());
       $('mpProfileForm').addEventListener('submit', e => this.onSaveProfile(e));
       $('pfStudy').addEventListener('change', () => this.syncProfileForm());
       $('pfResType').addEventListener('change', () => this.syncProfileForm());
