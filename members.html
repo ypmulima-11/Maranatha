@@ -160,15 +160,6 @@
             <label class="mp-field"><span data-i18n="portal.supass">Password (at least 6 characters)</span>
               <input type="password" id="suPass" placeholder="Choose a password" data-i18n-ph="portal.supassph" autocomplete="new-password">
             </label>
-            <label class="mp-field"><span data-i18n="portal.supart">Voice part (optional)</span>
-              <select id="suPart">
-                <option value="" data-i18n="portal.none">Not selected</option>
-                <option>Soprano</option>
-                <option>Alto</option>
-                <option>Tenor</option>
-                <option>Bass</option>
-              </select>
-            </label>
             <div class="mp-msg" id="suMsg" role="status"></div>
             <button type="submit" class="mp-btn big" data-i18n="portal.subtn">Create account</button>
           </form>
@@ -218,8 +209,17 @@
               <label class="mp-field"><span>Phone number</span>
                 <input type="tel" id="pfPhone" placeholder="e.g. +255 7xx xxx xxx" autocomplete="tel">
               </label>
-              <label class="mp-field"><span>Email address (managed by Supabase)</span>
+              <label class="mp-field"><span>Email address</span>
                 <input type="email" id="pfEmail" disabled>
+              </label>
+              <label class="mp-field"><span>Voice part</span>
+                <select id="pfVoice">
+                  <option value="">Not selected</option>
+                  <option>Soprano</option>
+                  <option>Alto</option>
+                  <option>Tenor</option>
+                  <option>Bass</option>
+                </select>
               </label>
               <label class="mp-field"><span>Study status</span>
                 <select id="pfStudy">
@@ -342,6 +342,9 @@
 
               <h3 class="mp-sec">Members by residence</h3>
               <div class="mp-mrow-list" id="adminResidence"></div>
+
+              <h3 class="mp-sec">Members by voice part</h3>
+              <div class="mp-mrow-list" id="adminVoice"></div>
 
               <h3 class="mp-sec">Birthdays by month</h3>
               <div class="mp-mrow-list" id="adminBirthdays"></div>

@@ -146,7 +146,6 @@
       const name = $('suName').value.trim();
       const email = $('suEmail').value.trim().toLowerCase();
       const password = $('suPass').value;
-      const part = $('suPart').value;
 
       if (!name || !email || !password) {
         msg.className = 'mp-msg err';
@@ -168,7 +167,7 @@
         () => this.supabase.auth.signUp({
           email: email,
           password: password,
-          options: { emailRedirectTo: window.location.origin + window.location.pathname, data: { full_name: name, voice_part: part } }
+          options: { emailRedirectTo: window.location.origin + window.location.pathname, data: { full_name: name } }
         }),
         msg
       );
@@ -323,6 +322,7 @@
       $('pfDob').value = p.dob || '';
       $('pfPhone').value = p.phone || '';
       $('pfEmail').value = p.email || '';
+      $('pfVoice').value = p.voice_part || '';
       $('pfStudy').value = p.study_status || '';
       $('pfCourse').value = p.course_program || '';
       $('pfUni').value = p.university || '';
@@ -416,6 +416,7 @@
         full_name: name,
         dob: $('pfDob').value || null,
         phone: $('pfPhone').value.trim(),
+        voice_part: $('pfVoice').value,
         study_status: study,
         course_program: course,
         university: university,
@@ -590,6 +591,7 @@
         this.loadAdminInbox();
         this.loadAdminPending();
         this.loadAdminResidence();
+        this.loadAdminVoice();
         this.loadAdminBirthdays();
         const form = $('adminResourceForm');
         if (form) form.style.display = '';
@@ -909,6 +911,8 @@
 
     static HALLS = ['Hall 1','Hall 2','Hall 3','Hall 4','Hall 5','Hall 6','Hall 7','Magufuli Hostel','Coict Hostel','Mabibo Hostel'];
 
+    static VOICE_ORDER = ['Soprano', 'Alto', 'Tenor', 'Bass'];
+
     static MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
     async loadAdminResidence() {
@@ -934,6 +938,54 @@
         const e = document.createElement('p');
         e.className = 'mp-empty';
         e.textContent = 'No member has filled in a residence yet.';
+        box.appendChild(e);
+        return;
+      }
+      keys.forEach(key => {
+        const head = document.createElement('div');
+        head.className = 'mp-mwho';
+        const n = document.createElement('div');
+        n.textContent = key + ' \u00b7 ' + groups[key].length;
+        head.appendChild(n);
+        box.appendChild(head);
+        groups[key].forEach(m => {
+          const row = document.createElement('div');
+          row.className = 'mp-mrow';
+          const who = document.createElement('div');
+          who.className = 'mp-mwho';
+          const nm = document.createElement('div');
+          nm.textContent = m.full_name;
+          const em = document.createElement('div');
+          em.className = 'mp-date';
+          em.textContent = m.email;
+          who.appendChild(nm);
+          who.appendChild(em);
+          row.appendChild(who);
+          box.appendChild(row);
+        });
+      });
+    }
+
+    async loadAdminVoice() {
+      const box = $('adminVoice');
+      if (!box) return;
+      const { data } = await this.supabase
+        .from('profiles').select('full_name, email, voice_part').order('full_name');
+      box.innerHTML = '';
+      const groups = {};
+      (data || []).forEach(m => {
+        const key = m.voice_part || 'Not set';
+        (groups[key] = groups[key] || []).push(m);
+      });
+      const keys = Object.keys(groups).sort((a, b) => {
+        const ia = MemberPortal.VOICE_ORDER.indexOf(a);
+        const ib = MemberPortal.VOICE_ORDER.indexOf(b);
+        return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b);
+      });
+      if (!keys.length) {
+        const e = document.createElement('p');
+        e.className = 'mp-empty';
+        e.textContent = 'No member has chosen a voice part yet.';
         box.appendChild(e);
         return;
       }
