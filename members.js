@@ -152,7 +152,7 @@
         () => this.supabase.auth.signUp({
           email: email,
           password: password,
-          options: { emailRedirectTo: window.location.href, data: { full_name: name, voice_part: part } }
+          options: { emailRedirectTo: window.location.origin + window.location.pathname, data: { full_name: name, voice_part: part } }
         }),
         msg
       );
@@ -186,7 +186,7 @@
       }
       msg.className = 'mp-msg';
       const res = await this.authCall(
-        () => this.supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href }),
+        () => this.supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname }),
         msg
       );
       if (res.failed) return;
