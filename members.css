@@ -200,11 +200,16 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 .mp-mrow {
   display: flex; align-items: center; justify-content: space-between;
   gap: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px;
+  flex-wrap: wrap;
 }
 .mp-mwho { min-width: 0; }
 .mp-mrow select {
   border: 1px solid var(--line); border-radius: 7px;
   padding: 6px 8px; background: #fbfcf8; cursor: pointer;
+}
+.mp-mrow input.mp-mtitle {
+  border: 1px solid var(--line); border-radius: 7px;
+  padding: 6px 8px; background: #fbfcf8; width: 170px; font-size: 13px;
 }
 .mp-res-form { margin-top: 4px; }
 

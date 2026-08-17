@@ -225,6 +225,45 @@
       }));
     }
 
+    /* Live leadership from member accounts (team page) — replaces the
+       content.json team when there are active leaders in the database. */
+    teamCard(t) {
+      const initials = (t.full_name || '?')
+        .split(/\s+/).filter(Boolean).slice(0, 2)
+        .map(w => w[0].toUpperCase()).join('') || '?';
+      const roleLabel = t.role === 'admin' ? 'Administrator'
+        : t.role === 'leader' ? 'Leader' : 'Section Leader';
+      const c = El.make('div', 'tmc');
+      const a = El.make('div', 'tma');
+      if (t.avatar_url) {
+        const im = document.createElement('img');
+        im.src = t.avatar_url;
+        im.alt = t.full_name || '';
+        a.appendChild(im);
+      } else {
+        a.textContent = initials;
+      }
+      c.appendChild(a);
+      c.appendChild(El.make('div', 'tmn', t.full_name || ''));
+      c.appendChild(El.make('div', 'tmr', t.title || roleLabel));
+      if (t.voice_part) c.appendChild(El.make('div', 'tmv', t.voice_part));
+      return c;
+    }
+
+    async renderTeamLive() {
+      const g = El.get('tmList');
+      if (!g || !window.supabase || !SUPABASE_READY) return;
+      const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+      try {
+        const { data, error } = await sb.rpc('get_public_leaders');
+        if (error) { console.warn('team live:', error); return; }
+        if (!data || !data.length) return;
+        g.replaceChildren(...data.map(t => this.teamCard(t)));
+      } catch (err) {
+        console.warn('team live:', err);
+      }
+    }
+
     renderMembers(list) {
       const g = El.get('msList');
       if (!g) return;
@@ -835,6 +874,7 @@
       this.renderer.renderAll(SiteContent.DEFAULT);
       const live = await SiteContent.fetchLive();
       if (live) this.renderer.renderAll(live);
+      this.renderer.renderTeamLive();
       new EventCountdown().start();
       const player = new DemoPlayer();
       player.bind();

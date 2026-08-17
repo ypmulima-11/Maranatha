@@ -541,7 +541,7 @@
 
     renderDashboard() {
       if (!this.profile) return;
-      const isLeader = this.profile.role === 'leader' || this.profile.role === 'admin';
+      const isLeader = this.profile.role === 'leader' || this.profile.role === 'section_leader' || this.profile.role === 'admin';
       const isAdmin = this.profile.role === 'admin';
 
       $('mpGreet').textContent = 'Habari, ' + this.profile.full_name;
@@ -573,6 +573,7 @@
       });
 
       $('mpLeaderCard').hidden = !isLeader;
+      $('mpLeaderWork').hidden = !isLeader;
       $('mpAdminCard').hidden = !isAdmin;
       $('mpNavAdmin').hidden = !isAdmin;
 
@@ -585,6 +586,8 @@
       this.renderList($('mpAdminInfo'),
         this.resources.filter(r => r.audience === 'admin'),
         'Nothing here yet \u2014 admin tools will be added soon.');
+
+      if (isLeader) this.loadLeaderWorkspace();
 
       if (isAdmin) {
         this.loadAdminMembers();
@@ -728,6 +731,97 @@
         card.appendChild(d);
         box.appendChild(card);
       });
+    }
+
+    /* ---------- Leader workspace ---------- */
+
+    makeRecord(r) {
+      const card = document.createElement('div');
+      card.className = 'mp-item';
+      const h = document.createElement('h3');
+      h.textContent = r.title || 'Untitled';
+      card.appendChild(h);
+      if (r.body) {
+        const p = document.createElement('p');
+        p.textContent = r.body;
+        card.appendChild(p);
+      }
+      const d = document.createElement('div');
+      d.className = 'mp-date';
+      d.textContent = (r.record_date ? r.record_date + ' \u00b7 ' : '') +
+        new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      card.appendChild(d);
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'mp-btn small danger';
+      del.textContent = 'Delete';
+      del.addEventListener('click', () => this.deleteRecord(r.id));
+      card.appendChild(del);
+      return card;
+    }
+
+    async loadLeaderWorkspace() {
+      const box = $('lrList');
+      if (!box || !this.supabase) return;
+      const { data, error } = await this.supabase
+        .from('leader_records')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.warn('leader records:', error);
+        box.innerHTML = '';
+        const e = document.createElement('p');
+        e.className = 'mp-empty';
+        e.textContent = 'Records are not available yet \u2014 the leaders table is still being set up.';
+        box.appendChild(e);
+        return;
+      }
+      box.innerHTML = '';
+      const list = data || [];
+      if (!list.length) {
+        const e = document.createElement('p');
+        e.className = 'mp-empty';
+        e.textContent = 'No records yet \u2014 add your first leadership record above.';
+        box.appendChild(e);
+        return;
+      }
+      list.forEach(r => box.appendChild(this.makeRecord(r)));
+    }
+
+    async onAddRecord(e) {
+      e.preventDefault();
+      const msg = $('lrMsg');
+      if (!msg || !this.supabase) return;
+      const title = $('lrTitle').value.trim();
+      if (!title) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'Give the record a title.';
+        return;
+      }
+      msg.className = 'mp-msg';
+      msg.textContent = 'Saving\u2026';
+      const { error } = await this.supabase.from('leader_records').insert({
+        owner_id: this.profile.id,
+        title: title,
+        body: $('lrBody').value.trim(),
+        record_date: $('lrDate').value || null
+      });
+      if (error) {
+        msg.className = 'mp-msg err';
+        msg.textContent = error.message;
+        return;
+      }
+      $('lrTitle').value = '';
+      $('lrBody').value = '';
+      $('lrDate').value = '';
+      msg.className = 'mp-msg ok';
+      msg.textContent = 'Record added \u2713';
+      this.loadLeaderWorkspace();
+    }
+
+    async deleteRecord(id) {
+      await this.supabase.from('leader_records').delete().eq('id', id);
+      this.loadLeaderWorkspace();
     }
 
     /* ---------- Admin: pending registrations + invites ---------- */
@@ -902,6 +996,27 @@
           }
         });
         row.appendChild(sel);
+        const tit = document.createElement('input');
+        tit.type = 'text';
+        tit.className = 'mp-mtitle';
+        tit.value = m.title || '';
+        tit.placeholder = 'Title (e.g. Chairperson)';
+        tit.maxLength = 60;
+        tit.addEventListener('change', async () => {
+          const val = tit.value.trim();
+          if (val === (m.title || '')) return;
+          const { error } = await this.supabase.rpc('admin_set_title', {
+            p_email: m.email,
+            p_title: val
+          });
+          if (error) {
+            window.alert('Could not change title: ' + error.message);
+            tit.value = m.title || '';
+            return;
+          }
+          m.title = val;
+        });
+        row.appendChild(tit);
         row.appendChild(det);
         box.appendChild(row);
       });
@@ -1190,6 +1305,8 @@
       $('pvOut').addEventListener('click', () => this.signOut());
       $('adminResourceForm').addEventListener('submit', e => this.addResource(e));
       $('adminInviteForm').addEventListener('submit', e => this.onInvite(e));
+      const lrForm = $('lrForm');
+      if (lrForm) lrForm.addEventListener('submit', e => this.onAddRecord(e));
       $('mpInviteCopy').addEventListener('click', () => this.copyInvite());
       $('mpEditProfile').addEventListener('click', () => this.openProfileForm(false));
       $('pfCancel').addEventListener('click', () => {
