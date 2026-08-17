@@ -8,10 +8,11 @@
   class ApiClient {
     constructor() {
       this.fnUrl = '';
+      this.supabase = null;
     }
 
     async call(action, data) {
-      const { data: { session } } = await window.supabase.auth.getSession();
+      const { data: { session } } = await this.supabase.auth.getSession();
       if (!session) throw new Error('not signed in');
       const res = await fetch(this.fnUrl, {
         method: 'POST',
@@ -409,6 +410,7 @@
 
       this.supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
       this.api.fnUrl = SUPABASE_CONFIG.url.replace(/\/+$/, '') + '/functions/v1/admin-github';
+      this.api.supabase = this.supabase;
 
       this.supabase.auth.getSession().then(({ data }) => {
         if (data.session) this.openWorkspace();
