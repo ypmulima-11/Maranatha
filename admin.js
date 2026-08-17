@@ -157,19 +157,20 @@
       try {
         const res = await this.api.call('read');
         this.data = JSON.parse(ApiClient.b64decode(res.content));
-        return true;
+        return { ok: true };
       } catch (err) {
-        this.setStatus('admStatus', 'Could not load content: ' + err.message, 'err');
-        return false;
+        const msg = 'Could not load content: ' + err.message;
+        this.setStatus('admStatus', msg, 'err');
+        return { ok: false, message: msg };
       }
     }
 
     async openWorkspace() {
       const msg = $('admLoginMsg');
-      const ok = await this.fetchContent();
-      if (!ok) {
+      const res = await this.fetchContent();
+      if (!res.ok) {
         msg.className = 'adm-msg err';
-        msg.textContent = 'Could not open the editor. Only accounts with the admin role are allowed \u2014 check the message above.';
+        msg.textContent = 'Could not open the editor. ' + (res.message || '');
         try { await this.supabase.auth.signOut(); } catch (e) { /* ignore */ }
         $('admSignIn').disabled = false;
         return;
@@ -393,7 +394,7 @@
       $('admPass').addEventListener('keydown', e => { if (e.key === 'Enter') this.signIn(); });
 
       $('admReload').addEventListener('click', () => {
-        this.fetchContent().then(ok => { if (ok) this.renderAll(); });
+        this.fetchContent().then(res => { if (res.ok) this.renderAll(); });
       });
 
       $('admSave').addEventListener('click', () => this.saveAll());
