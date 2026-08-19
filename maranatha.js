@@ -345,7 +345,7 @@
       this.renderNews(d.news);
       this.renderEvents(d.events);
       this.renderVideos(d.videos);
-      this.renderTeam(d.team);
+      // this.renderTeam(d.team); — removed: team page uses live DB leaders only
       this.renderMembers(d.members);
       this.renderGallery(d.gallery);
       this.renderWorks(d.works);
