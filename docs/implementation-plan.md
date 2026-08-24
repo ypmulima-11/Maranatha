@@ -19,6 +19,7 @@
 | Add-to-calendar | ✅ | Google Calendar links on event cards |
 | SEO | ✅ | Meta/OG/JSON-LD, robots.txt, sitemap.xml, noindex on admin/portal |
 | OOP codebase | ✅ | ES6 classes: `SiteApp`, `SectionRenderer`, `I18n`, `MemberPortal`, `AdminApp`, `GitHubClient`, … |
+| Leader workspaces (role-specific) | 🟡 | Portal UI live (`supabase-leader-workspaces.sql` needs a run in the SQL Editor); generic `leader_records` fallback for untitled leaders |
 | Storage buckets (files) | ⬜ | No file uploads yet (avatars, sheet music, gallery originals) |
 | Attendance tracking | ⬜ | Not started |
 | Approval-based registration | ⬜ | Not started |
@@ -89,6 +90,20 @@ Future: settings toggle to enable/disable each mode; automatic email to the admi
 - RLS on all; `handle_new_user` trigger (sets status pending); `admin_set_role`, `admin_set_status`, `claim_invite` RPCs
 
 ### Planned additions (next phases)
+
+**Role-specific leader workspaces** (`supabase-leader-workspaces.sql`, written 2026-08-24, pending run): one table per role, each row typed by `record_type` and owned via `owner_id` (RLS: owner manages, admins read; subcommittee tables also readable by active leaders). The portal picks the workspace from the member's admin-assigned **title** (EN/SW aliases) and renders a matching form:
+
+| Title match | Table | Record types |
+|-------------|-------|--------------|
+| Chairperson / Mwenyekiti | `chairperson_workspace` | meetings · sub-committee appointments · bank/official documents |
+| Choir Master / Mwalimu Mkuu | `choirmaster_workspace` | rehearsals · song repertoire · ministry calendar · assistants |
+| Secretary / Katibu | `secretary_workspace` | minutes · asset register · correspondence · membership records |
+| Assistant Secretary / Katibu Msaidizi | `asst_secretary_workspace` | meeting support · backup minutes · communication drafts |
+| Treasurer / Mtunza Hazina | `treasurer_workspace` | semester reports · bank transactions · contributions · expenses |
+| Nidhamu / Liturujia / Media / Kijamii | `subcommittee_workspace` | meetings · activity reports · member issues · liturgy plans · media · social events |
+
+Plus a `get_my_workspace()` RPC summarizing all of a leader's records. Leaders with no matching title keep the generic `leader_records` notes workspace.
+
 ```sql
 -- ATTENDANCE (Phase 6)
 CREATE TABLE attendance (
@@ -207,4 +222,9 @@ Maranatha/                          # live repo
 
 ## 12. Immediate Next Step
 
-Run **sections 8 and 9** of `supabase-setup.sql` in the Supabase SQL Editor (public form tables + events/RSVP/announcements/invites/status columns). Then the portal's events, RSVPs, announcements, pending approvals and invite links all go live.
+1. Run `supabase-leader-workspaces.sql` in the Supabase SQL Editor (idempotent — includes an upgrade path if the first draft was already run). Role-specific leader workspace cards then go live; verify with a test leader per role.
+2. If not yet done: run **sections 8 and 9** (`supabase-sections-8-9.sql`) — public form tables + events/RSVP/announcements/invites/status columns.
+
+## 13. Verification (leader workspaces, 2026-08-24)
+
+Headless-Edge harness against the live portal code: title→workspace mapping for 17 EN/SW titles, config integrity (all fields/selects), form render + record-type switching, required-field validation, insert payload (types coerced, `owner_id`/`record_type`, subcommittee `committee_name` injection), delete routing, and generic fallback all pass. `members.html` loads with zero console errors.

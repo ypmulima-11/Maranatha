@@ -587,7 +587,7 @@
         this.resources.filter(r => r.audience === 'admin'),
         'Nothing here yet \u2014 admin tools will be added soon.');
 
-      if (isLeader) this.loadLeaderWorkspace();
+      if (isLeader) this.renderLeaderWorkspace();
 
       if (isAdmin) {
         this.loadAdminMembers();
@@ -733,23 +733,485 @@
       });
     }
 
-    /* ---------- Leader workspace ---------- */
+    /* ---------- Role-specific leader workspaces ---------- */
+
+    static optLabel(v) {
+      return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
+    }
+
+    static WORKSPACES = {
+      chairperson: {
+        table: 'chairperson_workspace',
+        name: 'Chairperson',
+        types: {
+          meeting: {
+            label: 'Meeting',
+            title: r => 'Meeting: ' + (r.meeting_title || ''),
+            fields: [
+              { k: 'meeting_title', l: 'Meeting title', req: true },
+              { k: 'meeting_date', l: 'Meeting date', t: 'date', req: true },
+              { k: 'meeting_type', l: 'Meeting type', t: 'select', opts: ['executive', 'general_assembly', 'sub_committee', 'other'] },
+              { k: 'agenda', l: 'Agenda', t: 'textarea' },
+              { k: 'attendees', l: 'Attendees' },
+              { k: 'minutes', l: 'Minutes', t: 'textarea' },
+              { k: 'action_items', l: 'Action items', t: 'textarea' }
+            ]
+          },
+          appointment: {
+            label: 'Sub-committee appointment',
+            title: r => 'Appointment: ' + (r.committee_name || '') + ' \u2014 ' + (r.appointee_name || ''),
+            fields: [
+              { k: 'committee_name', l: 'Committee', req: true },
+              { k: 'appointee_name', l: 'Appointee name', req: true },
+              { k: 'appointment_date', l: 'Appointment date', t: 'date' },
+              { k: 'appointment_letter_url', l: 'Letter link (URL)' }
+            ]
+          },
+          document: {
+            label: 'Bank & official document',
+            title: r => 'Document: ' + (r.document_title || ''),
+            fields: [
+              { k: 'document_title', l: 'Document title', req: true },
+              { k: 'document_type', l: 'Document type', t: 'select', opts: ['bank_signatory', 'official_letter', 'authorization', 'other'] },
+              { k: 'document_date', l: 'Document date', t: 'date' },
+              { k: 'document_file_url', l: 'File link (URL)' }
+            ]
+          }
+        }
+      },
+
+      choirmaster: {
+        table: 'choirmaster_workspace',
+        name: 'Choir Master',
+        types: {
+          rehearsal: {
+            label: 'Rehearsal',
+            title: r => 'Rehearsal: ' + (r.pieces_practiced || r.rehearsal_date || ''),
+            fields: [
+              { k: 'rehearsal_date', l: 'Rehearsal date', t: 'date', req: true },
+              { k: 'rehearsal_time', l: 'Time', t: 'time' },
+              { k: 'venue', l: 'Venue' },
+              { k: 'pieces_practiced', l: 'Pieces practiced', t: 'textarea' },
+              { k: 'focus_areas', l: 'Focus areas', t: 'textarea' },
+              { k: 'attendance_count', l: 'Attendance count', t: 'number' }
+            ]
+          },
+          repertoire: {
+            label: 'Song repertoire',
+            title: r => 'Song: ' + (r.song_title || ''),
+            fields: [
+              { k: 'song_title', l: 'Song title', req: true },
+              { k: 'composer', l: 'Composer' },
+              { k: 'arrangement', l: 'Arrangement' },
+              { k: 'difficulty', l: 'Difficulty', t: 'select', opts: ['easy', 'medium', 'hard'] },
+              { k: 'status_repertoire', l: 'Status', t: 'select', opts: ['learning', 'polishing', 'performance_ready', 'archived'] }
+            ]
+          },
+          event: {
+            label: 'Ministry calendar',
+            title: r => 'Event: ' + (r.event_title || ''),
+            fields: [
+              { k: 'event_title', l: 'Event title', req: true },
+              { k: 'event_date', l: 'Event date', t: 'date', req: true },
+              { k: 'event_type', l: 'Event type', t: 'select', opts: ['mass', 'concert', 'wedding', 'funeral', 'festival', 'rehearsal', 'other'] },
+              { k: 'event_venue', l: 'Venue' },
+              { k: 'preparation_notes', l: 'Preparation notes', t: 'textarea' }
+            ]
+          },
+          assistant: {
+            label: 'Assistant',
+            title: r => 'Assistant: ' + (r.assistant_name || ''),
+            fields: [
+              { k: 'assistant_name', l: 'Assistant name', req: true },
+              { k: 'assistant_role', l: 'Role given' },
+              { k: 'appointment_date', l: 'Appointment date', t: 'date' }
+            ]
+          }
+        }
+      },
+
+      secretary: {
+        table: 'secretary_workspace',
+        name: 'Secretary',
+        types: {
+          minutes: {
+            label: 'Meeting minutes',
+            title: r => 'Minutes: ' + (r.meeting_type || '') + ' \u00b7 ' + (r.meeting_date || ''),
+            fields: [
+              { k: 'meeting_date', l: 'Meeting date', t: 'date', req: true },
+              { k: 'meeting_type', l: 'Meeting type', t: 'select', opts: ['executive', 'general', 'sub_committee', 'annual_general', 'other'] },
+              { k: 'attendees', l: 'Attendees', t: 'textarea' },
+              { k: 'apologies', l: 'Apologies', t: 'textarea' },
+              { k: 'minutes_text', l: 'Minutes', t: 'textarea' },
+              { k: 'matters_arising', l: 'Matters arising', t: 'textarea' },
+              { k: 'decisions_made', l: 'Decisions made', t: 'textarea' },
+              { k: 'action_items', l: 'Action items', t: 'textarea' },
+              { k: 'next_meeting_date', l: 'Next meeting date', t: 'date' }
+            ]
+          },
+          asset: {
+            label: 'Asset register',
+            title: r => 'Asset: ' + (r.asset_name || ''),
+            fields: [
+              { k: 'asset_name', l: 'Asset name', req: true },
+              { k: 'asset_category', l: 'Category', t: 'select', opts: ['instruments', 'sound_equipment', 'furniture', 'vestments', 'documents', 'other'] },
+              { k: 'asset_condition', l: 'Condition', t: 'select', opts: ['excellent', 'good', 'fair', 'needs_repair', 'disposed'] },
+              { k: 'asset_location', l: 'Location' },
+              { k: 'asset_value', l: 'Value (TZS)', t: 'number' },
+              { k: 'acquisition_date', l: 'Acquired on', t: 'date' }
+            ]
+          },
+          correspondence: {
+            label: 'Correspondence',
+            title: r => 'Correspondence: ' + (r.subject || ''),
+            fields: [
+              { k: 'subject', l: 'Subject', req: true },
+              { k: 'correspondence_type', l: 'Direction', t: 'select', opts: ['incoming', 'outgoing', 'internal'] },
+              { k: 'correspondence_date', l: 'Date', t: 'date' },
+              { k: 'from_to', l: 'From / To' },
+              { k: 'reference_number', l: 'Reference number' },
+              { k: 'file_url', l: 'File link (URL)' }
+            ]
+          },
+          membership: {
+            label: 'Membership record',
+            title: r => 'Member: ' + (r.member_name || ''),
+            fields: [
+              { k: 'member_name', l: 'Member name', req: true },
+              { k: 'member_role', l: 'Role' },
+              { k: 'membership_status', l: 'Status', t: 'select', opts: ['active', 'on_leave', 'resigned', 'suspended'] },
+              { k: 'membership_date', l: 'Effective date', t: 'date' }
+            ]
+          }
+        }
+      },
+
+      asst_secretary: {
+        table: 'asst_secretary_workspace',
+        name: 'Assistant Secretary',
+        types: {
+          meeting_support: {
+            label: 'Meeting support',
+            title: r => 'Support: ' + (r.support_role || '') + ' \u00b7 ' + (r.meeting_date || ''),
+            fields: [
+              { k: 'support_role', l: 'Support task', t: 'select', opts: ['minutes_draft', 'attendance', 'documents_prep', 'distribution', 'other'], req: true },
+              { k: 'meeting_date', l: 'Meeting date', t: 'date' },
+              { k: 'meeting_type', l: 'Meeting type', t: 'select', opts: ['executive', 'general', 'sub_committee', 'other'] },
+              { k: 'draft_minutes', l: 'Draft minutes', t: 'textarea' },
+              { k: 'documents_prepared', l: 'Documents prepared', t: 'textarea' },
+              { k: 'distribution_list', l: 'Distribution list', t: 'textarea' }
+            ]
+          },
+          backup_minutes: {
+            label: 'Backup minutes',
+            title: r => 'Backup minutes: ' + (r.backup_for_date || ''),
+            fields: [
+              { k: 'backup_for_date', l: 'Meeting date', t: 'date', req: true },
+              { k: 'backup_minutes', l: 'Minutes', t: 'textarea' }
+            ]
+          },
+          communication: {
+            label: 'Communication draft',
+            title: r => 'Communication: ' + (r.comm_type || ''),
+            fields: [
+              { k: 'comm_type', l: 'Type', t: 'select', opts: ['letter', 'email', 'notice', 'announcement', 'other'], req: true },
+              { k: 'comm_draft', l: 'Draft', t: 'textarea' },
+              { k: 'comm_recipients', l: 'Recipients' },
+              { k: 'comm_status', l: 'Status', t: 'select', opts: ['draft', 'ready_to_send', 'sent'] }
+            ]
+          }
+        }
+      },
+
+      treasurer: {
+        table: 'treasurer_workspace',
+        name: 'Treasurer',
+        types: {
+          semester_report: {
+            label: 'Semester report',
+            title: r => 'Report: ' + (r.semester || ''),
+            fields: [
+              { k: 'semester', l: 'Semester (e.g. 2026-1)', req: true },
+              { k: 'report_date', l: 'Report date', t: 'date' },
+              { k: 'total_income', l: 'Total income', t: 'number' },
+              { k: 'total_expenses', l: 'Total expenses', t: 'number' },
+              { k: 'balance_brought_forward', l: 'Balance b/f', t: 'number' },
+              { k: 'balance_carried_forward', l: 'Balance c/f', t: 'number' },
+              { k: 'report_file_url', l: 'Report file link (URL)' }
+            ]
+          },
+          transaction: {
+            label: 'Bank transaction',
+            title: r => 'Transaction: ' + (r.description || ''),
+            fields: [
+              { k: 'transaction_date', l: 'Date', t: 'date', req: true },
+              { k: 'transaction_type', l: 'Type', t: 'select', opts: ['deposit', 'withdrawal', 'transfer', 'fee', 'interest'], req: true },
+              { k: 'amount', l: 'Amount (TZS)', t: 'number', req: true },
+              { k: 'description', l: 'Description', req: true },
+              { k: 'reference_number', l: 'Reference number' },
+              { k: 'bank_statement_ref', l: 'Statement reference' }
+            ]
+          },
+          contribution: {
+            label: 'Contribution received',
+            title: r => 'Contribution: ' + (r.contributor_name || ''),
+            fields: [
+              { k: 'contributor_name', l: 'Contributor', req: true },
+              { k: 'contributor_type', l: 'Source', t: 'select', opts: ['member', 'donor', 'fundraising', 'parish', 'other'] },
+              { k: 'contribution_amount', l: 'Amount (TZS)', t: 'number' },
+              { k: 'contribution_date', l: 'Date', t: 'date' },
+              { k: 'contribution_method', l: 'Method', t: 'select', opts: ['cash', 'mobile_money', 'bank_transfer', 'cheque', 'other'] },
+              { k: 'receipt_number', l: 'Receipt number' }
+            ]
+          },
+          expense: {
+            label: 'Expense',
+            title: r => 'Expense: ' + (r.expense_description || ''),
+            fields: [
+              { k: 'expense_description', l: 'Description', req: true },
+              { k: 'expense_category', l: 'Category', t: 'select', opts: ['instruments', 'vestments', 'transport', 'venue', 'meals', 'stationery', 'maintenance', 'utilities', 'honoraria', 'other'] },
+              { k: 'expense_amount', l: 'Amount (TZS)', t: 'number' },
+              { k: 'expense_date', l: 'Date', t: 'date' },
+              { k: 'payee', l: 'Paid to' },
+              { k: 'invoice_receipt_url', l: 'Invoice/receipt link (URL)' },
+              { k: 'approved_by', l: 'Approved by' }
+            ]
+          }
+        }
+      },
+
+      subcommittee: {
+        table: 'subcommittee_workspace',
+        types: {
+          meeting: {
+            label: 'Committee meeting',
+            title: r => 'Meeting: ' + (r.meeting_date || ''),
+            fields: [
+              { k: 'meeting_date', l: 'Meeting date', t: 'date' },
+              { k: 'meeting_venue', l: 'Venue' },
+              { k: 'attendees', l: 'Attendees', t: 'textarea' },
+              { k: 'agenda', l: 'Agenda', t: 'textarea' },
+              { k: 'minutes', l: 'Minutes', t: 'textarea' },
+              { k: 'decisions', l: 'Decisions', t: 'textarea' },
+              { k: 'action_items', l: 'Action items', t: 'textarea' },
+              { k: 'next_meeting_date', l: 'Next meeting date', t: 'date' }
+            ]
+          },
+          activity: {
+            label: 'Activity report',
+            title: r => 'Activity: ' + (r.activity_title || ''),
+            fields: [
+              { k: 'activity_title', l: 'Activity title', req: true },
+              { k: 'activity_date', l: 'Date', t: 'date' },
+              { k: 'participants_count', l: 'Participants', t: 'number' },
+              { k: 'activity_description', l: 'Description', t: 'textarea' },
+              { k: 'outcome', l: 'Outcome', t: 'textarea' },
+              { k: 'challenges', l: 'Challenges', t: 'textarea' },
+              { k: 'recommendations', l: 'Recommendations', t: 'textarea' }
+            ]
+          },
+          member_issue: {
+            label: 'Member issue',
+            title: r => 'Issue: ' + (r.member_name || ''),
+            fields: [
+              { k: 'member_name', l: 'Member name', req: true },
+              { k: 'issue_type', l: 'Issue type', t: 'select', opts: ['attendance', 'conduct', 'uniform', 'conflict', 'other'] },
+              { k: 'issue_description', l: 'Description', t: 'textarea' },
+              { k: 'resolution', l: 'Resolution', t: 'textarea' },
+              { k: 'follow_up_date', l: 'Follow-up date', t: 'date' }
+            ]
+          },
+          liturgy: {
+            label: 'Liturgy plan',
+            title: r => 'Liturgy: ' + (r.liturgy_type || '') + ' \u00b7 ' + (r.liturgy_date || ''),
+            fields: [
+              { k: 'liturgy_date', l: 'Date', t: 'date' },
+              { k: 'liturgy_type', l: 'Celebration', t: 'select', opts: ['sunday_mass', 'feast_day', 'wedding', 'funeral', 'special', 'other'] },
+              { k: 'readings', l: 'Readings', t: 'textarea' },
+              { k: 'songs_selected', l: 'Songs selected', t: 'textarea' },
+              { k: 'special_notes', l: 'Special notes', t: 'textarea' }
+            ]
+          },
+          media: {
+            label: 'Media item',
+            title: r => 'Media: ' + (r.media_title || ''),
+            fields: [
+              { k: 'media_title', l: 'Title', req: true },
+              { k: 'media_type', l: 'Type', t: 'select', opts: ['photo', 'video', 'audio', 'livestream', 'social_post', 'website_update', 'other'] },
+              { k: 'media_description', l: 'Description', t: 'textarea' },
+              { k: 'platform', l: 'Platform' },
+              { k: 'publish_date', l: 'Publish date', t: 'date' },
+              { k: 'media_file_url', l: 'File link (URL)' }
+            ]
+          },
+          social_event: {
+            label: 'Social event',
+            title: r => 'Social: ' + (r.event_title || ''),
+            fields: [
+              { k: 'event_title', l: 'Event title', req: true },
+              { k: 'event_date', l: 'Date', t: 'date' },
+              { k: 'beneficiaries', l: 'Beneficiaries' },
+              { k: 'budget_allocated', l: 'Budget allocated', t: 'number' },
+              { k: 'budget_spent', l: 'Budget spent', t: 'number' },
+              { k: 'event_description', l: 'Description', t: 'textarea' }
+            ]
+          }
+        }
+      }
+    };
+
+    static GENERIC_WS = {
+      key: 'generic',
+      table: 'leader_records',
+      name: 'Leader',
+      types: {
+        note: {
+          label: 'Note',
+          title: r => r.title || 'Untitled',
+          fields: [
+            { k: 'title', l: 'Title', req: true },
+            { k: 'body', l: 'Notes', t: 'textarea' },
+            { k: 'record_date', l: 'Date', t: 'date' }
+          ]
+        }
+      }
+    };
+
+    static SUB_COMMITTEES = [
+      ['nidhamu', /nidhamu|discipline/],
+      ['liturujia', /liturujia|liturgy/],
+      ['media', /\bmedia\b/],
+      ['kijamii', /kijamii|\bsocial\b/]
+    ];
+
+    static workspaceForProfile(p) {
+      if (!p || !p.title) return null;
+      const norm = (' ' + p.title.toLowerCase().replace(/[.,]/g, ' ').replace(/\s+/g, ' ').trim() + ' ');
+      const W = MemberPortal.WORKSPACES;
+      const mk = key => Object.assign({ key: key }, W[key]);
+      if (/katibu msaidizi|assistant secretary|asst secretary|asst sec/.test(norm)) return mk('asst_secretary');
+      if (/mwenyekiti|chair/.test(norm)) return mk('chairperson');
+      if (/mwalimu mkuu|mwaimaji|choir ?master/.test(norm)) return mk('choirmaster');
+      if (/mtunza hazina|hazina|treasurer/.test(norm)) return mk('treasurer');
+      if (/katibu|secretary/.test(norm)) return mk('secretary');
+      for (const [committee, re] of MemberPortal.SUB_COMMITTEES) {
+        if (re.test(norm.trim())) {
+          const ws = mk('subcommittee');
+          ws.committee = committee;
+          ws.name = MemberPortal.optLabel(committee) + ' sub-committee';
+          return ws;
+        }
+      }
+      return null;
+    }
+
+    wsTypeKey() {
+      return this._wsType && this.ws.types[this._wsType] ? this._wsType : Object.keys(this.ws.types)[0];
+    }
+
+    renderLeaderWorkspace() {
+      this.ws = MemberPortal.workspaceForProfile(this.profile) || MemberPortal.GENERIC_WS;
+      this._wsType = null;
+      const hint = $('lrHint');
+      const form = $('lrForm');
+      const list = $('lrList');
+      if (!form || !list) return;
+
+      if (hint) {
+        hint.textContent = this.ws.key === 'generic'
+          ? 'Your personal records for this leadership year \u2014 only you and the admins can see them.'
+          : this.ws.name + ' workspace \u2014 your structured records, visible only to you and the admins.';
+      }
+
+      form.innerHTML = '';
+      list.innerHTML = '';
+
+      const typeLbl = document.createElement('label');
+      typeLbl.className = 'mp-field';
+      const ts = document.createElement('span');
+      ts.textContent = 'Record type';
+      typeLbl.appendChild(ts);
+      const sel = document.createElement('select');
+      sel.id = 'lrType';
+      Object.keys(this.ws.types).forEach(k => {
+        const o = document.createElement('option');
+        o.value = k;
+        o.textContent = this.ws.types[k].label;
+        sel.appendChild(o);
+      });
+      sel.addEventListener('change', () => {
+        this._wsType = sel.value;
+        this.renderWsFields();
+      });
+      typeLbl.appendChild(sel);
+      form.appendChild(typeLbl);
+
+      this.wsFields = document.createElement('div');
+      form.appendChild(this.wsFields);
+
+      this.lrMsg = document.createElement('div');
+      this.lrMsg.className = 'mp-msg';
+      this.lrMsg.setAttribute('role', 'status');
+      form.appendChild(this.lrMsg);
+
+      const btn = document.createElement('button');
+      btn.type = 'submit';
+      btn.className = 'mp-btn';
+      btn.textContent = 'Save record';
+      form.appendChild(btn);
+
+      this.renderWsFields();
+      this.loadLeaderWorkspace();
+    }
+
+    renderWsFields() {
+      if (!this.wsFields) return;
+      const t = this.ws.types[this.wsTypeKey()];
+      this.wsFields.innerHTML = '';
+      t.fields.forEach(f => {
+        const lab = document.createElement('label');
+        lab.className = 'mp-field';
+        const sp = document.createElement('span');
+        sp.textContent = f.l + (f.req ? ' *' : '');
+        lab.appendChild(sp);
+        let inp;
+        if (f.t === 'textarea') {
+          inp = document.createElement('textarea');
+          inp.rows = 2;
+        } else if (f.t === 'select') {
+          inp = document.createElement('select');
+          [''].concat(f.opts).forEach(v => {
+            const o = document.createElement('option');
+            o.value = v;
+            o.textContent = v === '' ? '\u2014' : MemberPortal.optLabel(v);
+            inp.appendChild(o);
+          });
+        } else {
+          inp = document.createElement('input');
+          inp.type = f.t || 'text';
+        }
+        inp.dataset.k = f.k;
+        lab.appendChild(inp);
+        this.wsFields.appendChild(lab);
+      });
+    }
 
     makeRecord(r) {
       const card = document.createElement('div');
       card.className = 'mp-item';
-      const h = document.createElement('h3');
-      h.textContent = r.title || 'Untitled';
-      card.appendChild(h);
-      if (r.body) {
-        const p = document.createElement('p');
-        p.textContent = r.body;
-        card.appendChild(p);
+      const t = this.ws.types[r.record_type];
+      if (Object.keys(this.ws.types).length > 1) {
+        const b = document.createElement('span');
+        b.className = 'mp-badge member';
+        b.textContent = t ? t.label : MemberPortal.optLabel(r.record_type || 'record');
+        card.appendChild(b);
       }
+      const h = document.createElement('h3');
+      h.textContent = t ? (t.title(r) || 'Untitled') : (r.title || 'Untitled');
+      card.appendChild(h);
       const d = document.createElement('div');
       d.className = 'mp-date';
-      d.textContent = (r.record_date ? r.record_date + ' \u00b7 ' : '') +
-        new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      d.textContent = new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
       card.appendChild(d);
       const del = document.createElement('button');
       del.type = 'button';
@@ -762,26 +1224,28 @@
 
     async loadLeaderWorkspace() {
       const box = $('lrList');
-      if (!box || !this.supabase) return;
+      if (!box || !this.supabase || !this.ws) return;
       const { data, error } = await this.supabase
-        .from('leader_records')
+        .from(this.ws.table)
         .select('*')
+        .eq('owner_id', this.profile.id)
         .order('created_at', { ascending: false });
+      box.innerHTML = '';
       if (error) {
-        console.warn('leader records:', error);
-        box.innerHTML = '';
+        console.warn('leader workspace:', error);
         const e = document.createElement('p');
         e.className = 'mp-empty';
-        e.textContent = 'Records are not available yet \u2014 the leaders table is still being set up.';
+        e.textContent = /does not exist|schema cache|relation/i.test(error.message)
+          ? 'This workspace is not set up yet \u2014 ask an admin to run supabase-leader-workspaces.sql in Supabase first.'
+          : error.message;
         box.appendChild(e);
         return;
       }
-      box.innerHTML = '';
       const list = data || [];
       if (!list.length) {
         const e = document.createElement('p');
         e.className = 'mp-empty';
-        e.textContent = 'No records yet \u2014 add your first leadership record above.';
+        e.textContent = 'No records yet \u2014 add your first one above.';
         box.appendChild(e);
         return;
       }
@@ -790,37 +1254,44 @@
 
     async onAddRecord(e) {
       e.preventDefault();
-      const msg = $('lrMsg');
-      if (!msg || !this.supabase) return;
-      const title = $('lrTitle').value.trim();
-      if (!title) {
+      const msg = this.lrMsg;
+      if (!msg || !this.supabase || !this.ws) return;
+      const tkey = this.wsTypeKey();
+      const t = this.ws.types[tkey];
+      const row = { owner_id: this.profile.id, record_type: tkey };
+      const missing = [];
+      this.wsFields.querySelectorAll('[data-k]').forEach(inp => {
+        const f = t.fields.find(x => x.k === inp.dataset.k);
+        if (!f) return;
+        const v = (inp.value || '').trim();
+        if (f.req && !v) { missing.push(f.l); return; }
+        if (!v) return;
+        row[f.k] = f.t === 'number' ? Number(v) : v;
+      });
+      if (missing.length) {
         msg.className = 'mp-msg err';
-        msg.textContent = 'Give the record a title.';
+        msg.textContent = 'Please fill in: ' + missing.join(', ');
         return;
       }
+      if (this.ws.key === 'subcommittee') row.committee_name = this.ws.committee;
       msg.className = 'mp-msg';
       msg.textContent = 'Saving\u2026';
-      const { error } = await this.supabase.from('leader_records').insert({
-        owner_id: this.profile.id,
-        title: title,
-        body: $('lrBody').value.trim(),
-        record_date: $('lrDate').value || null
-      });
+      const { error } = await this.supabase.from(this.ws.table).insert(row);
       if (error) {
         msg.className = 'mp-msg err';
         msg.textContent = error.message;
         return;
       }
-      $('lrTitle').value = '';
-      $('lrBody').value = '';
-      $('lrDate').value = '';
+      this.wsFields.querySelectorAll('input, textarea').forEach(i => { i.value = ''; });
+      this.wsFields.querySelectorAll('select').forEach(s => { s.selectedIndex = 0; });
       msg.className = 'mp-msg ok';
-      msg.textContent = 'Record added \u2713';
+      msg.textContent = 'Record saved \u2713';
       this.loadLeaderWorkspace();
     }
 
     async deleteRecord(id) {
-      await this.supabase.from('leader_records').delete().eq('id', id);
+      if (!this.supabase || !this.ws) return;
+      await this.supabase.from(this.ws.table).delete().eq('id', id);
       this.loadLeaderWorkspace();
     }
 
@@ -1375,5 +1846,7 @@
   }
 
   const portal = new MemberPortal();
+  window.MemberPortal = MemberPortal;
+  window.portal = portal;
   portal.init();
 })();

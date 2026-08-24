@@ -334,20 +334,8 @@
 
             <div class="mp-card2" id="mpLeaderWork" hidden>
               <h2><span data-i18n="portal.lwork">Leader workspace</span> <span class="mp-badge leader">Leader</span></h2>
-              <p class="mp-hint">Your personal records for this leadership year — only you and the admins can see them.</p>
-              <form class="mp-res-form" id="lrForm" novalidate>
-                <label class="mp-field"><span>Title</span>
-                  <input type="text" id="lrTitle" placeholder="e.g. Rehearsal notes — week 3" maxlength="120">
-                </label>
-                <label class="mp-field"><span>Notes</span>
-                  <textarea id="lrBody" rows="3" placeholder="Write your record..."></textarea>
-                </label>
-                <label class="mp-field"><span>Date</span>
-                  <input type="date" id="lrDate">
-                </label>
-                <div class="mp-msg" id="lrMsg" role="status"></div>
-                <button type="submit" class="mp-btn">Add record</button>
-              </form>
+              <p class="mp-hint" id="lrHint">Your personal records for this leadership year — only you and the admins can see them.</p>
+              <form class="mp-res-form" id="lrForm" novalidate></form>
               <div class="mp-list" id="lrList"></div>
             </div>
 
