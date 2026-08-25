@@ -20,6 +20,7 @@
 | SEO | ✅ | Meta/OG/JSON-LD, robots.txt, sitemap.xml, noindex on admin/portal |
 | OOP codebase | ✅ | ES6 classes: `SiteApp`, `SectionRenderer`, `I18n`, `MemberPortal`, `AdminApp`, `GitHubClient`, … |
 | Leader workspaces (role-specific) | 🟡 | Portal UI live (`supabase-leader-workspaces.sql` needs a run in the SQL Editor); generic `leader_records` fallback for untitled leaders |
+| Attendance (QR check-in) | 🟡 | Portal UI live (`supabase-attendance.sql` needs a run in the SQL Editor): sessions with rotating QR/code, 15-min late rule, leader roll + overrides, member history |
 | Storage buckets (files) | ⬜ | No file uploads yet (avatars, sheet music, gallery originals) |
 | Attendance tracking | ⬜ | Not started |
 | Approval-based registration | ⬜ | Not started |
@@ -223,8 +224,12 @@ Maranatha/                          # live repo
 ## 12. Immediate Next Step
 
 1. Run `supabase-leader-workspaces.sql` in the Supabase SQL Editor (idempotent — includes an upgrade path if the first draft was already run). Role-specific leader workspace cards then go live; verify with a test leader per role.
-2. If not yet done: run **sections 8 and 9** (`supabase-sections-8-9.sql`) — public form tables + events/RSVP/announcements/invites/status columns.
+2. Run `supabase-attendance.sql` (idempotent; requires the events table from sections 8/9). Then: leader opens a session → members scan the QR (`members.html?code=XXXX`) or type the code → present/late auto-set (15-min grace), leader can override, codes rotate/expiring after 20 min.
 
 ## 13. Verification (leader workspaces, 2026-08-24)
 
 Headless-Edge harness against the live portal code: title→workspace mapping for 17 EN/SW titles, config integrity (all fields/selects), form render + record-type switching, required-field validation, insert payload (types coerced, `owner_id`/`record_type`, subcommittee `committee_name` injection), delete routing, and generic fallback all pass. `members.html` loads with zero console errors.
+
+## 14. Verification (attendance, 2026-08-25)
+
+Headless-Edge harness (21 checks): check-in result messages (present/late/already/closed/invalid/error), code passthrough + input clearing, history rendering with status badges, session creation args, live-session card (QR canvas drawn, code shown, roll counts, unmarked quick-buttons), mark/unmark RPC routing, rotate/close RPCs. Caught and fixed a real bug during testing: unmark now goes through a `leader_unmark_attendance` RPC instead of a direct delete (no direct write grants on `attendance` by design). `members.html` loads with zero console errors.

@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --g9: #0d2a04;
   --g8: #173404;
   --au: #BA7517;
@@ -212,6 +212,33 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
   padding: 6px 8px; background: #fbfcf8; width: 170px; font-size: 13px;
 }
 .mp-res-form { margin-top: 4px; }
+
+/* ---------- Attendance ---------- */
+.qr-wrap {
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px; width: max-content; margin: 10px auto 6px;
+}
+.qr-wrap canvas, .qr-wrap img { display: block; }
+.att-code {
+  font-size: 22px; font-weight: 700; letter-spacing: 5px;
+  text-align: center; color: var(--green, #0d2a04); margin: 4px 0 2px;
+}
+.att-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; padding: 7px 2px; border-bottom: 1px solid #eee;
+  font-size: 13px;
+}
+.att-row:last-child { border-bottom: 0; }
+.att-counts { font-size: 12px; font-weight: 600; margin: 8px 0 2px; }
+.att-status {
+  font-size: 11px; font-weight: 700; padding: 3px 9px;
+  border-radius: 999px; white-space: nowrap;
+}
+.att-present { background: #e7efe0; color: #2f5c14; }
+.att-late { background: #fdf3e2; color: #a15c00; }
+.att-absent { background: #fbe9e7; color: #b3261e; }
+.att-excused { background: #eceff4; color: #45516b; }
+.sess-live { border-left: 3px solid #BA7517; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 720px) {

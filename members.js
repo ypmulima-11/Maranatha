@@ -502,9 +502,403 @@
         .from('resources').select('*').order('created_at', { ascending: true });
       this.resources = res || [];
 
+      await this.handleUrlCheckIn();
       this.renderDashboard();
       this.loadEvents();
       this.loadAnnouncements();
+    }
+
+    /* ---------- Attendance: member check-in ---------- */
+
+    async handleUrlCheckIn() {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      if (!code) return;
+      params.delete('code');
+      const qs = params.toString();
+      history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+      const res = await this.supabase.rpc('check_in_with_code', { p_code: code });
+      this.applyCheckInResult(res);
+    }
+
+    applyCheckInResult(res) {
+      const msg = $('ciMsg');
+      if (!msg) return;
+      if (res && res.error) {
+        msg.className = 'mp-msg err';
+        msg.textContent = res.error.message;
+        return;
+      }
+      let val = '';
+      const d = res && res.data;
+      if (typeof d === 'string') val = d;
+      else if (d && typeof d === 'object') val = String(Object.values(d[0] !== undefined ? d[0] : d)[0]);
+      if (val.indexOf('present:') === 0 || val === 'present') {
+        msg.className = 'mp-msg ok';
+        msg.textContent = val === 'present' ? 'Checked in \u2713' : 'Checked in \u2014 ' + val.slice(9) + ' \u2713';
+      } else if (val.indexOf('late:') === 0 || val === 'late') {
+        msg.className = 'mp-msg ok';
+        msg.textContent = val === 'late' ? 'Checked in (late)' : 'Checked in (late) \u2014 ' + val.slice(5);
+      } else if (val === 'already') {
+        msg.className = 'mp-msg';
+        msg.textContent = 'You were already checked in.';
+      } else if (val === 'closed') {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'That code has expired \u2014 ask your leader for the new one.';
+      } else {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'Code not recognised \u2014 check it and try again.';
+      }
+      this.loadMyAttendance();
+    }
+
+    async onCheckIn(e) {
+      e.preventDefault();
+      const code = $('ciCode').value.trim();
+      const msg = $('ciMsg');
+      if (!msg || !this.supabase) return;
+      if (!code) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'Type the check-in code first.';
+        return;
+      }
+      msg.className = 'mp-msg';
+      msg.textContent = 'Checking in\u2026';
+      const res = await this.supabase.rpc('check_in_with_code', { p_code: code });
+      this.applyCheckInResult(res);
+      $('ciCode').value = '';
+    }
+
+    async loadMyAttendance() {
+      const box = $('attMine');
+      if (!box || !this.supabase) return;
+      const { data, error } = await this.supabase.rpc('my_attendance');
+      box.innerHTML = '';
+      if (error) {
+        console.warn('my_attendance:', error);
+        const p = document.createElement('p');
+        p.className = 'mp-empty';
+        p.textContent = /not found|schema cache|does not exist/i.test(error.message)
+          ? 'Attendance is not set up yet \u2014 ask an admin to run supabase-attendance.sql.'
+          : error.message;
+        box.appendChild(p);
+        return;
+      }
+      const list = data || [];
+      if (!list.length) {
+        const p = document.createElement('p');
+        p.className = 'mp-empty';
+        p.textContent = 'No attendance yet \u2014 your check-ins will appear here.';
+        box.appendChild(p);
+        return;
+      }
+      list.forEach(r => {
+        const row = document.createElement('div');
+        row.className = 'att-row';
+        const who = document.createElement('div');
+        const t = document.createElement('span');
+        t.textContent = r.session_title || 'Session';
+        who.appendChild(t);
+        const d = document.createElement('div');
+        d.className = 'mp-date';
+        d.textContent = new Date(r.started_at).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        who.appendChild(d);
+        row.appendChild(who);
+        row.appendChild(this.attBadge(r.status));
+        box.appendChild(row);
+      });
+    }
+
+    attBadge(status) {
+      const b = document.createElement('span');
+      b.className = 'att-status' + (status ? ' att-' + status : '');
+      b.textContent = status ? MemberPortal.optLabel(status) : '\u2014';
+      return b;
+    }
+
+    /* ---------- Attendance: leader sessions ---------- */
+
+    async initLeaderSessions() {
+      const sel = $('ssEvent');
+      if (sel && !sel.options.length) {
+        const none = document.createElement('option');
+        none.value = '';
+        none.textContent = '\u2014 none \u2014';
+        sel.appendChild(none);
+        const { data: evs } = await this.supabase
+          .from('events')
+          .select('id,title_en,title_sw,start_time')
+          .gte('start_time', new Date(Date.now() - 86400000).toISOString())
+          .order('start_time', { ascending: true })
+          .limit(20);
+        (evs || []).forEach(ev => {
+          const o = document.createElement('option');
+          o.value = ev.id;
+          o.textContent = this.fmtWhen(ev.start_time) + ' \u00b7 ' + this.pickLang(ev.title_en, ev.title_sw);
+          sel.appendChild(o);
+        });
+      }
+      this.loadSessions();
+      this.startSessionTicker();
+    }
+
+    startSessionTicker() {
+      if (this._sessTick) return;
+      this._sessTick = setInterval(() => {
+        if (!this.supabase || !this.profile || !$('dashView')) return;
+        if ($('dashView').hidden) return;
+        this.loadSessions(true);
+      }, 60000);
+    }
+
+    async onCreateSession(e) {
+      e.preventDefault();
+      const msg = $('ssMsg');
+      if (!msg || !this.supabase) return;
+      const title = $('ssTitle').value.trim();
+      if (title.length < 2) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'Give the session a title.';
+        return;
+      }
+      msg.className = 'mp-msg';
+      msg.textContent = 'Opening\u2026';
+      const evId = $('ssEvent').value || null;
+      const { data, error } = await this.supabase.rpc('leader_create_session', {
+        p_title: title,
+        p_event_id: evId,
+        p_code_minutes: 20
+      });
+      if (error) {
+        msg.className = 'mp-msg err';
+        msg.textContent = error.message;
+        return;
+      }
+      $('ssTitle').value = '';
+      msg.className = 'mp-msg ok';
+      msg.textContent = 'Session open \u2014 show the QR or share the code.';
+      this.loadSessions();
+    }
+
+    async loadSessions(silent) {
+      const openBox = $('sessOpen');
+      const pastBox = $('sessPast');
+      if (!openBox || !pastBox || !this.supabase || !this.profile) return;
+      const { data, error } = await this.supabase
+        .from('attendance_sessions')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(30);
+      if (error) {
+        if (!silent) {
+          console.warn('sessions:', error);
+          openBox.innerHTML = '';
+          const p = document.createElement('p');
+          p.className = 'mp-empty';
+          p.textContent = /does not exist|schema cache|relation/i.test(error.message)
+            ? 'Sessions are not set up yet \u2014 ask an admin to run supabase-attendance.sql.'
+            : error.message;
+          openBox.appendChild(p);
+        }
+        return;
+      }
+      const list = data || [];
+      const isAdmin = this.profile.role === 'admin';
+      const manageable = s => s.created_by === this.profile.id || isAdmin;
+      const open = list.filter(s => s.is_open && manageable(s));
+      const past = list.filter(s => !s.is_open).slice(0, 8);
+
+      openBox.innerHTML = '';
+      open.forEach(s => openBox.appendChild(this.makeOpenSession(s)));
+
+      pastBox.innerHTML = '';
+      if (!past.length) {
+        const p = document.createElement('p');
+        p.className = 'mp-empty';
+        p.textContent = 'No closed sessions yet.';
+        pastBox.appendChild(p);
+      } else {
+        past.forEach(s => {
+          const wrap = document.createElement('div');
+          wrap.style.width = '100%';
+          const row = document.createElement('div');
+          row.className = 'att-row';
+          const left = document.createElement('div');
+          const t = document.createElement('span');
+          t.textContent = s.title;
+          left.appendChild(t);
+          const dt = document.createElement('div');
+          dt.className = 'mp-date';
+          dt.textContent = new Date(s.starts_at).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+          left.appendChild(dt);
+          row.appendChild(left);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'mp-btn small';
+          btn.textContent = 'View roll';
+          row.appendChild(btn);
+          const roll = document.createElement('div');
+          btn.addEventListener('click', () => {
+            if (roll.childNodes.length) { roll.innerHTML = ''; return; }
+            this.loadRoll(s.id, roll);
+          });
+          wrap.appendChild(row);
+          wrap.appendChild(roll);
+          pastBox.appendChild(wrap);
+        });
+      }
+    }
+
+    makeOpenSession(s) {
+      const card = document.createElement('div');
+      card.className = 'mp-item sess-live';
+      const h = document.createElement('h3');
+      h.textContent = s.title;
+      card.appendChild(h);
+      const d = document.createElement('div');
+      d.className = 'mp-date';
+      d.textContent = 'Started ' + this.fmtWhen(s.starts_at);
+      card.appendChild(d);
+
+      const qrWrap = document.createElement('div');
+      qrWrap.className = 'qr-wrap';
+      qrWrap.id = 'qr-' + s.id;
+      let drew = false;
+      if (typeof QRCode !== 'undefined' && s.code) {
+        const link = window.location.origin + window.location.pathname + '?code=' + encodeURIComponent(s.code);
+        try {
+          new QRCode(qrWrap, { text: link, width: 170, height: 170, correctLevel: QRCode.CorrectLevel.M });
+          drew = true;
+        } catch (err) { drew = false; }
+      }
+      if (!drew) qrWrap.textContent = 'QR unavailable \u2014 use the code below.';
+      card.appendChild(qrWrap);
+
+      const code = document.createElement('div');
+      code.className = 'att-code';
+      code.textContent = s.code || '\u2014';
+      card.appendChild(code);
+
+      const exp = document.createElement('div');
+      exp.className = 'mp-date';
+      exp.textContent = s.code_expires_at ? 'Code expires ' + this.fmtWhen(s.code_expires_at) : 'No live code';
+      card.appendChild(exp);
+
+      const acts = document.createElement('div');
+      acts.className = 'mp-rsvp';
+      const rot = document.createElement('button');
+      rot.type = 'button';
+      rot.className = 'mp-btn small';
+      rot.textContent = 'New code';
+      rot.addEventListener('click', () => this.rotateCode(s.id));
+      acts.appendChild(rot);
+      const close = document.createElement('button');
+      close.type = 'button';
+      close.className = 'mp-btn small danger';
+      close.textContent = 'Close session';
+      close.addEventListener('click', () => this.closeSession(s.id));
+      acts.appendChild(close);
+      card.appendChild(acts);
+
+      const roll = document.createElement('div');
+      roll.id = 'roll-' + s.id;
+      card.appendChild(roll);
+      this.loadRoll(s.id, roll);
+      return card;
+    }
+
+    async rotateCode(sid) {
+      const { error } = await this.supabase.rpc('leader_rotate_code', { p_session_id: sid });
+      if (error) window.alert('Could not rotate code: ' + error.message);
+      this.loadSessions(true);
+    }
+
+    async closeSession(sid) {
+      const { error } = await this.supabase.rpc('leader_close_session', { p_session_id: sid });
+      if (error) window.alert('Could not close session: ' + error.message);
+      this.loadSessions(true);
+    }
+
+    async loadRoll(sid, box) {
+      if (!box) return;
+      box.innerHTML = '<p class="mp-empty">Loading roll\u2026</p>';
+      const { data, error } = await this.supabase.rpc('session_roll', { p_session_id: sid });
+      box.innerHTML = '';
+      if (error) {
+        const p = document.createElement('p');
+        p.className = 'mp-empty';
+        p.textContent = error.message;
+        box.appendChild(p);
+        return;
+      }
+      const rows = data || [];
+      const count = st => rows.filter(r => r.status === st).length;
+      const counts = document.createElement('div');
+      counts.className = 'att-counts';
+      counts.textContent =
+        'Present ' + count('present') +
+        ' \u00b7 Late ' + count('late') +
+        ' \u00b7 Excused ' + count('excused') +
+        ' \u00b7 Absent ' + count('absent') +
+        ' \u00b7 Not marked ' + rows.filter(r => !r.status).length;
+      box.appendChild(counts);
+      rows.forEach(r => {
+        const row = document.createElement('div');
+        row.className = 'att-row';
+        const who = document.createElement('div');
+        const nm = document.createElement('span');
+        nm.textContent = r.full_name || 'Member';
+        who.appendChild(nm);
+        if (r.voice_part) {
+          const vp = document.createElement('div');
+          vp.className = 'mp-date';
+          vp.textContent = r.voice_part;
+          who.appendChild(vp);
+        }
+        row.appendChild(who);
+        if (r.status) {
+          const b = this.attBadge(r.status);
+          b.title = 'Click to unmark';
+          b.addEventListener('click', () => this.markAttendance(sid, r.member_id, null));
+          row.appendChild(b);
+        } else {
+          const mk = document.createElement('div');
+          mk.className = 'mp-rsvp';
+          ['present', 'late', 'excused', 'absent'].forEach(st => {
+            const bb = document.createElement('button');
+            bb.type = 'button';
+            bb.className = 'mp-btn small';
+            bb.textContent = st.charAt(0).toUpperCase();
+            bb.title = MemberPortal.optLabel(st);
+            bb.addEventListener('click', () => this.markAttendance(sid, r.member_id, st));
+            mk.appendChild(bb);
+          });
+          row.appendChild(mk);
+        }
+        box.appendChild(row);
+      });
+    }
+
+    async markAttendance(sid, memberId, status) {
+      let res;
+      if (status === null) {
+        res = await this.supabase.rpc('leader_unmark_attendance', {
+          p_session_id: sid,
+          p_member_id: memberId
+        });
+      } else {
+        res = await this.supabase.rpc('leader_mark_attendance', {
+          p_session_id: sid,
+          p_member_id: memberId,
+          p_status: status
+        });
+      }
+      if (res && res.error) {
+        window.alert('Could not save: ' + res.error.message);
+        return;
+      }
+      const box = $('roll-' + sid);
+      if (box) this.loadRoll(sid, box);
     }
 
     /* ---------- Rendering ---------- */
@@ -588,6 +982,14 @@
         'Nothing here yet \u2014 admin tools will be added soon.');
 
       if (isLeader) this.renderLeaderWorkspace();
+
+      $('mpAttendCard').hidden = false;
+      this.loadMyAttendance();
+
+      if (isLeader) {
+        $('mpSessCard').hidden = false;
+        this.initLeaderSessions();
+      }
 
       if (isAdmin) {
         this.loadAdminMembers();
@@ -1778,6 +2180,10 @@
       $('adminInviteForm').addEventListener('submit', e => this.onInvite(e));
       const lrForm = $('lrForm');
       if (lrForm) lrForm.addEventListener('submit', e => this.onAddRecord(e));
+      const ciForm = $('ciForm');
+      if (ciForm) ciForm.addEventListener('submit', e => this.onCheckIn(e));
+      const sessForm = $('sessForm');
+      if (sessForm) sessForm.addEventListener('submit', e => this.onCreateSession(e));
       $('mpInviteCopy').addEventListener('click', () => this.copyInvite());
       $('mpEditProfile').addEventListener('click', () => this.openProfileForm(false));
       $('pfCancel').addEventListener('click', () => {
