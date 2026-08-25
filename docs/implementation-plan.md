@@ -203,8 +203,13 @@ Maranatha/                          # live repo
 ### Pending
 - RLS privacy test for future phone/gender columns
 - Attendance CRUD tests
-- Mobile viewport pass on all pages
 - Screen-reader / keyboard pass on portal + admin
+
+### Mobile + bilingual pass (2026-08-25)
+Verified all pages at a true 390px viewport in EN and SW via headless Edge screenshots (iframe harness at real CSS width — `--window-size` alone is unreliable on Windows DPI). Layout was already sound; fixes made:
+- **Auth-state bug**: `INITIAL_SESSION` was treated as signed-in, hiding the public roster and auto-scrolling everyone to the portal. Now branches on the actual session.
+- **Mojibake**: 46 double-encoded characters (`â€"`, `Â·`) across 7 HTML files restored to proper `—` and `·`.
+- **Anchor offsets**: `scroll-margin-top` on `#portal`/`#members` so deep links don't hide headings under the fixed header.
 
 ## 11. Roadmap
 

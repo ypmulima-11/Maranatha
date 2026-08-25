@@ -2203,13 +2203,13 @@
 
       this.supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
-      this.supabase.auth.onAuthStateChange((event) => {
-        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+      this.supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' || (event === 'INITIAL_SESSION' && session)) {
           this.hasSession = true;
           this.setMemberMode(true);
           this.showDash();
           this.loadDashboard();
-        } else if (event === 'SIGNED_OUT') {
+        } else if (event === 'SIGNED_OUT' || (event === 'INITIAL_SESSION' && !session)) {
           this.hasSession = false;
           this.setMemberMode(false);
           this.showAuth();

@@ -213,6 +213,10 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 }
 .mp-res-form { margin-top: 4px; }
 
+/* ---------- Anchor offsets ---------- */
+.mpw { scroll-margin-top: 96px; }
+#members { scroll-margin-top: 84px; }
+
 /* ---------- Attendance ---------- */
 .qr-wrap {
   background: #fff; border: 1px solid var(--line); border-radius: 10px;
