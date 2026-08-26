@@ -592,6 +592,13 @@
         box.appendChild(p);
         return;
       }
+      const attended = list.filter(r => r.status === 'present' || r.status === 'late').length;
+      const pct = Math.round(100 * attended / list.length);
+      const sum = document.createElement('div');
+      sum.className = 'att-counts';
+      sum.textContent = 'You attended ' + attended + ' of your last ' + list.length +
+        ' sessions (' + pct + '%).';
+      box.appendChild(sum);
       list.forEach(r => {
         const row = document.createElement('div');
         row.className = 'att-row';
@@ -986,9 +993,17 @@
       $('mpAttendCard').hidden = false;
       this.loadMyAttendance();
 
+      $('mpLibCard').hidden = false;
+      this.loadLibrary();
+
+      $('mpDirCard').hidden = false;
+      this.loadDirectory();
+
       if (isLeader) {
         $('mpSessCard').hidden = false;
         this.initLeaderSessions();
+        $('mpPostCard').hidden = false;
+        this.loadMyPosts();
       }
 
       if (isAdmin) {
@@ -1697,6 +1712,403 @@
       this.loadLeaderWorkspace();
     }
 
+    /* ---------- Leader posting: events + announcements ---------- */
+
+    async onCreateEvent(e) {
+      e.preventDefault();
+      const msg = $('evMsg');
+      if (!msg || !this.supabase) return;
+      const titleEn = $('evTitleEn').value.trim();
+      const start = $('evStart').value;
+      if (!titleEn || !start) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'An English title and a start time are required.';
+        return;
+      }
+      msg.className = 'mp-msg';
+      msg.textContent = 'Publishing\u2026';
+      const { error } = await this.supabase.from('events').insert({
+        title_en: titleEn,
+        title_sw: $('evTitleSw').value.trim(),
+        description_en: $('evDescEn').value.trim(),
+        description_sw: $('evDescSw').value.trim(),
+        event_type: $('evType').value,
+        start_time: new Date(start).toISOString(),
+        location: $('evLoc').value.trim(),
+        is_mandatory: $('evMand').checked,
+        created_by: this.profile.id
+      });
+      if (error) {
+        msg.className = 'mp-msg err';
+        msg.textContent = error.message;
+        return;
+      }
+      ['evTitleEn', 'evTitleSw', 'evDescEn', 'evDescSw', 'evStart', 'evLoc'].forEach(id => { $(id).value = ''; });
+      $('evMand').checked = false;
+      msg.className = 'mp-msg ok';
+      msg.textContent = 'Event published \u2713';
+      this.loadMyPosts();
+      this.loadEvents();
+    }
+
+    async onCreateAnno(e) {
+      e.preventDefault();
+      const msg = $('anMsg');
+      if (!msg || !this.supabase) return;
+      const titleEn = $('anTitleEn').value.trim();
+      if (!titleEn) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'An English title is required.';
+        return;
+      }
+      msg.className = 'mp-msg';
+      msg.textContent = 'Publishing\u2026';
+      const { error } = await this.supabase.from('announcements').insert({
+        title_en: titleEn,
+        title_sw: $('anTitleSw').value.trim(),
+        content_en: $('anBodyEn').value.trim(),
+        content_sw: $('anBodySw').value.trim(),
+        is_pinned: $('anPin').checked,
+        author_id: this.profile.id
+      });
+      if (error) {
+        msg.className = 'mp-msg err';
+        msg.textContent = error.message;
+        return;
+      }
+      ['anTitleEn', 'anTitleSw', 'anBodyEn', 'anBodySw'].forEach(id => { $(id).value = ''; });
+      $('anPin').checked = false;
+      msg.className = 'mp-msg ok';
+      msg.textContent = 'Announcement published \u2713';
+      this.loadMyPosts();
+      this.loadAnnouncements();
+    }
+
+    async loadMyPosts() {
+      const box = $('postList');
+      if (!box || !this.supabase) return;
+      const { data: evs } = await this.supabase.from('events').select('id,title_en,start_time').order('created_at', { ascending: false }).limit(8);
+      const { data: anns } = await this.supabase.from('announcements').select('id,title_en,is_pinned,created_at').order('created_at', { ascending: false }).limit(8);
+      box.innerHTML = '';
+      const rows = [];
+      (evs || []).forEach(ev => rows.push({ kind: 'event', id: ev.id, label: ev.title_en, when: ev.start_time }));
+      (anns || []).forEach(an => rows.push({ kind: 'anno', id: String(an.id), label: an.title_en + (an.is_pinned ? ' \ud83d\udccc' : ''), when: an.created_at }));
+      rows.sort((a, b) => new Date(b.when) - new Date(a.when));
+      if (!rows.length) {
+        const p = document.createElement('p');
+        p.className = 'mp-empty';
+        p.textContent = 'Nothing published yet.';
+        box.appendChild(p);
+        return;
+      }
+      rows.slice(0, 12).forEach(r => {
+        const row = document.createElement('div');
+        row.className = 'att-row';
+        const who = document.createElement('div');
+        const b = document.createElement('span');
+        b.className = 'mp-badge ' + (r.kind === 'event' ? 'admin' : 'member');
+        b.textContent = r.kind === 'event' ? 'Event' : 'Notice';
+        who.appendChild(b);
+        const t = document.createElement('span');
+        t.textContent = ' ' + r.label;
+        who.appendChild(t);
+        row.appendChild(who);
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'mp-btn small danger';
+        del.textContent = 'Delete';
+        del.addEventListener('click', () => this.deletePost(r.kind, r.id));
+        row.appendChild(del);
+        box.appendChild(row);
+      });
+    }
+
+    async deletePost(kind, id) {
+      if (!window.confirm('Delete this ' + (kind === 'event' ? 'event' : 'announcement') + '?')) return;
+      const table = kind === 'event' ? 'events' : 'announcements';
+      const { error } = await this.supabase.from(table).delete().eq('id', id);
+      if (error) {
+        window.alert('Could not delete: ' + error.message);
+        return;
+      }
+      this.loadMyPosts();
+      this.loadEvents();
+      this.loadAnnouncements();
+    }
+
+    /* ---------- Music library ---------- */
+
+    async loadLibrary() {
+      if (!this.supabase) return;
+      const { data, error } = await this.supabase
+        .from('library_items')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(80);
+      const box = $('libList');
+      if (!box) return;
+      if (error) {
+        console.warn('library:', error);
+        box.innerHTML = '';
+        const p = document.createElement('p');
+        p.className = 'mp-empty';
+        p.textContent = /does not exist|schema cache|relation/i.test(error.message)
+          ? 'The library is not set up yet \u2014 ask an admin to run supabase-phase-final.sql.'
+          : error.message;
+        box.appendChild(p);
+        return;
+      }
+      this.libItems = data || [];
+      this.renderLibrary();
+      const form = $('libForm');
+      if (form && this.profile) {
+        form.hidden = !(this.profile.role === 'leader' || this.profile.role === 'section_leader' || this.profile.role === 'admin');
+      }
+    }
+
+    renderLibrary() {
+      const box = $('libList');
+      if (!box) return;
+      const kind = $('libKind') ? $('libKind').value : '';
+      const voice = $('libVoice') ? $('libVoice').value : '';
+      box.innerHTML = '';
+      const list = (this.libItems || []).filter(it =>
+        (!kind || it.kind === kind) && (!voice || it.voice_part === voice));
+      if (!list.length) {
+        const p = document.createElement('p');
+        p.className = 'mp-empty';
+        p.textContent = (this.libItems || []).length
+          ? 'Nothing matches these filters.'
+          : 'The library is empty \u2014 leaders can add the first file.';
+        box.appendChild(p);
+        return;
+      }
+      list.forEach(it => {
+        const row = document.createElement('div');
+        row.className = 'att-row';
+        const who = document.createElement('div');
+        const b = document.createElement('span');
+        b.className = 'mp-badge ' + (it.kind === 'score' ? 'admin' : it.kind === 'track' ? 'leader' : 'member');
+        b.textContent = it.kind === 'score' ? 'Sheet music' : it.kind === 'track' ? 'Track' : 'File';
+        who.appendChild(b);
+        const t = document.createElement('span');
+        t.textContent = ' ' + it.title;
+        who.appendChild(t);
+        const v = document.createElement('div');
+        v.className = 'mp-date';
+        v.textContent = (it.voice_part === 'all' ? 'Full choir' : MemberPortal.optLabel(it.voice_part)) +
+          ' \u00b7 ' + new Date(it.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        who.appendChild(v);
+        row.appendChild(who);
+        const act = document.createElement('div');
+        act.className = 'mp-rsvp';
+        const dl = document.createElement('button');
+        dl.type = 'button';
+        dl.className = 'mp-btn small';
+        dl.textContent = 'Download';
+        dl.addEventListener('click', () => this.libDownload(it));
+        act.appendChild(dl);
+        if (this.profile && ['leader', 'section_leader', 'admin'].includes(this.profile.role)) {
+          const del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'mp-btn small danger';
+          del.textContent = 'Delete';
+          del.addEventListener('click', () => this.libDelete(it));
+          act.appendChild(del);
+        }
+        row.appendChild(act);
+        box.appendChild(row);
+      });
+    }
+
+    async onLibUpload(e) {
+      e.preventDefault();
+      const msg = $('libMsg');
+      if (!msg || !this.supabase) return;
+      const title = $('libTitle').value.trim();
+      const file = $('libFile').files[0];
+      if (!title || !file) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'A title and a file are required.';
+        return;
+      }
+      if (file.size > 20 * 1024 * 1024) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'That file is larger than 20 MB.';
+        return;
+      }
+      msg.className = 'mp-msg';
+      msg.textContent = 'Uploading\u2026';
+      const safe = file.name.replace(/[^\w.\-]+/g, '_');
+      const path = 'lib/' + Date.now() + '-' + safe;
+      const up = await this.supabase.storage.from('library').upload(path, file, {
+        contentType: file.type || 'application/octet-stream'
+      });
+      if (up.error) {
+        msg.className = 'mp-msg err';
+        msg.textContent = up.error.message;
+        return;
+      }
+      const { error } = await this.supabase.from('library_items').insert({
+        title: title,
+        kind: $('libKindNew').value,
+        voice_part: $('libVoiceNew').value,
+        file_path: path,
+        file_name: file.name,
+        file_size: file.size,
+        uploaded_by: this.profile.id
+      });
+      if (error) {
+        msg.className = 'mp-msg err';
+        msg.textContent = error.message;
+        return;
+      }
+      $('libTitle').value = '';
+      $('libFile').value = '';
+      msg.className = 'mp-msg ok';
+      msg.textContent = 'Added to the library \u2713';
+      this.loadLibrary();
+    }
+
+    async libDownload(item) {
+      const res = await this.supabase.storage.from('library').createSignedUrl(item.file_path, 300);
+      if (res.error || !res.data || !res.data.signedUrl) {
+        window.alert('Could not open the file: ' + (res.error ? res.error.message : 'no URL'));
+        return;
+      }
+      window.open(res.data.signedUrl, '_blank');
+    }
+
+    async libDelete(item) {
+      if (!window.confirm('Delete "' + item.title + '" from the library?')) return;
+      await this.supabase.storage.from('library').remove([item.file_path]);
+      const { error } = await this.supabase.from('library_items').delete().eq('id', item.id);
+      if (error) {
+        window.alert('Could not delete: ' + error.message);
+        return;
+      }
+      this.loadLibrary();
+    }
+
+    /* ---------- Member directory ---------- */
+
+    async loadDirectory() {
+      if (!this.supabase) return;
+      const isLeader = ['leader', 'section_leader', 'admin'].includes(this.profile.role);
+      const { data, error } = await this.supabase.rpc(isLeader ? 'directory_full' : 'directory');
+      const box = $('dirList');
+      if (!box) return;
+      if (error) {
+        console.warn('directory:', error);
+        box.innerHTML = '';
+        const p = document.createElement('p');
+        p.className = 'mp-empty';
+        p.textContent = /does not exist|schema cache|relation/i.test(error.message)
+          ? 'The directory is not set up yet \u2014 ask an admin to run supabase-phase-final.sql.'
+          : error.message;
+        box.appendChild(p);
+        return;
+      }
+      this.dirRows = data || [];
+      const hint = $('dirHint');
+      if (hint) hint.textContent = isLeader
+        ? 'Names, voice parts and contact details \u2014 leaders only.'
+        : 'Names and voice parts. Contact details are visible to leaders only.';
+      this.renderDirectory();
+    }
+
+    renderDirectory() {
+      const box = $('dirList');
+      if (!box) return;
+      const q = ($('dirSearch') ? $('dirSearch').value : '').trim().toLowerCase();
+      box.innerHTML = '';
+      const list = (this.dirRows || []).filter(r =>
+        !q || (r.full_name || '').toLowerCase().includes(q) || (r.voice_part || '').toLowerCase().includes(q));
+      if (!list.length) {
+        const p = document.createElement('p');
+        p.className = 'mp-empty';
+        p.textContent = (this.dirRows || []).length ? 'Nobody matches that search.' : 'No active members yet.';
+        box.appendChild(p);
+        return;
+      }
+      let lastPart = null;
+      list.forEach(r => {
+        const part = r.voice_part || 'Other';
+        if (part !== lastPart) {
+          lastPart = part;
+          const h = document.createElement('h3');
+          h.className = 'mp-sec';
+          h.textContent = part;
+          box.appendChild(h);
+        }
+        const row = document.createElement('div');
+        row.className = 'att-row';
+        const who = document.createElement('div');
+        const nm = document.createElement('span');
+        nm.textContent = r.full_name || 'Member';
+        who.appendChild(nm);
+        const sub = [r.title, r.role === 'admin' ? 'Admin' : null].filter(Boolean).join(' \u00b7 ');
+        if (sub) {
+          const s = document.createElement('div');
+          s.className = 'mp-date';
+          s.textContent = sub;
+          who.appendChild(s);
+        }
+        if (r.phone || r.email) {
+          const c = document.createElement('div');
+          c.className = 'mp-date';
+          c.textContent = [r.phone, r.email].filter(Boolean).join(' \u00b7 ');
+          who.appendChild(c);
+        }
+        row.appendChild(who);
+        box.appendChild(row);
+      });
+    }
+
+    /* ---------- Attendance season report ---------- */
+
+    async loadReport() {
+      const box = $('repBox');
+      if (!box || !this.supabase) return;
+      box.innerHTML = '<p class="mp-empty">Crunching numbers\u2026</p>';
+      const { data, error } = await this.supabase.rpc('attendance_overview');
+      box.innerHTML = '';
+      if (error) {
+        const p = document.createElement('p');
+        p.className = 'mp-empty';
+        p.textContent = /does not exist|schema cache|relation/i.test(error.message)
+          ? 'Reports are not set up yet \u2014 ask an admin to run supabase-phase-final.sql.'
+          : error.message;
+        box.appendChild(p);
+        return;
+      }
+      const rows = (data || []).slice().sort((a, b) => (b.pct || 0) - (a.pct || 0));
+      if (!rows.length) {
+        const p = document.createElement('p');
+        p.className = 'mp-empty';
+        p.textContent = 'No active members found.';
+        box.appendChild(p);
+        return;
+      }
+      rows.forEach(r => {
+        const row = document.createElement('div');
+        row.className = 'att-row';
+        const who = document.createElement('div');
+        const nm = document.createElement('span');
+        nm.textContent = r.full_name || 'Member';
+        who.appendChild(nm);
+        const s = document.createElement('div');
+        s.className = 'mp-date';
+        s.textContent = (r.voice_part ? r.voice_part + ' \u00b7 ' : '') +
+          'P' + r.present + ' L' + r.late + ' A' + r.absent + ' E' + r.excused;
+        who.appendChild(s);
+        row.appendChild(who);
+        row.appendChild(this.attBadge(r.marked ? (r.pct >= 85 ? 'present' : r.pct >= 60 ? 'late' : 'absent') : 'excused'))
+          .textContent = r.marked ? r.pct + '%' : '\u2014';
+        box.appendChild(row);
+      });
+    }
+
     /* ---------- Admin: pending registrations + invites ---------- */
 
     async setMemberStatus(email, status) {
@@ -2184,6 +2596,20 @@
       if (ciForm) ciForm.addEventListener('submit', e => this.onCheckIn(e));
       const sessForm = $('sessForm');
       if (sessForm) sessForm.addEventListener('submit', e => this.onCreateSession(e));
+      const evForm = $('evForm');
+      if (evForm) evForm.addEventListener('submit', e => this.onCreateEvent(e));
+      const anForm = $('anForm');
+      if (anForm) anForm.addEventListener('submit', e => this.onCreateAnno(e));
+      const libForm = $('libForm');
+      if (libForm) libForm.addEventListener('submit', e => this.onLibUpload(e));
+      ['libKind', 'libVoice'].forEach(id => {
+        const el = $(id);
+        if (el) el.addEventListener('change', () => this.renderLibrary());
+      });
+      const dirSearch = $('dirSearch');
+      if (dirSearch) dirSearch.addEventListener('input', () => this.renderDirectory());
+      const repBtn = $('repBtn');
+      if (repBtn) repBtn.addEventListener('click', () => this.loadReport());
       $('mpInviteCopy').addEventListener('click', () => this.copyInvite());
       $('mpEditProfile').addEventListener('click', () => this.openProfileForm(false));
       $('pfCancel').addEventListener('click', () => {

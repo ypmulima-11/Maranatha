@@ -357,6 +357,152 @@
               <div id="sessOpen"></div>
               <h3 class="mp-sec">Past sessions</h3>
               <div class="mp-list" id="sessPast"></div>
+              <h3 class="mp-sec">Season report</h3>
+              <button type="button" class="mp-btn small" id="repBtn">Show attendance report</button>
+              <div class="mp-list" id="repBox"></div>
+            </div>
+
+            <div class="mp-card2 mp-card-wide" id="mpPostCard" hidden>
+              <h2><span>Post to the choir</span> <span class="mp-badge leader">Leader</span></h2>
+              <h3 class="mp-sec">New event</h3>
+              <form class="mp-res-form" id="evForm" novalidate>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Title (EN)</span>
+                    <input type="text" id="evTitleEn" maxlength="120" placeholder="Sunday rehearsal">
+                  </label>
+                  <label class="mp-field"><span>Title (SW)</span>
+                    <input type="text" id="evTitleSw" maxlength="120" placeholder="Zoezi la Jumapili">
+                  </label>
+                </div>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Description (EN)</span>
+                    <input type="text" id="evDescEn" maxlength="240" placeholder="Regular practice in the parish hall">
+                  </label>
+                  <label class="mp-field"><span>Description (SW)</span>
+                    <input type="text" id="evDescSw" maxlength="240" placeholder="Zoezi kwenye ukumbi wa parokia">
+                  </label>
+                </div>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Starts</span>
+                    <input type="datetime-local" id="evStart">
+                  </label>
+                  <label class="mp-field"><span>Type</span>
+                    <select id="evType">
+                      <option value="rehearsal">Rehearsal</option>
+                      <option value="mass">Mass</option>
+                      <option value="concert">Concert</option>
+                      <option value="meeting">Meeting</option>
+                      <option value="social">Social</option>
+                      <option value="training">Training</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Location</span>
+                    <input type="text" id="evLoc" maxlength="120" placeholder="Parish hall">
+                  </label>
+                  <label class="mp-field mp-check"><span>Mandatory</span>
+                    <input type="checkbox" id="evMand">
+                  </label>
+                </div>
+                <div class="mp-msg" id="evMsg" role="status"></div>
+                <button type="submit" class="mp-btn">Publish event</button>
+              </form>
+
+              <h3 class="mp-sec">New announcement</h3>
+              <form class="mp-res-form" id="anForm" novalidate>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Title (EN)</span>
+                    <input type="text" id="anTitleEn" maxlength="120" placeholder="Choir T-shirts are ready">
+                  </label>
+                  <label class="mp-field"><span>Title (SW)</span>
+                    <input type="text" id="anTitleSw" maxlength="120" placeholder="Jezi za kwaya ziko tayari">
+                  </label>
+                </div>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Message (EN)</span>
+                    <textarea id="anBodyEn" rows="2" placeholder="Write the announcement..."></textarea>
+                  </label>
+                  <label class="mp-field"><span>Message (SW)</span>
+                    <textarea id="anBodySw" rows="2" placeholder="Andika taarifa..."></textarea>
+                  </label>
+                </div>
+                <label class="mp-field mp-check"><span>Pin to top</span>
+                  <input type="checkbox" id="anPin">
+                </label>
+                <div class="mp-msg" id="anMsg" role="status"></div>
+                <button type="submit" class="mp-btn">Publish announcement</button>
+              </form>
+
+              <h3 class="mp-sec">Recent posts</h3>
+              <div class="mp-list" id="postList"></div>
+            </div>
+
+            <div class="mp-card2 mp-card-wide" id="mpLibCard" hidden>
+              <h2>Music library</h2>
+              <p class="mp-hint">Sheet music and practice tracks, shared by the leadership. Files are private to choir members.</p>
+              <div class="mp-libfilters">
+                <label class="mp-field"><span>Show</span>
+                  <select id="libKind">
+                    <option value="">Everything</option>
+                    <option value="score">Sheet music</option>
+                    <option value="track">Practice track</option>
+                    <option value="other">Other files</option>
+                  </select>
+                </label>
+                <label class="mp-field"><span>Voice part</span>
+                  <select id="libVoice">
+                    <option value="">All parts</option>
+                    <option value="soprano">Soprano</option>
+                    <option value="alto">Alto</option>
+                    <option value="tenor">Tenor</option>
+                    <option value="bass">Bass</option>
+                    <option value="all">Full choir</option>
+                  </select>
+                </label>
+              </div>
+              <div class="mp-list" id="libList"></div>
+              <form class="mp-res-form" id="libForm" novalidate hidden>
+                <h3 class="mp-sec">Add a file</h3>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Title</span>
+                    <input type="text" id="libTitle" maxlength="120" placeholder="e.g. Misa ya Amani — Alto">
+                  </label>
+                  <label class="mp-field"><span>Voice part</span>
+                    <select id="libVoiceNew">
+                      <option value="all">Full choir</option>
+                      <option value="soprano">Soprano</option>
+                      <option value="alto">Alto</option>
+                      <option value="tenor">Tenor</option>
+                      <option value="bass">Bass</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Type</span>
+                    <select id="libKindNew">
+                      <option value="score">Sheet music</option>
+                      <option value="track">Practice track</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </label>
+                  <label class="mp-field"><span>File (PDF / audio, max 20 MB)</span>
+                    <input type="file" id="libFile">
+                  </label>
+                </div>
+                <div class="mp-msg" id="libMsg" role="status"></div>
+                <button type="submit" class="mp-btn">Upload to library</button>
+              </form>
+            </div>
+
+            <div class="mp-card2" id="mpDirCard" hidden>
+              <h2>Member directory</h2>
+              <p class="mp-hint" id="dirHint">Names and voice parts. Contact details are visible to leaders only.</p>
+              <label class="mp-field"><span>Search</span>
+                <input type="search" id="dirSearch" placeholder="Name or voice part...">
+              </label>
+              <div class="mp-list" id="dirList"></div>
             </div>
 
             <div class="mp-card2" id="mpLeaderCard" hidden>

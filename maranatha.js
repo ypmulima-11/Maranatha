@@ -417,19 +417,36 @@
     }
 
     bindReveal() {
+      const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduced) {
+        const staggers = '.fsi,.valg,.stg,.mug,.evg,.vidg,.tmg,.gag,.nwg,.msg,.jinfo,.dog,.cog,.fwrap';
+        try { document.querySelectorAll(staggers).forEach(el => el.classList.add('rev-stagger')); } catch (e) { /* ignore */ }
+        try {
+          document.querySelectorAll('.sw .slbl, .sw .stit, .cd, .jof, .atxt, .avis').forEach(el => el.classList.add('reveal'));
+        } catch (e) { /* ignore */ }
+      }
       const revealEls = document.querySelectorAll('.reveal, .rev-stagger');
+      const show = el => el.classList.add('in');
+      // Anything already on screen shows immediately (no flash-hiding).
+      revealEls.forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight && r.bottom > 0) show(el);
+      });
+      // Fail-safe: nothing may stay hidden for more than a few seconds,
+      // even if the observer never fires (print, odd embeds, bugs).
+      setTimeout(() => revealEls.forEach(el => {
+        if (!el.classList.contains('in')) show(el);
+      }), 4000);
       if ('IntersectionObserver' in window) {
         const ro = new IntersectionObserver(entries => {
           entries.forEach(e => {
             if (e.isIntersecting) {
-              e.target.classList.add('in');
+              show(e.target);
               ro.unobserve(e.target);
             }
           });
-        }, { threshold: 0.12 });
-        revealEls.forEach(el => ro.observe(el));
-      } else {
-        revealEls.forEach(el => el.classList.add('in'));
+        }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
+        revealEls.forEach(el => { if (!el.classList.contains('in')) ro.observe(el); });
       }
     }
 

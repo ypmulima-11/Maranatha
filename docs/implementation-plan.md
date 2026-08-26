@@ -21,6 +21,10 @@
 | OOP codebase | ✅ | ES6 classes: `SiteApp`, `SectionRenderer`, `I18n`, `MemberPortal`, `AdminApp`, `GitHubClient`, … |
 | Leader workspaces (role-specific) | 🟡 | Portal UI live (`supabase-leader-workspaces.sql` needs a run in the SQL Editor); generic `leader_records` fallback for untitled leaders |
 | Attendance (QR check-in) | 🟡 | Portal UI live (`supabase-attendance.sql` needs a run in the SQL Editor): sessions with rotating QR/code, 15-min late rule, leader roll + overrides, member history |
+| Leader posting tools | 🟡 | Portal UI live — leaders publish events & announcements (bilingual) and delete their posts; policies already existed (sections 8/9) |
+| Music library (uploads) | 🟡 | Portal UI live (`supabase-phase-final.sql` needs a run): private `library` bucket, sheet music/tracks by voice part, signed-URL downloads, leader upload/delete |
+| Attendance reports | 🟡 | Portal UI live (`supabase-phase-final.sql`): `attendance_overview()` season report for leaders + member's own % |
+| Member directory | 🟡 | Portal UI live (`supabase-phase-final.sql`): `directory()` (names + voice parts) / `directory_full()` (adds phone+email for leaders), searchable, grouped by voice part |
 | Storage buckets (files) | ⬜ | No file uploads yet (avatars, sheet music, gallery originals) |
 | Attendance tracking | ⬜ | Not started |
 | Approval-based registration | ⬜ | Not started |
@@ -211,6 +215,14 @@ Verified all pages at a true 390px viewport in EN and SW via headless Edge scree
 - **Mojibake**: 46 double-encoded characters (`â€"`, `Â·`) across 7 HTML files restored to proper `—` and `·`.
 - **Anchor offsets**: `scroll-margin-top` on `#portal`/`#members` so deep links don't hide headings under the fixed header.
 
+### Design polish pass (2026-08-25)
+Identity kept (green/gold, Playfair + DM Sans); layering and motion added in an appended `maranatha.css` block + small `maranatha.js`/`members.css` additions:
+- Gold-gradient CTAs with glow + shine sweep; hero: Ken Burns zoom, gold gradient accent words, blurred label pill, animated scroll cue
+- Section headings get a gold flourish bar; cards get unified hover lifts (news cards grow a gold top bar, gallery/music get zoom + sheen, team avatars lift)
+- Footer: gold hairline + heading dashes; countdown: glass + gold border; gold gradient scrollbar/selection
+- Scroll-reveal system (already in JS, barely used) now auto-applies to all section grids, with fail-safes: on-screen elements show instantly, `prefers-reduced-motion` respected, and a 4s timer guarantees nothing stays hidden
+- Verified with headless-Edge screenshots at 390px and 1280px in EN + SW; no console errors
+
 ## 11. Roadmap
 
 | Phase | Features | Status |
@@ -228,8 +240,10 @@ Verified all pages at a true 390px viewport in EN and SW via headless Edge scree
 
 ## 12. Immediate Next Step
 
-1. Run `supabase-leader-workspaces.sql` in the Supabase SQL Editor (idempotent — includes an upgrade path if the first draft was already run). Role-specific leader workspace cards then go live; verify with a test leader per role.
-2. Run `supabase-attendance.sql` (idempotent; requires the events table from sections 8/9). Then: leader opens a session → members scan the QR (`members.html?code=XXXX`) or type the code → present/late auto-set (15-min grace), leader can override, codes rotate/expiring after 20 min.
+Run the three pending SQL files in the Supabase SQL Editor (all idempotent):
+1. `supabase-leader-workspaces.sql` — role-specific leader workspaces
+2. `supabase-attendance.sql` — QR/code attendance
+3. `supabase-phase-final.sql` — music library bucket + table, attendance reports, member directory RPCs
 
 ## 13. Verification (leader workspaces, 2026-08-24)
 
@@ -238,3 +252,7 @@ Headless-Edge harness against the live portal code: title→workspace mapping fo
 ## 14. Verification (attendance, 2026-08-25)
 
 Headless-Edge harness (21 checks): check-in result messages (present/late/already/closed/invalid/error), code passthrough + input clearing, history rendering with status badges, session creation args, live-session card (QR canvas drawn, code shown, roll counts, unmarked quick-buttons), mark/unmark RPC routing, rotate/close RPCs. Caught and fixed a real bug during testing: unmark now goes through a `leader_unmark_attendance` RPC instead of a direct delete (no direct write grants on `attendance` by design). `members.html` loads with zero console errors.
+
+## 15. Verification (posting, library, reports, directory — 2026-08-26)
+
+Headless-Edge harness (21 checks, all passing): event/announcement validation + bilingual insert payloads, my-posts list + delete routing, library list/kind/voice filters, upload with sanitized storage path + row insert, signed-URL download, storage+row delete, directory grouping by voice part + leader contact visibility + search, season report sorting with pct badges, member's own attendance %. `members.html` loads with zero console errors.

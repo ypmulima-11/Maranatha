@@ -250,3 +250,22 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
   .mp-pro { grid-template-columns: 1fr; }
   .mp-brand em { display: none; }
 }
+
+/* ---------- Portal polish (2026-08) ---------- */
+.mp-card2 { box-shadow: 0 8px 22px -14px rgba(23,52,4,.14); }
+.mp-btn { transition: transform .15s ease, box-shadow .2s ease, background .2s ease, filter .2s ease; }
+.mp-btn:hover { transform: translateY(-1px); }
+.mp-btn.big {
+  background: linear-gradient(135deg, #FAC775 0%, #E19A3C 45%, #BA7517 100%);
+  box-shadow: 0 10px 26px -10px rgba(186,117,23,.5);
+}
+.mp-btn.big:hover { filter: brightness(1.06); box-shadow: 0 14px 30px -10px rgba(186,117,23,.6); }
+
+/* ---------- Library, directory, posting (2026-08) ---------- */
+.mp-two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.mp-check input { width: auto; display: inline-block; margin-left: 8px; }
+.mp-check span { display: inline-block; }
+.mp-libfilters { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+@media (max-width: 720px) {
+  .mp-two, .mp-libfilters { grid-template-columns: 1fr; }
+}
