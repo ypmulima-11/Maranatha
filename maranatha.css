@@ -30,6 +30,8 @@ img { display: block; max-width: 100%; }
 }
 .tb a { color: var(--g1); transition: color .2s; }
 .tb a:hover { color: var(--al); }
+.tb-mail { display: inline-flex; align-items: center; gap: 6px; }
+.tb-mail svg { flex-shrink: 0; vertical-align: middle; }
 .tblang { display: flex; align-items: center; gap: 8px; }
 .tblang span { opacity: .4; }
 .tblang button {
