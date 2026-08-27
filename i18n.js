@@ -217,7 +217,10 @@
           'portal.reject': 'Reject',
           'portal.approved': 'Member approved.',
           'portal.rejected': 'Member rejected.',
-          'portal.status.err': 'Could not update member status.'
+          'portal.status.err': 'Could not update member status.',
+            'portal.supass': 'Password (at least 6 characters)',
+            'portal.supassph': 'Choose a password',
+            'portal.supassconf': 'Confirm password',
         },
         sw: {
           'portal.label': 'Ufikiaji wa wanachama',
@@ -242,6 +245,7 @@
           'portal.fullname': 'Jina kamili',
           'portal.supass': 'Nenosiri (angalau herufi 6)',
           'portal.supassph': 'Chagua nenosiri',
+          'portal.supassconf': 'Thibitisha nenosiri',
           'portal.supart': 'Sehemu ya sauti (si lazima)',
           'portal.none': 'Haijachaguliwa',
           'portal.subtn': 'Unda akaunti',

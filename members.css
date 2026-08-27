@@ -246,10 +246,23 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 720px) {
-  .mp-grid { grid-template-columns: 1fr; }
+  .mp-grid { grid-template: 1fr; }
   .mp-pro { grid-template-columns: 1fr; }
   .mp-brand em { display: none; }
 }
+
+/* ---------- Password field with show/hide toggle ---------- */
+.mp-passwrap { position: relative; display: flex; align-items: center; }
+.mp-passwrap input { flex: 1; padding-right: 44px; }
+.mp-passbtn {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border: none; background: transparent;
+  color: var(--ts); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; transition: background .15s, color .15s;
+}
+.mp-passbtn:hover { background: var(--g0); color: var(--g6); }
+.mp-passbtn:focus-visible { outline: 2px solid var(--au); outline-offset: 2px; }
+.mp-passbtn svg { display: block; }
 
 /* ---------- Portal polish (2026-08) ---------- */
 .mp-card2 { box-shadow: 0 8px 22px -14px rgba(23,52,4,.14); }

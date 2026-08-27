@@ -146,6 +146,7 @@
       const name = $('suName').value.trim();
       const email = $('suEmail').value.trim().toLowerCase();
       const password = $('suPass').value;
+      const passwordConf = $('suPassConf').value;
 
       if (!name || !email || !password) {
         msg.className = 'mp-msg err';
@@ -160,6 +161,11 @@
       if (password.length < 6) {
         msg.className = 'mp-msg err';
         msg.textContent = 'Password must be at least 6 characters.';
+        return;
+      }
+      if (password !== passwordConf) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'Passwords do not match.';
         return;
       }
       msg.className = 'mp-msg';
@@ -185,7 +191,7 @@
         return;
       }
       msg.className = 'mp-msg ok';
-      msg.textContent = 'Account created! Check your inbox for a confirmation link, then sign in.';
+      msg.textContent = 'Account created! Check your inbox (and spam folder) for a confirmation link. The email may take a few minutes to arrive. Then sign in.';
       this.switchTab('signin');
       $('siEmail').value = email;
     }
@@ -2621,6 +2627,24 @@
       $('mpProfileForm').addEventListener('submit', e => this.onSaveProfile(e));
       $('pfStudy').addEventListener('change', () => this.syncProfileForm());
       $('pfResType').addEventListener('change', () => this.syncProfileForm());
+
+      document.querySelectorAll('.mp-passbtn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.dataset.target;
+          const input = $(targetId);
+          if (!input) return;
+          const isHidden = input.type === 'password';
+          input.type = isHidden ? 'text' : 'password';
+          const svg = btn.querySelector('svg');
+          if (svg) {
+            if (isHidden) {
+              svg.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7.06 0-11.07-2.5-11.07-8.5 0-2.5.6-4.85 1.65-6.9l-1.65 1.65A12.06 12.06 0 0 0 1 12c0 5 3.5 9 9.5 9a10 10 0 0 0 4.95-1.52l1.55 1.55"/>';
+            } else {
+              svg.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+            }
+          }
+        });
+      });
 
       if (!window.supabase || !SUPABASE_READY) {
         this.showSetupBanner();

@@ -159,7 +159,16 @@
               <input type="email" id="suEmail" placeholder="you@example.com" autocomplete="email">
             </label>
             <label class="mp-field"><span data-i18n="portal.supass">Password (at least 6 characters)</span>
-              <input type="password" id="suPass" placeholder="Choose a password" data-i18n-ph="portal.supassph" autocomplete="new-password">
+              <div class="mp-passwrap">
+                <input type="password" id="suPass" placeholder="Choose a password" data-i18n-ph="portal.supassph" autocomplete="new-password">
+                <button type="button" class="mp-passbtn" data-target="suPass" aria-label="Show password"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              </div>
+            </label>
+            <label class="mp-field"><span data-i18n="portal.supassconf">Confirm password</span>
+              <div class="mp-passwrap">
+                <input type="password" id="suPassConf" placeholder="Confirm your password" autocomplete="new-password">
+                <button type="button" class="mp-passbtn" data-target="suPassConf" aria-label="Show password"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              </div>
             </label>
             <div class="mp-msg" id="suMsg" role="status"></div>
             <button type="submit" class="mp-btn big" data-i18n="portal.subtn">Create account</button>
