@@ -1629,6 +1629,7 @@
       // Initialize first tab
       if (Object.keys(this.ws.types).length > 1) {
         this._wsType = Object.keys(this.ws.types)[0];
+        this.wsFields = formInner.querySelector('.ws-tab-panel.active');
         this.bindTabSwitching();
       } else {
         this._wsType = Object.keys(this.ws.types)[0];
