@@ -80,7 +80,8 @@
       team: [
         ['initials', 'Initials (max 2 letters)', 'text'],
         ['name', 'Name / title', 'text'],
-        ['role', 'Role', 'text']
+        ['role', 'Role', 'text'],
+        ['avatar', 'Avatar URL', 'text']
       ],
       members: [
         ['part', 'Voice part', 'select', ['Soprano', 'Alto', 'Tenor', 'Bass']],
@@ -280,6 +281,37 @@
           }
           const reader = new FileReader();
           reader.onload = () => this.uploadImage(f, reader.result, inputs.src, msg, btn);
+          reader.readAsDataURL(f);
+        });
+        up.appendChild(btn);
+        up.appendChild(file);
+        up.appendChild(msg);
+        grid.appendChild(up);
+      }
+
+      if (tab === 'team') {
+        const up = document.createElement('div');
+        up.className = 'adm-upload full';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'adm-btn ghost adm-upbtn';
+        btn.textContent = 'Upload avatar\u2026';
+        const msg = document.createElement('span');
+        msg.className = 'adm-upmsg';
+        const file = document.createElement('input');
+        file.type = 'file';
+        file.accept = 'image/*';
+        file.hidden = true;
+        btn.addEventListener('click', () => file.click());
+        file.addEventListener('change', () => {
+          const f = file.files[0];
+          if (!f) return;
+          if (f.size > 2 * 1024 * 1024) {
+            msg.textContent = 'Avatar is too large (max 2 MB).';
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = () => this.uploadImage(f, reader.result, inputs.avatar, msg, btn);
           reader.readAsDataURL(f);
         });
         up.appendChild(btn);

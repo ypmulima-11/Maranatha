@@ -2327,7 +2327,27 @@
           }
           m.title = val;
         });
+        const saveBtn = document.createElement('button');
+        saveBtn.type = 'button';
+        saveBtn.className = 'mp-btn small';
+        saveBtn.textContent = 'Save';
+        saveBtn.addEventListener('click', async () => {
+          const val = tit.value.trim();
+          if (val === (m.title || '')) return;
+          const { error } = await this.supabase.rpc('admin_set_title', {
+            p_email: m.email,
+            p_title: val
+          });
+          if (error) {
+            window.alert('Could not change title: ' + error.message);
+            return;
+          }
+          m.title = val;
+          saveBtn.textContent = 'Saved!';
+          setTimeout(() => saveBtn.textContent = 'Save', 1500);
+        });
         row.appendChild(tit);
+        row.appendChild(saveBtn);
         row.appendChild(det);
         box.appendChild(row);
       });
@@ -2345,7 +2365,7 @@
       const box = $('adminResidence');
       if (!box) return;
       const { data } = await this.supabase
-        .from('profiles').select('full_name, email, residence_type, residence').order('full_name');
+        .from('profiles').select('full_name, residence_type, residence').order('full_name');
       box.innerHTML = '';
       const groups = {};
       (data || []).forEach(m => {
@@ -2381,11 +2401,7 @@
           who.className = 'mp-mwho';
           const nm = document.createElement('div');
           nm.textContent = m.full_name;
-          const em = document.createElement('div');
-          em.className = 'mp-date';
-          em.textContent = m.email;
           who.appendChild(nm);
-          who.appendChild(em);
           row.appendChild(who);
           box.appendChild(row);
         });
@@ -2396,7 +2412,7 @@
       const box = $('adminVoice');
       if (!box) return;
       const { data } = await this.supabase
-        .from('profiles').select('full_name, email, voice_part').order('full_name');
+        .from('profiles').select('full_name, voice_part').order('full_name');
       box.innerHTML = '';
       const groups = {};
       (data || []).forEach(m => {
@@ -2429,11 +2445,7 @@
           who.className = 'mp-mwho';
           const nm = document.createElement('div');
           nm.textContent = m.full_name;
-          const em = document.createElement('div');
-          em.className = 'mp-date';
-          em.textContent = m.email;
           who.appendChild(nm);
-          who.appendChild(em);
           row.appendChild(who);
           box.appendChild(row);
         });

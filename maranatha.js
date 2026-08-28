@@ -246,7 +246,6 @@
       c.appendChild(a);
       c.appendChild(El.make('div', 'tmn', t.full_name || ''));
       c.appendChild(El.make('div', 'tmr', t.title || roleLabel));
-      if (t.voice_part) c.appendChild(El.make('div', 'tmv', t.voice_part));
       return c;
     }
 
