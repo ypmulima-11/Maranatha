@@ -1828,14 +1828,8 @@
         btn.innerHTML = '<span>Update record</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>';
       }
       
-      // Set up one-time update handler
-      const form = document.getElementById('lrForm');
-      const originalSubmit = form.onsubmit;
-      form.onsubmit = (e) => {
-        e.preventDefault();
-        this.updateRecord(r.id);
-        form.onsubmit = originalSubmit;
-      };
+      // Set edit mode flag
+      this._editingRecordId = r.id;
     }
 
     async updateRecord(id) {
@@ -1871,6 +1865,7 @@
       msg.textContent = 'Record updated \u2713';
       this.loadLeaderWorkspace();
       // Reset form to add mode
+      this._editingRecordId = null;
       const btn = document.querySelector('#lrForm button[type="submit"]');
       if (btn) {
         delete btn.dataset.editId;
@@ -1919,6 +1914,20 @@
       if (!msg || !this.supabase || !this.ws) return;
       const tkey = this.wsTypeKey();
       const t = this.ws.types[tkey];
+      
+      // Check if we're in edit mode
+      if (this._editingRecordId) {
+        await this.updateRecord(this._editingRecordId);
+        this._editingRecordId = null;
+        // Reset button
+        const btn = document.querySelector('#lrForm button[type="submit"]');
+        if (btn) {
+          delete btn.dataset.editId;
+          btn.innerHTML = '<span>Save record</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>';
+        }
+        return;
+      }
+      
       const row = { owner_id: this.profile.id, record_type: tkey };
       const missing = [];
       this.wsFields.querySelectorAll('[data-k]').forEach(inp => {
