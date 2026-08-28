@@ -333,8 +333,7 @@
     }
 
     openProfileEdit() {
-      const p = this.profile;
-      if (!p) return;
+      const p = this.profile || {};
       $('pfName').value = p.full_name || '';
       $('pfDob').value = p.dob || '';
       $('pfPhone').value = p.phone || '';
@@ -427,9 +426,19 @@
         }
       }
 
+      const { data: userData } = await this.supabase.auth.getUser();
+      const user = userData && userData.user;
+      if (!user) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'User not found. Please sign in again.';
+        return;
+      }
+
       msg.className = 'mp-msg';
       msg.textContent = 'Saving\u2026';
       const patch = {
+        id: user.id,
+        email: user.email,
         full_name: name,
         dob: $('pfDob').value || null,
         phone: $('pfPhone').value.trim(),
@@ -443,7 +452,7 @@
         residence: residence
       };
       const res = await this.authCall(
-        () => this.supabase.from('profiles').update(patch).eq('id', this.profile.id),
+        () => this.supabase.from('profiles').upsert(patch),
         msg
       );
       if (res.failed) return;
