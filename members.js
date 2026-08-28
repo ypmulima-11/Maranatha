@@ -1548,10 +1548,6 @@
       return null;
     }
 
-    wsTypeKey() {
-      return this._wsType && this.ws.types[this._wsType] ? this._wsType : Object.keys(this.ws.types)[0];
-    }
-
     renderLeaderWorkspace() {
       this.ws = MemberPortal.workspaceForProfile(this.profile) || MemberPortal.GENERIC_WS;
       this._wsType = null;
@@ -1569,100 +1565,322 @@
       form.innerHTML = '';
       list.innerHTML = '';
 
-      const typeLbl = document.createElement('label');
-      typeLbl.className = 'mp-field';
-      const ts = document.createElement('span');
-      ts.textContent = 'Record type';
-      typeLbl.appendChild(ts);
-      const sel = document.createElement('select');
-      sel.id = 'lrType';
-      Object.keys(this.ws.types).forEach(k => {
-        const o = document.createElement('option');
-        o.value = k;
-        o.textContent = this.ws.types[k].label;
-        sel.appendChild(o);
-      });
-      sel.addEventListener('change', () => {
-        this._wsType = sel.value;
-        this.renderWsFields();
-      });
-      typeLbl.appendChild(sel);
-      form.appendChild(typeLbl);
+      // Header with workspace branding
+      const header = document.createElement('div');
+      header.className = 'ws-header';
+      header.innerHTML = `
+        <div class="ws-brand">
+          <div class="ws-icon">${this.ws.icon || '📋'}</div>
+          <div class="ws-info">
+            <h3>${this.ws.name} Workspace</h3>
+            <p class="ws-desc">${this.ws.description || 'Manage your leadership records'}</p>
+          </div>
+          ${Object.keys(this.ws.types).length > 1 ? `
+            <div class="ws-tabs" role="tablist">
+              ${Object.entries(this.ws.types).map(([k, t]) => `
+                <button class="ws-tab ${k === Object.keys(this.ws.types)[0] ? 'active' : ''}" 
+                        role="tab" 
+                        data-type="${k}" 
+                        aria-selected="${k === Object.keys(this.ws.types)[0]}">
+                  <span class="ws-tab-icon">${t.icon || '📄'}</span>
+                  <span class="ws-tab-label">${t.label}</span>
+                </button>
+              `).join('')}
+            </div>
+          ` : ''}
+      `;
+      form.appendChild(header);
 
-      this.wsFields = document.createElement('div');
-      form.appendChild(this.wsFields);
+      // Form area
+      const formInner = document.createElement('div');
+      formInner.className = 'ws-form-inner';
+      
+      if (Object.keys(this.ws.types).length > 1) {
+        const tabPanels = document.createElement('div');
+        tabPanels.className = 'ws-tab-panels';
+        Object.keys(this.ws.types).forEach((k, i) => {
+          const panel = document.createElement('div');
+          panel.className = 'ws-tab-panel' + (i === 0 ? ' active' : '');
+          panel.dataset.type = k;
+          panel.setAttribute('role', 'tabpanel');
+          panel.setAttribute('aria-hidden', i !== 0);
+          tabPanels.appendChild(panel);
+        });
+        formInner.appendChild(tabPanels);
+      } else {
+        this.wsFields = document.createElement('div');
+        formInner.appendChild(this.wsFields);
+      }
+      form.appendChild(formInner);
 
+      // Message area
       this.lrMsg = document.createElement('div');
       this.lrMsg.className = 'mp-msg';
       this.lrMsg.setAttribute('role', 'status');
       form.appendChild(this.lrMsg);
 
+      // Submit button
       const btn = document.createElement('button');
       btn.type = 'submit';
-      btn.className = 'mp-btn';
-      btn.textContent = 'Save record';
+      btn.className = 'mp-btn mp-btn-primary';
+      btn.innerHTML = '<span>Save record</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>';
       form.appendChild(btn);
 
+      // Initialize first tab
+      if (Object.keys(this.ws.types).length > 1) {
+        this._wsType = Object.keys(this.ws.types)[0];
+        this.bindTabSwitching();
+      } else {
+        this._wsType = Object.keys(this.ws.types)[0];
+        this.wsFields = formInner.querySelector('.ws-tab-panel') || formInner.querySelector('.ws-form-inner > div');
+      }
       this.renderWsFields();
       this.loadLeaderWorkspace();
+    }
+
+    bindTabSwitching() {
+      const tabs = document.querySelectorAll('.ws-tab');
+      const panels = document.querySelectorAll('.ws-tab-panel');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const type = tab.dataset.type;
+          panels.forEach(p => {
+            p.classList.toggle('active', p.dataset.type === tab.dataset.type);
+            p.setAttribute('aria-hidden', p.dataset.type !== tab.dataset.type);
+          });
+          this._wsType = type;
+          this.wsFields = document.querySelector(`.ws-tab-panel[data-type="${type}"]`);
+          this.renderWsFields();
+        });
+      });
     }
 
     renderWsFields() {
       if (!this.wsFields) return;
       const t = this.ws.types[this.wsTypeKey()];
       this.wsFields.innerHTML = '';
-      t.fields.forEach(f => {
-        const lab = document.createElement('label');
-        lab.className = 'mp-field';
-        const sp = document.createElement('span');
-        sp.textContent = f.l + (f.req ? ' *' : '');
-        lab.appendChild(sp);
-        let inp;
-        if (f.t === 'textarea') {
-          inp = document.createElement('textarea');
-          inp.rows = 2;
-        } else if (f.t === 'select') {
-          inp = document.createElement('select');
-          [''].concat(f.opts).forEach(v => {
-            const o = document.createElement('option');
-            o.value = v;
-            o.textContent = v === '' ? '\u2014' : MemberPortal.optLabel(v);
-            inp.appendChild(o);
-          });
-        } else {
-          inp = document.createElement('input');
-          inp.type = f.t || 'text';
+      
+      // Group fields by section if defined
+      const sections = this.groupFieldsBySection(t.fields);
+      
+      Object.entries(sections).forEach(([sectionName, fields]) => {
+        if (sectionName) {
+          const sectionHeader = document.createElement('div');
+          sectionHeader.className = 'ws-section-header';
+          sectionHeader.innerHTML = `<h4>${sectionName}</h4><span class="ws-section-count">${fields.length} fields</span>`;
+          this.wsFields.appendChild(sectionHeader);
         }
-        inp.dataset.k = f.k;
-        lab.appendChild(inp);
-        this.wsFields.appendChild(lab);
+        
+        const grid = document.createElement('div');
+        grid.className = 'ws-field-grid';
+        
+        fields.forEach(f => {
+          const lab = document.createElement('label');
+          lab.className = 'mp-field ws-field' + (f.req ? ' required' : '');
+          
+          const sp = document.createElement('span');
+          sp.className = 'ws-field-label';
+          sp.textContent = f.l + (f.req ? ' *' : '');
+          lab.appendChild(sp);
+          
+          let inp;
+          if (f.t === 'textarea') {
+            inp = document.createElement('textarea');
+            inp.rows = f.rows || 3;
+          } else if (f.t === 'select') {
+            inp = document.createElement('select');
+            [''].concat(f.opts).forEach(v => {
+              const o = document.createElement('option');
+              o.value = v;
+              o.textContent = v === '' ? '\u2014' : MemberPortal.optLabel(v);
+              inp.appendChild(o);
+            });
+          } else if (f.t === 'date') {
+            inp = document.createElement('input');
+            inp.type = 'date';
+          } else if (f.t === 'time') {
+            inp = document.createElement('input');
+            inp.type = 'time';
+          } else if (f.t === 'number') {
+            inp = document.createElement('input');
+            inp.type = 'number';
+            inp.step = f.step || 'any';
+          } else if (f.t === 'file') {
+            inp = document.createElement('input');
+            inp.type = 'file';
+            inp.accept = f.accept || '*';
+          } else {
+            inp = document.createElement('input');
+            inp.type = f.t || 'text';
+          }
+          if (f.placeholder) inp.placeholder = f.placeholder;
+          inp.dataset.k = f.k;
+          if (f.req) inp.required = true;
+          lab.appendChild(inp);
+          grid.appendChild(lab);
+        });
+        
+        this.wsFields.appendChild(grid);
       });
+    }
+
+    groupFieldsBySection(fields) {
+      const sections = {};
+      fields.forEach(f => {
+        const section = f.section || 'General';
+        if (!sections[section]) sections[section] = [];
+        sections[section].push(f);
+      });
+      return sections;
     }
 
     makeRecord(r) {
       const card = document.createElement('div');
-      card.className = 'mp-item';
+      card.className = 'ws-record';
+      card.dataset.id = r.id;
+      
       const t = this.ws.types[r.record_type];
-      if (Object.keys(this.ws.types).length > 1) {
-        const b = document.createElement('span');
-        b.className = 'mp-badge member';
-        b.textContent = t ? t.label : MemberPortal.optLabel(r.record_type || 'record');
-        card.appendChild(b);
-      }
-      const h = document.createElement('h3');
-      h.textContent = t ? (t.title(r) || 'Untitled') : (r.title || 'Untitled');
-      card.appendChild(h);
-      const d = document.createElement('div');
-      d.className = 'mp-date';
-      d.textContent = new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-      card.appendChild(d);
-      const del = document.createElement('button');
-      del.type = 'button';
-      del.className = 'mp-btn small danger';
-      del.textContent = 'Delete';
-      del.addEventListener('click', () => this.deleteRecord(r.id));
-      card.appendChild(del);
+      const isMultiType = Object.keys(this.ws.types).length > 1;
+      
+      card.innerHTML = `
+        <div class="ws-record-header">
+          ${isMultiType ? `<span class="ws-record-type-badge">${t ? t.label : MemberPortal.optLabel(r.record_type || 'record')}</span>` : ''}
+          <h4 class="ws-record-title">${t ? (t.title(r) || 'Untitled') : (r.title || 'Untitled')}</h4>
+          <div class="ws-record-meta">
+            <span class="ws-record-date">${new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+            ${r.record_date ? `<span class="ws-record-event-date">Event: ${r.record_date}</span>` : ''}
+          </div>
+        </div>
+        <div class="ws-record-preview">
+          ${this.generateRecordPreview(r, t)}
+        </div>
+        <div class="ws-record-actions">
+          <button type="button" class="ws-btn-icon ws-btn-edit" aria-label="Edit" data-id="${r.id}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button type="button" class="ws-btn-icon ws-btn-delete danger" aria-label="Delete" data-id="${r.id}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+        </div>
+      `;
+      
+      // Add event listeners
+      card.querySelector('.ws-btn-delete').addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.deleteRecord(r.id);
+      });
+      card.querySelector('.ws-btn-edit').addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.editRecord(r);
+      });
+      
       return card;
+    }
+
+    generateRecordPreview(r, t) {
+      if (!t) return '';
+      const fields = t.fields || [];
+      const previewFields = fields.filter(f => f.preview !== false).slice(0, 4);
+      if (!previewFields.length) return '';
+      
+      return previewFields.map(f => {
+        const val = r[f.k];
+        if (!val && val !== 0 && val !== false) return '';
+        const displayVal = f.t === 'date' ? (val ? new Date(val).toLocaleDateString('en-GB') : '') : val;
+        return `<div class="ws-preview-field"><span class="ws-preview-label">${f.l}:</span><span class="ws-preview-value">${displayVal}</span></div>`;
+      }).join('');
+    }
+
+    editRecord(r) {
+      // Switch to the correct tab
+      this._wsType = r.record_type;
+      const tabs = document.querySelectorAll('.ws-tab');
+      tabs.forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.type === r.record_type);
+      });
+      const panels = document.querySelectorAll('.ws-tab-panel');
+      panels.forEach(p => {
+        p.classList.toggle('active', p.dataset.type === r.record_type);
+        p.setAttribute('aria-hidden', p.dataset.type !== r.record_type);
+      });
+      this._wsType = r.record_type;
+      this.wsFields = document.querySelector(`.ws-tab-panel[data-type="${r.record_type}"]`);
+      this.renderWsFields();
+      
+      // Populate fields
+      const t = this.ws.types[r.record_type];
+      t.fields.forEach(f => {
+        const inp = this.wsFields.querySelector(`[data-k="${f.k}"]`);
+        if (inp && r[f.k] !== undefined && r[f.k] !== null) {
+          if (f.t === 'date') {
+            inp.value = r[f.k] ? r[f.k].split('T')[0] : '';
+          } else {
+            inp.value = r[f.k];
+          }
+        }
+      });
+      
+      // Scroll to form
+      document.querySelector('.ws-form-inner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      
+      // Change button to update mode
+      const btn = document.querySelector('#lrForm button[type="submit"]');
+      if (btn) {
+        btn.dataset.editId = r.id;
+        btn.innerHTML = '<span>Update record</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>';
+      }
+      
+      // Set up one-time update handler
+      const form = document.getElementById('lrForm');
+      const originalSubmit = form.onsubmit;
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        this.updateRecord(r.id);
+        form.onsubmit = originalSubmit;
+      };
+    }
+
+    async updateRecord(id) {
+      const msg = this.lrMsg;
+      if (!msg || !this.supabase || !this.ws) return;
+      const tkey = this.wsTypeKey();
+      const t = this.ws.types[tkey];
+      const row = { record_type: tkey };
+      const missing = [];
+      this.wsFields.querySelectorAll('[data-k]').forEach(inp => {
+        const f = t.fields.find(x => x.k === inp.dataset.k);
+        if (!f) return;
+        const v = (inp.value || '').trim();
+        if (f.req && !v) { missing.push(f.l); return; }
+        if (!v) return;
+        row[f.k] = f.t === 'number' ? Number(v) : v;
+      });
+      if (missing.length) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'Please fill in: ' + missing.join(', ');
+        return;
+      }
+      if (this.ws.key === 'subcommittee') row.committee_name = this.ws.committee;
+      msg.className = 'mp-msg';
+      msg.textContent = 'Saving\u2026';
+      const { error } = await this.supabase.from(this.ws.table).update(row).eq('id', id);
+      if (error) {
+        msg.className = 'mp-msg err';
+        msg.textContent = error.message;
+        return;
+      }
+      msg.className = 'mp-msg ok';
+      msg.textContent = 'Record updated \u2713';
+      this.loadLeaderWorkspace();
+      // Reset form to add mode
+      const btn = document.querySelector('#lrForm button[type="submit"]');
+      if (btn) {
+        delete btn.dataset.editId;
+        btn.innerHTML = '<span>Save record</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>';
+      }
+      this.wsFields.querySelectorAll('input, textarea, select').forEach(inp => {
+        if (inp.type === 'file') return;
+        inp.value = '';
+      });
+      this.wsFields.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
     }
 
     async loadLeaderWorkspace() {
