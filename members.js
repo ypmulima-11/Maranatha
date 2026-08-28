@@ -188,10 +188,21 @@
       if (data.session) {
         msg.className = 'mp-msg ok';
         msg.textContent = 'Account created \u2014 welcome!';
+        $('suName').value = '';
+        $('suEmail').value = '';
+        $('suPass').value = '';
+        $('suPassConf').value = '';
         return;
       }
+      
+      // Clear the signup form fields so they aren't visible if the user navigates back
+      $('suName').value = '';
+      $('suEmail').value = '';
+      $('suPass').value = '';
+      $('suPassConf').value = '';
+
       msg.className = 'mp-msg ok';
-      msg.textContent = 'Account created! Check your inbox (and spam folder) for a confirmation link. The email may take a few minutes to arrive. Then sign in.';
+      msg.textContent = 'Account created \u2014 welcome! You can now sign in.';
       this.switchTab('signin');
       $('siEmail').value = email;
     }
