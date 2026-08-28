@@ -246,9 +246,56 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 720px) {
-  .mp-grid { grid-template: 1fr; }
+  .mp-grid { grid-template-columns: 1fr; }
   .mp-pro { grid-template-columns: 1fr; }
   .mp-brand em { display: none; }
+  .mp-card2 { padding: 1rem; }
+  .mp-field { margin-bottom: 12px; }
+  .mp-field input, .mp-field select, .mp-field textarea { width: 100%; box-sizing: border-box; }
+  .mp-passwrap input { padding-right: 44px; }
+  .mp-passbtn { width: 36px; height: 36px; }
+  .mp-btn.big { width: 100%; justify-content: center; }
+  .mp-res-form { gap: 12px; }
+  .mp-mrow { flex-direction: column; gap: 8px; align-items: flex-start; }
+  .mp-mrow > div:last-child { width: 100%; text-align: left; }
+  .mp-mwho { width: 100%; }
+  .mp-date { margin-top: 4px; }
+  .mp-btn { width: 100%; text-align: center; }
+  .mp-btn.small { padding: 8px 12px; font-size: 12px; }
+  .mp-list { gap: 8px; }
+  .mp-item { padding: 12px; }
+  .mp-badge { font-size: 11px; padding: 2px 8px; }
+  .mp-field label { flex-direction: column; gap: 4px; }
+  .mp-field span { font-size: 13px; }
+  .mp-field input, .mp-field select, .mp-field textarea { font-size: 16px; }
+  .mp-msg { font-size: 13px; padding: 8px 12px; }
+  .mp-hint { font-size: 12px; line-height: 1.5; }
+  .mp-sec { font-size: 14px; margin: 16px 0 8px; }
+  .mp-card2 { margin-bottom: 16px; }
+  .mp-res-form { margin-top: 8px; }
+  .mp-tab { padding: 10px 8px; font-size: 13px; }
+  .mp-tab-wrap { overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+  .mp-tab { flex-shrink: 0; }
+  .mp-mrow .mp-btn.small { width: auto; }
+  .mp-libfilters { gap: 8px; }
+  .mp-card2.mp-card-wide { padding: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .tb { font-size: 10px; }
+  .mp-btn.big { padding: 12px 16px; font-size: 14px; }
+  .mp-card2 { padding: 0.875rem; }
+  .mp-field input, .mp-field select, .mp-field textarea { padding: 10px 12px; }
+  .mp-btn { padding: 10px 14px; }
+  .mp-field { margin-bottom: 10px; }
+  .mp-hint { font-size: 11px; }
+  .mp-sec { font-size: 13px; }
+  .mp-card2.mp-card-wide { padding: 0.875rem; }
+  .mp-btn.small { padding: 6px 10px; font-size: 11px; }
+  .mp-passbtn { width: 32px; height: 32px; }
+  .mp-passwrap input { padding-right: 40px; }
+  .mp-field span { font-size: 12px; }
+  .mp-field input, .mp-field select, .mp-field textarea { padding: 10px 12px; font-size: 16px; }
 }
 
 /* ---------- Password field with show/hide toggle ---------- */

@@ -821,6 +821,77 @@ footer { background: #070f04; border-top: 1px solid rgba(255,255,255,.05); }
   .totop { bottom: 16px; right: 16px; }
 }
 
+@media(max-width:480px) {
+  .tb { font-size: 10px; padding: 0 0.75rem; }
+  nav { padding: 0 0.75rem; }
+  .hero { padding: 6rem 0.75rem 3rem; }
+  .hstats { gap: 1rem; font-size: 12px; }
+  .hstats span { font-size: 28px; }
+  .hsl { font-size: 10px; }
+  .bg, .bo { padding: 10px 20px; font-size: 13px; }
+  .sw { padding: 2.5rem 0.75rem; }
+  .fsw .sw { padding: 2rem 0.75rem; }
+  .slbl { font-size: 10px; }
+  .stit { font-size: clamp(22px, 5vw, 32px); }
+  .ssub { font-size: 13px; max-width: 100%; }
+  .fsi { gap: 1rem; }
+  .fsb { padding: 1rem; gap: 10px; }
+  .fsic { width: 40px; height: 40px; font-size: 18px; }
+  .fsb h3 { font-size: 13px; }
+  .fsb p { font-size: 12px; }
+  .ag { gap: 1.5rem; }
+  .avis { height: 250px; }
+  .astats { gap: 1rem; }
+  .sn { font-size: 28px; }
+  .sk { font-size: 11px; }
+  .valg, .stg, .vidg, .nwg, .msg { gap: 0.75rem; }
+  .valc, .stc { padding: 1.2rem; }
+  .valic, .stq { font-size: 20px; }
+  .valc h3, .stc > p { font-size: 14px; }
+  .valc p { font-size: 12px; }
+  .mug { grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); gap: 1rem; }
+  .muth { height: 110px; }
+  .mub { padding: 12px; }
+  .evg { grid-template-columns: 1fr; gap: 1rem; }
+  .evh { padding: 12px; }
+  .evd { font-size: 30px; }
+  .evb { padding: 12px; }
+  .tmg { grid-template-columns: repeat(2,1fr); gap: 1rem; }
+  .tma { width: 70px; height: 70px; font-size: 20px; }
+  .tmn { font-size: 13px; }
+  .tmr { font-size: 11px; }
+  .gag { grid-template-columns: repeat(2,1fr); gap: 8px; }
+  .gapl { width: 36px; height: 36px; font-size: 18px; }
+  .nwg { grid-template-columns: 1fr; }
+  .nwc { padding: 1.2rem; }
+  .nwd span { font-size: 24px; }
+  .nwc h3 { font-size: 14px; }
+  .nwc p { font-size: 12.5px; }
+  .jog { grid-template-columns: 1fr; gap: 1.5rem; }
+  .jib { width: 40px; height: 40px; font-size: 17px; }
+  .jv { font-size: 13px; }
+  .pops span { font-size: 11px; padding: 3px 10px; }
+  .jof { gap: 10px; }
+  .cof input, .cof textarea { padding: 10px 14px; font-size: 14px; }
+  .cof button { padding: 12px 24px; font-size: 13px; }
+  .fwrap { grid-template-columns: 1fr; gap: 1.5rem; padding: 2.5rem 1rem 1.5rem; }
+  .fcol h4 { font-size: 11px; }
+  .fcol a, .fcol span { font-size: 12px; }
+  .fnews-form { flex-direction: column; gap: 10px; }
+  .fnews-form .fld { max-width: none; width: 100%; }
+  .fnews-form input { padding: 10px 14px; }
+  .fnews-form button { padding: 10px 20px; font-size: 13px; }
+  .fbot { padding: 1rem; font-size: 11px; }
+  .lb-prev { left: 8px; }
+  .lb-next { right: 8px; }
+  .totop { bottom: 12px; right: 12px; width: 40px; height: 40px; font-size: 18px; }
+  .cd { flex-direction: column; gap: 0.75rem; }
+  .cdg { width: 100%; justify-content: center; }
+  .cdx { flex: 1 1 100%; min-width: 0; }
+  .cdx span { font-size: 22px; }
+  .cdx small { font-size: 9px; }
+}
+
 /* ---------- MULTI-PAGE COMPACT HERO ---------- */
 .hero.ph { min-height: 76vh; padding: 8rem 2rem 4.5rem; }
 .hero.ph .hsub { margin-bottom: 0; }
