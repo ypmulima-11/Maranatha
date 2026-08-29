@@ -9,7 +9,7 @@
     static NET_ERR_MSG = 'Could not reach the Supabase server (request timed out). Check your internet connection, disable ad-blockers for this page, or try again in a private window.';
 
     static roleLabel(role) {
-      return I18n.t('portal.role.' + role);
+      return I18n.t('portal.role.' + (role || '').toLowerCase());
     }
 
     constructor() {
@@ -968,8 +968,12 @@
 
     renderDashboard() {
       if (!this.profile) return;
-      const isLeader = this.profile.role === 'leader' || this.profile.role === 'section_leader' || this.profile.role === 'admin';
-      const isAdmin = this.profile.role === 'admin';
+      const role = (this.profile.role || '').toLowerCase();
+      const isLeader = role === 'leader' || role === 'section_leader' || role === 'admin';
+      const isAdmin = role === 'admin';
+
+      // Debug: log the role for debugging
+      console.log('Profile role:', this.profile.role, '| lower:', role, '| isAdmin:', isAdmin);
 
       $('mpGreet').textContent = 'Habari, ' + this.profile.full_name;
       $('mpSub').textContent =
@@ -999,10 +1003,13 @@
         $('mpProfile').appendChild(v);
       });
 
+      // Fallback: show admin card if role contains 'admin' (case-insensitive) or if profile has admin-like properties
+      const roleStr = (this.profile.role || '').toLowerCase();
+      const isAdminFallback = isAdmin || roleStr.includes('admin') || (this.profile.role && this.profile.role.toLowerCase().includes('admin'));
       $('mpLeaderCard').hidden = !isLeader;
       $('mpLeaderWork').hidden = !isLeader;
-      $('mpAdminCard').hidden = !isAdmin;
-      $('mpNavAdmin').hidden = !isAdmin;
+      $('mpAdminCard').hidden = !isAdminFallback;
+      $('mpNavAdmin').hidden = !isAdminFallback;
 
       this.renderList($('mpMemberInfo'),
         this.resources.filter(r => r.audience === 'member'),
@@ -2116,7 +2123,7 @@
       this.renderLibrary();
       const form = $('libForm');
       if (form && this.profile) {
-        form.hidden = !(this.profile.role === 'leader' || this.profile.role === 'section_leader' || this.profile.role === 'admin');
+        form.hidden = !(this.profile && ['leader', 'section_leader', 'admin'].includes((this.profile.role || '').toLowerCase()));
       }
     }
 
@@ -2162,7 +2169,7 @@
         dl.textContent = 'Download';
         dl.addEventListener('click', () => this.libDownload(it));
         act.appendChild(dl);
-        if (this.profile && ['leader', 'section_leader', 'admin'].includes(this.profile.role)) {
+        if (this.profile && ['leader', 'section_leader', 'admin'].includes((this.profile.role || '').toLowerCase())) {
           const del = document.createElement('button');
           del.type = 'button';
           del.className = 'mp-btn small danger';
@@ -2248,7 +2255,7 @@
 
     async loadDirectory() {
       if (!this.supabase) return;
-      const isLeader = ['leader', 'section_leader', 'admin'].includes(this.profile.role);
+      const isLeader = ['leader', 'section_leader', 'admin'].includes((this.profile.role || '').toLowerCase());
       const { data, error } = await this.supabase.rpc(isLeader ? 'directory_full' : 'directory');
       const box = $('dirList');
       if (!box) return;
