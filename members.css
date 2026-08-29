@@ -383,37 +383,56 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 .ws-tabs {
   display: flex;
   gap: 4px;
-  background: rgba(255,255,255,.6);
+  background: rgba(255,255,255,.8);
   padding: 4px;
-  border-radius: 8px;
+  border-radius: 10px;
   flex-wrap: wrap;
+  border: 1px solid rgba(186,117,23,.1);
 }
 
 .ws-tab {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
+  gap: 8px;
+  padding: 10px 20px;
   border: none;
   background: transparent;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
   color: var(--ts);
   cursor: pointer;
   transition: all .15s ease;
   white-space: nowrap;
+  position: relative;
+}
+
+.ws-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, var(--au), var(--g6));
+  border-radius: 1px;
+  transition: width .2s ease, left .2s ease;
+  left: 50%;
 }
 
 .ws-tab:hover {
-  background: rgba(186,117,23,.12);
+  background: rgba(186,117,23,.08);
   color: var(--au);
 }
 
 .ws-tab.active {
-  background: linear-gradient(135deg, var(--au), var(--g6));
-  color: var(--g9);
-  box-shadow: 0 2px 8px rgba(186,117,23,.35);
+  color: var(--au);
+  background: rgba(186,117,23,.06);
+}
+
+.ws-tab.active::after {
+  width: 80%;
+  left: 10%;
 }
 
 .ws-tab-icon {
