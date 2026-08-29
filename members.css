@@ -867,3 +867,336 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
     font-size: 16px;
   }
 }
+
+:root {
+  --g9: #0d2a04;
+  --g8: #173404;
+  --au: #BA7517;
+  --al: #FAC775;
+  --bg: #f4f6ef;
+  --card: #ffffff;
+  --ink: #1e2a14;
+  --mut: #5f6e51;
+  --line: #dde4d2;
+  --err: #b3261e;
+  --ok: #1e7d32;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+[hidden] { display: none !important; }
+
+.mpw { background: var(--bg); }
+
+.mp-app {
+  font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+button { font: inherit; }
+input, select, textarea { font: inherit; }
+code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
+
+/* ---------- Header ---------- */
+.mp-h { background: var(--g9); color: #fff; padding: 0 1.5rem; }
+.mp-h-in {
+  max-width: 980px; margin: 0 auto; height: 60px;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.mp-brand { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-weight: 600; font-size: 16px; }
+.mp-brand em { font-style: normal; color: var(--al); }
+.mp-logo {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--g9); border: 2px solid var(--au); color: var(--al);
+  display: flex; align-items: center; justify-content: center; font-weight: 700;
+  overflow: hidden; flex-shrink: 0;
+}
+.mp-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mp-nav { display: flex; align-items: center; gap: 1.2rem; }
+.mp-nav a { color: rgba(255,255,255,.75); text-decoration: none; font-size: 13px; }
+.mp-nav a:hover { color: var(--al); }
+.mp-nav-admin { color: var(--al) !important; }
+.tblang { display: flex; align-items: center; gap: 6px; }
+.tblang span { opacity: .45; font-size: 13px; }
+.tblang button {
+  background: none; border: 1px solid rgba(255,255,255,.3); color: rgba(255,255,255,.75);
+  border-radius: 6px; padding: 2px 8px; cursor: pointer; font-size: 12px;
+}
+.tblang button.on { background: var(--au); border-color: var(--au); color: #fff; font-weight: 600; }
+
+/* ---------- Buttons ---------- */
+.mp-btn {
+  background: var(--au); color: #fff; border: 1px solid var(--au);
+  padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
+  transition: .15s;
+}
+.mp-btn:hover { background: #d18a1e; }
+.mp-btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.mp-btn.ghost:hover { border-color: var(--au); color: var(--au); }
+.mp-btn.big { width: 100%; padding: 11px; font-size: 15px; }
+.mp-btn:disabled { opacity: .6; cursor: wait; }
+.mp-link { background: none; border: none; color: var(--au); cursor: pointer; text-decoration: underline; font-size: 13px; }
+
+/* ---------- Auth ---------- */
+.mp-auth {
+  min-height: 0;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 2.5rem 0 3.5rem;
+}
+.mp-card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; width: min(440px, 100%);
+  box-shadow: 0 10px 30px rgba(13,42,4,.08); overflow: hidden;
+}
+.mp-tabs { display: flex; border-bottom: 1px solid var(--line); }
+.mp-tab {
+  flex: 1; background: none; border: none; padding: 13px; cursor: pointer;
+  font-weight: 600; color: var(--mut); border-bottom: 3px solid transparent;
+}
+.mp-tab.on { color: var(--ink); border-bottom-color: var(--au); }
+
+.mp-form { padding: 1.6rem 1.6rem 2rem; display: none; }
+.mp-form.on { display: block; }
+.mp-form h1 { font-size: 20px; margin-bottom: 6px; }
+.mp-hint { color: var(--mut); font-size: 13px; margin-bottom: 14px; }
+.mp-center { text-align: center; margin-top: 12px; }
+
+.mp-field { display: block; font-weight: 600; font-size: 13px; margin-bottom: 13px; }
+.mp-field input, .mp-field select, .mp-field textarea {
+  display: block; width: 100%; margin-top: 5px;
+  border: 1px solid var(--line); border-radius: 8px;
+  padding: 9px 11px; background: #fbfcf8;
+}
+.mp-field textarea { resize: vertical; min-height: 70px; }
+.mp-field input:focus, .mp-field select:focus, .mp-field textarea:focus { outline: 2px solid var(--al); border-color: var(--au); }
+
+.mp-role {
+  background: #fdf3e2; border: 1px solid #f0d9a8; color: #7a5b1a;
+  border-radius: 8px; padding: 9px 12px; font-size: 13px; margin-bottom: 12px;
+}
+
+.mp-or {
+  display: flex; align-items: center; gap: 10px; margin: 14px 0 10px;
+  color: var(--mut); font-size: 12px;
+}
+.mp-or::before, .mp-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.mp-btn.google {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; background: #fff; color: var(--ink); border-color: var(--line);
+}
+.mp-btn.google:hover { border-color: var(--au); color: var(--au); }
+.mp-btn.google svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.mp-msg { margin-bottom: 12px; font-size: 13px; min-height: 18px; }
+.mp-msg.err { color: var(--err); }
+.mp-msg.ok { color: var(--ok); }
+
+/* ---------- Dashboard ---------- */
+.mp-dash { min-height: 0; }
+.mp-dash-in { max-width: 980px; margin: 0 auto; padding: 2rem 1.2rem 4rem; }
+
+.mp-welcome {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap; margin-bottom: 16px;
+}
+.mp-greet { font-size: 22px; font-weight: 700; }
+.mp-sub { color: var(--mut); font-size: 13px; margin-top: 2px; }
+
+.mp-note {
+  background: #eef2e7; border: 1px solid var(--line); color: var(--mut);
+  border-radius: 8px; padding: 10px 14px; font-size: 12.5px; margin-bottom: 20px;
+}
+
+.mp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.mp-card2 {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 12px; padding: 18px;
+}
+.mp-card2 h2 { font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+.mp-badge {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .05em; padding: 2px 8px; border-radius: 20px;
+}
+.mp-badge.member { background: #e7efe0; color: #2f5c14; }
+.mp-badge.leader { background: #fdf3e2; color: #a15c00; }
+.mp-badge.admin { background: #e3ecf7; color: #1a4f8a; }
+
+.mp-list { display: flex; flex-direction: column; gap: 10px; }
+.mp-item { border: 1px solid var(--line); border-radius: 9px; padding: 12px 14px; }
+.mp-item h3 { font-size: 14px; margin-bottom: 4px; }
+.mp-item p { font-size: 13px; color: var(--mut); }
+.mp-item .mp-date { font-size: 11px; color: #9aa88a; margin-top: 6px; }
+.mp-pinned { border-color: #e0c98c; background: #fffdf4; }
+.mp-card-wide { grid-column: 1 / -1; }
+.mp-empty { color: var(--mut); font-size: 13px; font-style: italic; }
+
+/* ---------- Events: RSVP buttons ---------- */
+.mp-rsvp { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.mp-rsvp span { font-size: 11px; color: var(--mut); text-transform: uppercase; letter-spacing: .05em; }
+.mp-btn.small { padding: 4px 10px; font-size: 12px; }
+.mp-btn.small.on { background: var(--au); border-color: var(--au); color: #fff; }
+.mp-btn.danger { background: transparent; border-color: #d98a8a; color: #b03a3a; }
+.mp-btn.danger:hover { background: #fbecec; border-color: #b03a3a; color: #b03a3a; }
+
+/* ---------- Admin: invite box ---------- */
+.mp-invbox { margin-top: 10px; border: 1px dashed #e0c98c; border-radius: 8px; padding: 10px 12px; background: #fffdf4; }
+.mp-invrow { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+.mp-invrow code {
+  flex: 1; min-width: 0; font-size: 12px; word-break: break-all;
+  background: #f5f7f0; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px;
+}
+
+.mp-pro { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+.mp-pro .mp-k { font-size: 11px; color: var(--mut); text-transform: uppercase; letter-spacing: .05em; }
+.mp-pro .mp-v { font-size: 13.5px; font-weight: 600; }
+
+/* ---------- Setup banner ---------- */
+.mp-banner {
+  max-width: 700px; margin: 2rem auto 0; background: #fff8ec;
+  border: 1px solid #f0d9a8; border-radius: 12px; padding: 18px 22px;
+}
+.mp-banner h3 { font-size: 16px; margin-bottom: 6px; }
+.mp-banner p { font-size: 13px; color: var(--mut); margin-bottom: 8px; }
+.mp-banner ol { margin: 0 0 0 18px; font-size: 13px; color: var(--mut); }
+.mp-banner li { margin-bottom: 5px; }
+
+/* ---------- Admin: member list + resource form ---------- */
+.mp-sec { font-size: 13px; margin: 18px 0 8px; color: var(--mut); text-transform: uppercase; letter-spacing: .05em; }
+.mp-mrow-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 4px; }
+.mp-mrow {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px;
+  flex-wrap: wrap;
+}
+.mp-mwho { min-width: 0; }
+.mp-mrow select {
+  border: 1px solid var(--line); border-radius: 7px;
+  padding: 6px 8px; background: #fbfcf8; cursor: pointer;
+}
+.mp-mrow input.mp-mtitle {
+  border: 1px solid var(--line); border-radius: 7px;
+  padding: 6px 8px; background: #fbfcf8; width: 170px; font-size: 13px;
+}
+.mp-res-form { margin-top: 4px; }
+
+/* ---------- Anchor offsets ---------- */
+.mpw { scroll-margin-top: 96px; }
+#members { scroll-margin-top: 84px; }
+
+/* ---------- Attendance ---------- */
+.qr-wrap {
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px; width: max-content; margin: 10px auto 6px;
+}
+.qr-wrap canvas, .qr-wrap img { display: block; }
+.att-code {
+  font-size: 22px; font-weight: 700; letter-spacing: 5px;
+  text-align: center; color: var(--green, #0d2a04); margin: 4px 0 2px;
+}
+.att-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; padding: 7px 2px; border-bottom: 1px solid #eee;
+  font-size: 13px;
+}
+.att-row:last-child { border-bottom: 0; }
+.att-counts { font-size: 12px; font-weight: 600; margin: 8px 0 2px; }
+.att-status {
+  font-size: 11px; font-weight: 700; padding: 3px 9px;
+  border-radius: 999px; white-space: nowrap;
+}
+.att-present { background: #e7efe0; color: #2f5c14; }
+.att-late { background: #fdf3e2; color: #a15c00; }
+.att-absent { background: #fbe9e7; color: #b3261e; }
+.att-excused { background: #eceff4; color: #45516b; }
+.sess-live { border-left: 3px solid #BA7517; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+  .mp-grid { grid-template-columns: 1fr; }
+  .mp-pro { grid-template-columns: 1fr; }
+  .mp-brand em { display: none; }
+  .mp-card2 { padding: 1rem; }
+  .mp-field { margin-bottom: 12px; }
+  .mp-field input, .mp-field select, .mp-field textarea { width: 100%; box-sizing: border-box; }
+  .mp-passwrap input { padding-right: 44px; }
+  .mp-passbtn { width: 36px; height: 36px; }
+  .mp-btn.big { width: 100%; justify-content: center; }
+  .mp-res-form { gap: 12px; }
+  .mp-mrow { flex-direction: column; gap: 8px; align-items: flex-start; }
+  .mp-mrow > div:last-child { width: 100%; text-align: left; }
+  .mp-mwho { width: 100%; }
+  .mp-date { margin-top: 4px; }
+  .mp-btn { width: 100%; text-align: center; }
+  .mp-btn.small { padding: 8px 12px; font-size: 12px; }
+  .mp-list { gap: 8px; }
+  .mp-item { padding: 12px; }
+  .mp-badge { font-size: 11px; padding: 2px 8px; }
+  .mp-field label { flex-direction: column; gap: 4px; }
+  .mp-field span { font-size: 13px; }
+  .mp-field input, .mp-field select, .mp-field textarea { font-size: 16px; }
+  .mp-msg { font-size: 13px; padding: 8px 12px; }
+  .mp-hint { font-size: 12px; line-height: 1.5; }
+  .mp-sec { font-size: 14px; margin: 16px 0 8px; }
+  .mp-card2 { margin-bottom: 16px; }
+  .mp-res-form { margin-top: 8px; }
+  .mp-tab { padding: 10px 8px; font-size: 13px; }
+  .mp-tab-wrap { overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+  .mp-tab { flex-shrink: 0; }
+  .mp-mrow .mp-btn.small { width: auto; }
+  .mp-libfilters { gap: 8px; }
+  .mp-card2.mp-card-wide { padding: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .tb { font-size: 10px; }
+  .mp-btn.big { padding: 12px 16px; font-size: 14px; }
+  .mp-card2 { padding: 0.875rem; }
+  .mp-field input, .mp-field select, .mp-field textarea { padding: 10px 12px; }
+  .mp-btn { padding: 10px 14px; }
+  .mp-field { margin-bottom: 10px; }
+  .mp-hint { font-size: 11px; }
+  .mp-sec { font-size: 13px; }
+  .mp-card2.mp-card-wide { padding: 0.875rem; }
+  .mp-btn.small { padding: 6px 10px; font-size: 11px; }
+  .mp-passbtn { width: 32px; height: 32px; }
+  .mp-passwrap input { padding-right: 40px; }
+  .mp-field span { font-size: 12px; }
+  .mp-field input, .mp-field select, .mp-field textarea { padding: 10px 12px; font-size: 16px; }
+}
+
+/* ---------- Password field with show/hide toggle ---------- */
+.mp-passwrap { position: relative; display: flex; align-items: center; }
+.mp-passwrap input { flex: 1; padding-right: 44px; }
+.mp-passbtn {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border: none; background: transparent;
+  color: var(--ts); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; transition: background .15s, color .15s;
+}
+.mp-passbtn:hover { background: var(--g0); color: var(--g6); }
+.mp-passbtn:focus-visible { outline: 2px solid var(--au); outline-offset: 2px; }
+.mp-passbtn svg { display: block; }
+
+/* ---------- Portal polish (2026-08) ---------- */
+.mp-card2 { box-shadow: 0 8px 22px -14px rgba(23,52,4,.14); }
+.mp-btn { transition: transform .15s ease, box-shadow .2s ease, background .2s ease, filter .2s ease; }
+.mp-btn:hover { transform: translateY(-1px); }
+.mp-btn.big {
+  background: linear-gradient(135deg, #FAC775 0%, #E19A3C 45%, #BA7517 100%);
+  box-shadow: 0 10px 26px -10px rgba(186,117,23,.5);
+}
+.mp-btn.big:hover { filter: brightness(1.06); box-shadow: 0 14px 30px -10px rgba(186,117,23,.6); }
+
+/* ---------- Library, directory, posting (2026-08) ---------- */
+.mp-two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.mp-check input { width: auto; display: inline-block; margin-left: 8px; }
+.mp-check span { display: inline-block; }
+.mp-libfilters { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+@media (max-width: 720px) {
+  .mp-two, .mp-libfilters { grid-template-columns: 1fr; }
+}
+
