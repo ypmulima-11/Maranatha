@@ -425,6 +425,18 @@
 
       $('admSignIn').addEventListener('click', () => this.signIn());
       $('admPass').addEventListener('keydown', e => { if (e.key === 'Enter') this.signIn(); });
+      
+      const toggleAdmPass = $('toggleAdmPass');
+      if (toggleAdmPass) {
+        toggleAdmPass.addEventListener('click', () => {
+          const passInput = $('admPass');
+          if (passInput.type === 'password') {
+            passInput.type = 'text';
+          } else {
+            passInput.type = 'password';
+          }
+        });
+      }
 
       $('admReload').addEventListener('click', () => {
         this.fetchContent().then(res => { if (res.ok) this.renderAll(); });
