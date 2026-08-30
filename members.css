@@ -1231,3 +1231,71 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
   .mp-two, .mp-libfilters { grid-template-columns: 1fr; }
 }
 
+
+/* ---------- Glassmorphism form inputs ---------- */
+.glass-field {
+  display: block;
+  margin-bottom: 1.25rem;
+}
+.glass-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.glass-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #fbfcf8;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  transition: 0.2s border-color;
+}
+.glass-input-wrap:focus-within {
+  border-color: var(--au);
+  outline: 2px solid var(--al);
+}
+.glass-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  color: var(--mut);
+}
+.glass-input-wrap input {
+  flex: 1;
+  background: transparent;
+  border: none !important;
+  color: var(--ink);
+  padding: 12px 12px 12px 0 !important;
+  outline: none !important;
+  font-size: 14px;
+  width: 100%;
+}
+.glass-input-wrap input::placeholder {
+  color: var(--mut);
+  opacity: 0.7;
+}
+
+.glass-btn {
+  background: var(--au);
+  border: 1px solid var(--au);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px;
+  border-radius: 12px;
+  width: 100%;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: 0.2s background, 0.2s transform;
+}
+.glass-btn:hover {
+  background: #d18a1e;
+  transform: translateY(-1px);
+}
+.glass-btn:active {
+  transform: translateY(1px);
+}
