@@ -89,12 +89,12 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .nm-menu {
   position: fixed; top: 100px; left: 0; right: 0; z-index: 998;
   background: var(--g9); border-bottom: 1px solid rgba(255,255,255,.08);
-  padding: 1rem 2.5rem 1.5rem; display: none;
+  padding: 1rem 2.5rem 1.5rem; display: flex;
   flex-direction: column; gap: 6px;
-  transform: translateY(-8px); opacity: 0; pointer-events: none;
-  transition: transform .25s, opacity .25s;
+  transform: translateY(-15px); opacity: 0; visibility: hidden; pointer-events: none;
+  transition: transform .3s ease, opacity .3s ease, visibility .3s ease;
 }
-.nm-menu.open { display: flex; transform: translateY(0); opacity: 1; pointer-events: auto; }
+.nm-menu.open { visibility: visible; transform: translateY(0); opacity: 1; pointer-events: auto; }
 .nm-menu a {
   color: var(--g1); font-size: 15px; padding: 10px 4px;
   border-bottom: 1px solid rgba(255,255,255,.06);
