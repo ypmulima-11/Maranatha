@@ -73,32 +73,38 @@
     {
       "initials": "CP",
       "name": "Chairperson",
-      "role": "Leadership & coordination"
+      "role": "Leadership & coordination",
+      "avatar": ""
     },
     {
       "initials": "DC",
       "name": "Deputy Chairperson",
-      "role": "Lead Choir Master"
+      "role": "Lead Choir Master",
+      "avatar": ""
     },
     {
       "initials": "SC",
       "name": "Secretary",
-      "role": "Administration & records"
+      "role": "Administration & records",
+      "avatar": ""
     },
     {
       "initials": "AS",
       "name": "Assistant Secretary",
-      "role": "Administration support"
+      "role": "Administration support",
+      "avatar": ""
     },
     {
       "initials": "TR",
       "name": "Treasurer",
-      "role": "Finance"
+      "role": "Finance",
+      "avatar": ""
     },
     {
       "initials": "AC",
       "name": "Assistant Choir Master",
-      "role": "Choir conduct & support"
+      "role": "Choir conduct & support",
+      "avatar": ""
     }
   ],
   "members": [
@@ -175,10 +181,10 @@
   ],
   "works": [
     {
-      "title": "Bwana ni Mchungaji",
-      "sub": "Hymn · Live Recording",
-      "year": "2025",
-      "href": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+      "title": "TAZAMA NAKUJA KUKUSHUKURU",
+      "sub": "",
+      "year": "2026",
+      "href": "https://www.youtube.com/watch?v=abLA0PNWxN0"
     },
     {
       "title": "Mungu ni Mwema",
