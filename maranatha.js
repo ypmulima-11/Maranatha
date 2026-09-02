@@ -45,6 +45,12 @@
       const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);
       return m ? 'https://www.youtube.com/embed/' + m[1] : url;
     }
+
+    static getYTID(url) {
+      if (!url) return '';
+      const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);
+      return m ? m[1] : '';
+    }
   }
 
   /* ---------- Content source ---------- */
@@ -201,6 +207,12 @@
         a.target = '_blank';
         a.rel = 'noopener';
         const th = El.make('div', 'vidth');
+        const ytid = El.getYTID(v.href);
+        if (ytid) {
+          th.style.backgroundImage = `url('https://img.youtube.com/vi/${ytid}/maxresdefault.jpg')`;
+          th.style.backgroundSize = 'cover';
+          th.style.backgroundPosition = 'center';
+        }
         const vpc = El.make('div', 'vpc');
         vpc.appendChild(El.make('div', 'vpt', null));
         th.appendChild(vpc);
@@ -325,6 +337,12 @@
         a.href = w.href || '#';
         a.target = '_blank';
         const th = El.make('div', 'muth');
+        const ytid = El.getYTID(w.href);
+        if (ytid) {
+          th.style.backgroundImage = `url('https://img.youtube.com/vi/${ytid}/mqdefault.jpg')`;
+          th.style.backgroundSize = 'cover';
+          th.style.backgroundPosition = 'center';
+        }
         const pc = El.make('div', 'pc');
         pc.appendChild(El.make('div', 'pt', null));
         th.appendChild(pc);
