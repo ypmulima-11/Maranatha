@@ -184,15 +184,21 @@
       $('admRepo').textContent = 'Maranatha CMS';
       $('admView').href = 'https://ypmulima-11.github.io/Maranatha/';
       this.renderAll();
+      const hash = window.location.hash.replace('#', '');
+      this.switchTab(hash || 'news', true);
     }
 
     /* ---------- Tabs ---------- */
 
-    switchTab(name) {
+    switchTab(name, skipHistory) {
+      if (!AdminApp.TABS[name]) name = 'news';
       document.querySelectorAll('.adm-tab').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
       document.querySelectorAll('.adm-pane-sec').forEach(s => s.classList.toggle('on', s.id === 'pane-' + name));
       $('admPaneTitle').textContent = AdminApp.TABS[name].title;
       $('admPaneHint').textContent = AdminApp.TABS[name].hint;
+      if (!skipHistory) {
+        window.history.pushState(null, null, '#' + name);
+      }
     }
 
     /* ---------- Row rendering ---------- */
@@ -410,6 +416,13 @@
     /* ---------- Wire up + boot ---------- */
 
     init() {
+      window.addEventListener('hashchange', () => {
+        if (!$('admMain').hidden) {
+          const hash = window.location.hash.replace('#', '');
+          this.switchTab(hash, true);
+        }
+      });
+
       document.querySelectorAll('.adm-tab').forEach(b =>
         b.addEventListener('click', () => this.switchTab(b.dataset.tab))
       );
