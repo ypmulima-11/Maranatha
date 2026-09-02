@@ -285,6 +285,8 @@ input, select, textarea { font: inherit; }
 }
 
 .adm-pane { flex: 1; min-width: 0; }
+.adm-pane-sec { display: none; }
+.adm-pane-sec.on { display: block; }
 .adm-bar {
   display: flex; align-items: flex-start; justify-content: space-between;
   gap: 1rem; flex-wrap: wrap; margin-bottom: 16px;
