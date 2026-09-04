@@ -94,7 +94,11 @@
   <div class="sw">
     <div class="gai">
       <!-- Gallery is rendered from content.json (editable in admin.html) -->
-      <div class="gag rev-stagger" id="gaList"></div>
+      <div class="ga-carousel">
+        <button class="ga-arrow prev" id="gaPrev" aria-label="Previous">&lsaquo;</button>
+        <div class="gag rev-stagger" id="gaList"></div>
+        <button class="ga-arrow next" id="gaNext" aria-label="Next">&rsaquo;</button>
+      </div>
       <div class="gact"><a href="join.html#contact" class="bg" style="display:inline-block" data-i18n="ga.cta">Share your photos with us</a></div>
       <div class="lvw" data-i18n="ga.hint">Tip: click any photo or video to view it full screen.</div>
     </div>

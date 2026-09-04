@@ -893,6 +893,44 @@
     }
   }
 
+  class GalleryCarousel {
+    bind() {
+      const g = El.get('gaList');
+      const prev = El.get('gaPrev');
+      const next = El.get('gaNext');
+      if (!g || !prev || !next) return;
+
+      const scrollAmt = () => g.clientWidth * 0.75;
+      
+      const updateArrows = () => {
+        if (g.scrollWidth > g.clientWidth) {
+          prev.style.display = 'flex';
+          next.style.display = 'flex';
+          prev.style.opacity = g.scrollLeft <= 0 ? '0.3' : '1';
+          next.style.opacity = g.scrollLeft >= g.scrollWidth - g.clientWidth - 5 ? '0.3' : '1';
+        } else {
+          prev.style.display = 'none';
+          next.style.display = 'none';
+        }
+      };
+
+      prev.addEventListener('click', () => {
+        g.scrollBy({ left: -scrollAmt(), behavior: 'smooth' });
+      });
+      next.addEventListener('click', () => {
+        g.scrollBy({ left: scrollAmt(), behavior: 'smooth' });
+      });
+
+      g.addEventListener('scroll', updateArrows);
+      window.addEventListener('resize', updateArrows);
+      
+      const observer = new MutationObserver(updateArrows);
+      observer.observe(g, { childList: true, subtree: true });
+      
+      updateArrows();
+    }
+  }
+
   /* ---------- App bootstrap ---------- */
 
   class SiteApp {
@@ -913,6 +951,7 @@
       const player = new DemoPlayer();
       player.bind();
       new GalleryLightbox().bind();
+      new GalleryCarousel().bind();
     }
   }
 
