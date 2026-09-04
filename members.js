@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   'use strict';
 
   const $ = id => document.getElementById(id);
@@ -3958,6 +3958,11 @@
         $('mpProfile').appendChild(v);
       });
 
+      const leaderBtn = document.querySelector('.mp-ds-btn.ds-leader');
+      if (leaderBtn) leaderBtn.hidden = !isLeader;
+      const adminBtn = document.querySelector('.mp-ds-btn.ds-admin');
+      if (adminBtn) adminBtn.hidden = !isAdmin;
+
       $('mpLeaderCard').hidden = !isLeader;
       $('mpLeaderWork').hidden = !isLeader;
       $('mpAdminCard').hidden = !isAdmin;
@@ -5569,6 +5574,17 @@
       document.querySelectorAll('.mp-tab').forEach(b =>
         b.addEventListener('click', () => this.switchTab(b.dataset.view))
       );
+
+      document.querySelectorAll('.mp-ds-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.mp-ds-btn').forEach(b => b.classList.remove('on'));
+          btn.classList.add('on');
+          const viewId = 'dview-' + btn.dataset.dview;
+          document.querySelectorAll('.mp-dash-view').forEach(v => v.classList.remove('on'));
+          const target = $(viewId);
+          if (target) target.classList.add('on');
+        });
+      });
 
       document.querySelectorAll('.tblang button').forEach(b =>
         b.addEventListener('click', () => {
