@@ -297,353 +297,301 @@
 
       <!-- ============ DASHBOARD ============ -->
       <section class="mp-dash" id="dashView" hidden>
-        <div class="mp-dash-layout">
-          <!-- Sidebar -->
-          <aside class="mp-dash-sidebar">
-            <button type="button" class="mp-ds-btn on" data-dview="overview">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-              Overview
-            </button>
-            <button type="button" class="mp-ds-btn" data-dview="events">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-              Events &amp; Attendance
-            </button>
-            <button type="button" class="mp-ds-btn" data-dview="library">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-              Library &amp; Directory
-            </button>
-            <button type="button" class="mp-ds-btn ds-leader" data-dview="leader" hidden>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-              Leadership
-            </button>
-            <button type="button" class="mp-ds-btn ds-admin" data-dview="admin" hidden>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-              Admin Tools
-            </button>
-          </aside>
+        <div class="mp-dash-in">
 
-          <!-- Content Area -->
-          <div class="mp-dash-content">
-            <div class="mp-welcome">
-              <div>
-                <div class="mp-greet" id="mpGreet"></div>
-                <div class="mp-sub" id="mpSub"></div>
-              </div>
-              <button type="button" class="mp-btn ghost" id="mpOut" data-i18n="portal.out">Sign out</button>
+          <div class="mp-welcome">
+            <div>
+              <div class="mp-greet" id="mpGreet"></div>
+              <div class="mp-sub" id="mpSub"></div>
+            </div>
+            <button type="button" class="mp-btn" id="mpOut" data-i18n="portal.out">Sign out</button>
+          </div>
+
+          <div class="mp-grid">
+
+            <div class="mp-card2 mp-card-wide">
+              <h2 data-i18n="portal.next">Next event</h2>
+              <div class="mp-list" id="mpNextEvent"></div>
             </div>
 
-            <!-- OVERVIEW TAB -->
-            <div class="mp-dash-view on" id="dview-overview">
-              <div class="mp-grid">
-                <div class="mp-card2 mp-card-wide">
-                  <h2 data-i18n="portal.next">Next event</h2>
-                  <div class="mp-list" id="mpNextEvent"></div>
-                </div>
-                <div class="mp-card2">
-                  <h2 data-i18n="portal.anno">Announcements</h2>
-                  <div class="mp-list" id="mpAnnounce"></div>
-                </div>
-                <div class="mp-card2">
-                  <h2 data-i18n="portal.profile">My profile</h2>
-                  <div class="mp-pro" id="mpProfile"></div>
-                  <button type="button" class="mp-btn" id="mpEditProfile" style="margin-top:12px;">Edit profile</button>
-                </div>
-                <div class="mp-card2 mp-card-wide">
-                  <h2 data-i18n="portal.mres">Member resources</h2>
-                  <div class="mp-list" id="mpMemberInfo"></div>
-                </div>
-              </div>
+            <div class="mp-card2">
+              <h2 data-i18n="portal.anno">Announcements</h2>
+              <div class="mp-list" id="mpAnnounce"></div>
             </div>
 
-            <!-- EVENTS TAB -->
-            <div class="mp-dash-view" id="dview-events">
-              <div class="mp-grid">
-                <div class="mp-card2" id="mpAttendCard" hidden>
-                  <h2>Attendance</h2>
-                  <p class="mp-hint">Scan the QR code your leader shows, or type today's check-in code below.</p>
-                  <form class="mp-res-form" id="ciForm" novalidate>
-                    <label class="mp-field"><span>Check-in code</span>
-                      <input type="text" id="ciCode" maxlength="10" autocomplete="off" placeholder="e.g. K7F2QD" style="text-transform: uppercase">
-                    </label>
-                    <div class="mp-msg" id="ciMsg" role="status"></div>
-                    <button type="submit" class="mp-btn">Check in</button>
-                  </form>
-                  <h3 class="mp-sec">My recent attendance</h3>
-                  <div class="mp-list" id="attMine"></div>
-                </div>
-                <div class="mp-card2">
-                  <h2 data-i18n="portal.events">Upcoming events</h2>
-                  <div class="mp-list" id="mpEvents"></div>
-                </div>
-              </div>
+            <div class="mp-card2">
+              <h2 data-i18n="portal.events">Upcoming events</h2>
+              <div class="mp-list" id="mpEvents"></div>
             </div>
 
-            <!-- LIBRARY TAB -->
-            <div class="mp-dash-view" id="dview-library">
-              <div class="mp-grid">
-                <div class="mp-card2 mp-card-wide" id="mpLibCard" hidden>
-                  <h2>Music library</h2>
-                  <p class="mp-hint">Sheet music and practice tracks, shared by the leadership. Files are private to choir members.</p>
-                  <div class="mp-libfilters">
-                    <label class="mp-field"><span>Show</span>
-                      <select id="libKind">
-                        <option value="">Everything</option>
-                        <option value="score">Sheet music</option>
-                        <option value="track">Practice track</option>
-                        <option value="other">Other files</option>
-                      </select>
-                    </label>
-                    <label class="mp-field"><span>Voice part</span>
-                      <select id="libVoice">
-                        <option value="">All parts</option>
-                        <option value="soprano">Soprano</option>
-                        <option value="alto">Alto</option>
-                        <option value="tenor">Tenor</option>
-                        <option value="bass">Bass</option>
-                        <option value="all">Full choir</option>
-                      </select>
-                    </label>
-                  </div>
-                  <div class="mp-list" id="libList"></div>
-                  <form class="mp-res-form" id="libForm" novalidate hidden>
-                    <h3 class="mp-sec">Add a file</h3>
-                    <div class="mp-two">
-                      <label class="mp-field"><span>Title</span>
-                        <input type="text" id="libTitle" maxlength="120" placeholder="e.g. Misa ya Amani — Alto">
-                      </label>
-                      <label class="mp-field"><span>Voice part</span>
-                        <select id="libVoiceNew">
-                          <option value="all">Full choir</option>
-                          <option value="soprano">Soprano</option>
-                          <option value="alto">Alto</option>
-                          <option value="tenor">Tenor</option>
-                          <option value="bass">Bass</option>
-                        </select>
-                      </label>
-                    </div>
-                    <div class="mp-two">
-                      <label class="mp-field"><span>Type</span>
-                        <select id="libKindNew">
-                          <option value="score">Sheet music</option>
-                          <option value="track">Practice track</option>
-                          <option value="other">Other</option>
-                        </select>
-                      </label>
-                      <label class="mp-field"><span>File (PDF / audio, max 20 MB)</span>
-                        <input type="file" id="libFile">
-                      </label>
-                    </div>
-                    <div class="mp-msg" id="libMsg" role="status"></div>
-                    <button type="submit" class="mp-btn">Upload to library</button>
-                  </form>
-                </div>
+            <div class="mp-card2">
+              <h2 data-i18n="portal.profile">My profile</h2>
+              <div class="mp-pro" id="mpProfile"></div>
+              <button type="button" class="mp-btn" id="mpEditProfile">Edit profile</button>
+            </div>
 
-                <div class="mp-card2 mp-card-wide" id="mpDirCard" hidden>
-                  <h2>Member directory</h2>
-                  <p class="mp-hint" id="dirHint">Names and voice parts. Contact details are visible to leaders only.</p>
-                  <label class="mp-field"><span>Search</span>
-                    <input type="search" id="dirSearch" placeholder="Name or voice part...">
+            <div class="mp-card2">
+              <h2 data-i18n="portal.mres">Member resources</h2>
+              <div class="mp-list" id="mpMemberInfo"></div>
+            </div>
+
+            <div class="mp-card2" id="mpAttendCard" hidden>
+              <h2>Attendance</h2>
+              <p class="mp-hint">Scan the QR code your leader shows, or type today's check-in code below.</p>
+              <form class="mp-res-form" id="ciForm" novalidate>
+                <label class="mp-field"><span>Check-in code</span>
+                  <input type="text" id="ciCode" maxlength="10" autocomplete="off" placeholder="e.g. K7F2QD" style="text-transform: uppercase">
+                </label>
+                <div class="mp-msg" id="ciMsg" role="status"></div>
+                <button type="submit" class="mp-btn">Check in</button>
+              </form>
+              <h3 class="mp-sec">My recent attendance</h3>
+              <div class="mp-list" id="attMine"></div>
+            </div>
+
+            <div class="mp-card2 mp-card-wide" id="mpSessCard" hidden>
+              <h2><span>Attendance sessions</span> <span class="mp-badge leader">Leader</span></h2>
+              <form class="mp-res-form" id="sessForm" novalidate>
+                <label class="mp-field"><span>Session title</span>
+                  <input type="text" id="ssTitle" placeholder="e.g. Sunday practice — 24 Aug" maxlength="120">
+                </label>
+                <label class="mp-field"><span>Link to an event (optional)</span>
+                  <select id="ssEvent"></select>
+                </label>
+                <div class="mp-msg" id="ssMsg" role="status"></div>
+                <button type="submit" class="mp-btn">Open session &amp; show QR</button>
+              </form>
+              <div id="sessOpen"></div>
+              <h3 class="mp-sec">Past sessions</h3>
+              <div class="mp-list" id="sessPast"></div>
+              <h3 class="mp-sec">Season report</h3>
+              <button type="button" class="mp-btn small" id="repBtn">Show attendance report</button>
+              <div class="mp-list" id="repBox"></div>
+            </div>
+
+            <div class="mp-card2 mp-card-wide" id="mpPostCard" hidden>
+              <h2><span>Post to the choir</span> <span class="mp-badge leader">Leader</span></h2>
+              <h3 class="mp-sec">New event</h3>
+              <form class="mp-res-form" id="evForm" novalidate>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Title (EN)</span>
+                    <input type="text" id="evTitleEn" maxlength="120" placeholder="Sunday rehearsal">
                   </label>
-                  <div class="mp-list" id="dirList"></div>
+                  <label class="mp-field"><span>Title (SW)</span>
+                    <input type="text" id="evTitleSw" maxlength="120" placeholder="Zoezi la Jumapili">
+                  </label>
                 </div>
-              </div>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Description (EN)</span>
+                    <input type="text" id="evDescEn" maxlength="240" placeholder="Regular practice in the parish hall">
+                  </label>
+                  <label class="mp-field"><span>Description (SW)</span>
+                    <input type="text" id="evDescSw" maxlength="240" placeholder="Zoezi kwenye ukumbi wa parokia">
+                  </label>
+                </div>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Starts</span>
+                    <input type="datetime-local" id="evStart">
+                  </label>
+                  <label class="mp-field"><span>Type</span>
+                    <select id="evType">
+                      <option value="rehearsal">Rehearsal</option>
+                      <option value="mass">Mass</option>
+                      <option value="concert">Concert</option>
+                      <option value="meeting">Meeting</option>
+                      <option value="social">Social</option>
+                      <option value="training">Training</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Location</span>
+                    <input type="text" id="evLoc" maxlength="120" placeholder="Parish hall">
+                  </label>
+                  <label class="mp-field mp-check"><span>Mandatory</span>
+                    <input type="checkbox" id="evMand">
+                  </label>
+                </div>
+                <div class="mp-msg" id="evMsg" role="status"></div>
+                <button type="submit" class="mp-btn">Publish event</button>
+              </form>
+
+              <h3 class="mp-sec">New announcement</h3>
+              <form class="mp-res-form" id="anForm" novalidate>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Title (EN)</span>
+                    <input type="text" id="anTitleEn" maxlength="120" placeholder="Choir T-shirts are ready">
+                  </label>
+                  <label class="mp-field"><span>Title (SW)</span>
+                    <input type="text" id="anTitleSw" maxlength="120" placeholder="Jezi za kwaya ziko tayari">
+                  </label>
+                </div>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Message (EN)</span>
+                    <textarea id="anBodyEn" rows="2" placeholder="Write the announcement..."></textarea>
+                  </label>
+                  <label class="mp-field"><span>Message (SW)</span>
+                    <textarea id="anBodySw" rows="2" placeholder="Andika taarifa..."></textarea>
+                  </label>
+                </div>
+                <label class="mp-field mp-check"><span>Pin to top</span>
+                  <input type="checkbox" id="anPin">
+                </label>
+                <div class="mp-msg" id="anMsg" role="status"></div>
+                <button type="submit" class="mp-btn">Publish announcement</button>
+              </form>
+
+              <h3 class="mp-sec">Recent posts</h3>
+              <div class="mp-list" id="postList"></div>
             </div>
 
-            <!-- LEADER TAB -->
-            <div class="mp-dash-view" id="dview-leader">
-              <div class="mp-grid">
-                <div class="mp-card2 mp-card-wide" id="mpSessCard" hidden>
-                  <h2><span>Attendance sessions</span> <span class="mp-badge leader">Leader</span></h2>
-                  <form class="mp-res-form" id="sessForm" novalidate>
-                    <div class="mp-two">
-                      <label class="mp-field"><span>Session title</span>
-                        <input type="text" id="ssTitle" placeholder="e.g. Sunday practice — 24 Aug" maxlength="120">
-                      </label>
-                      <label class="mp-field"><span>Link to an event (optional)</span>
-                        <select id="ssEvent"></select>
-                      </label>
-                    </div>
-                    <div class="mp-msg" id="ssMsg" role="status"></div>
-                    <button type="submit" class="mp-btn">Open session &amp; show QR</button>
-                  </form>
-                  <div id="sessOpen"></div>
-                  <h3 class="mp-sec">Past sessions</h3>
-                  <div class="mp-list" id="sessPast"></div>
-                  <h3 class="mp-sec">Season report</h3>
-                  <button type="button" class="mp-btn small ghost" id="repBtn">Show attendance report</button>
-                  <div class="mp-list" id="repBox"></div>
-                </div>
-
-                <div class="mp-card2 mp-card-wide" id="mpPostCard" hidden>
-                  <h2><span>Post to the choir</span> <span class="mp-badge leader">Leader</span></h2>
-                  <h3 class="mp-sec">New event</h3>
-                  <form class="mp-res-form" id="evForm" novalidate>
-                    <div class="mp-two">
-                      <label class="mp-field"><span>Title (EN)</span>
-                        <input type="text" id="evTitleEn" maxlength="120" placeholder="Sunday rehearsal">
-                      </label>
-                      <label class="mp-field"><span>Title (SW)</span>
-                        <input type="text" id="evTitleSw" maxlength="120" placeholder="Zoezi la Jumapili">
-                      </label>
-                    </div>
-                    <div class="mp-two">
-                      <label class="mp-field"><span>Description (EN)</span>
-                        <input type="text" id="evDescEn" maxlength="240" placeholder="Regular practice in the parish hall">
-                      </label>
-                      <label class="mp-field"><span>Description (SW)</span>
-                        <input type="text" id="evDescSw" maxlength="240" placeholder="Zoezi kwenye ukumbi wa parokia">
-                      </label>
-                    </div>
-                    <div class="mp-two">
-                      <label class="mp-field"><span>Starts</span>
-                        <input type="datetime-local" id="evStart">
-                      </label>
-                      <label class="mp-field"><span>Type</span>
-                        <select id="evType">
-                          <option value="rehearsal">Rehearsal</option>
-                          <option value="mass">Mass</option>
-                          <option value="concert">Concert</option>
-                          <option value="meeting">Meeting</option>
-                          <option value="social">Social</option>
-                          <option value="training">Training</option>
-                          <option value="other">Other</option>
-                        </select>
-                      </label>
-                    </div>
-                    <div class="mp-two">
-                      <label class="mp-field"><span>Location</span>
-                        <input type="text" id="evLoc" maxlength="120" placeholder="Parish hall">
-                      </label>
-                      <label class="mp-field mp-check"><span>Mandatory</span>
-                        <input type="checkbox" id="evMand">
-                      </label>
-                    </div>
-                    <div class="mp-msg" id="evMsg" role="status"></div>
-                    <button type="submit" class="mp-btn">Publish event</button>
-                  </form>
-                  <h3 class="mp-sec">New announcement</h3>
-                  <form class="mp-res-form" id="anForm" novalidate>
-                    <div class="mp-two">
-                      <label class="mp-field"><span>Title (EN)</span>
-                        <input type="text" id="anTitleEn" maxlength="120" placeholder="Choir T-shirts are ready">
-                      </label>
-                      <label class="mp-field"><span>Title (SW)</span>
-                        <input type="text" id="anTitleSw" maxlength="120" placeholder="Jezi za kwaya ziko tayari">
-                      </label>
-                    </div>
-                    <div class="mp-two">
-                      <label class="mp-field"><span>Message (EN)</span>
-                        <textarea id="anBodyEn" rows="2" placeholder="Write the announcement..."></textarea>
-                      </label>
-                      <label class="mp-field"><span>Message (SW)</span>
-                        <textarea id="anBodySw" rows="2" placeholder="Andika taarifa..."></textarea>
-                      </label>
-                    </div>
-                    <label class="mp-field mp-check"><span>Pin to top</span>
-                      <input type="checkbox" id="anPin">
-                    </label>
-                    <div class="mp-msg" id="anMsg" role="status"></div>
-                    <button type="submit" class="mp-btn">Publish announcement</button>
-                  </form>
-                  <h3 class="mp-sec">Recent posts</h3>
-                  <div class="mp-list" id="postList"></div>
-                </div>
-                
-                <div class="mp-card2" id="mpLeaderCard" hidden>
-                  <h2><span data-i18n="portal.lres">Leader resources</span> <span class="mp-badge leader">Leader</span></h2>
-                  <div class="mp-list" id="mpLeaderInfo"></div>
-                </div>
-
-                <div class="mp-card2" id="mpLeaderWork" hidden>
-                  <h2><span data-i18n="portal.lwork">Leader workspace</span> <span class="mp-badge leader">Leader</span></h2>
-                  <p class="mp-hint" id="lrHint">Your personal records for this leadership year — only you and the admins can see them.</p>
-                  <form class="mp-res-form" id="lrForm" novalidate></form>
-                  <div class="mp-list" id="lrList"></div>
-                </div>
+            <div class="mp-card2 mp-card-wide" id="mpLibCard" hidden>
+              <h2>Music library</h2>
+              <p class="mp-hint">Sheet music and practice tracks, shared by the leadership. Files are private to choir members.</p>
+              <div class="mp-libfilters">
+                <label class="mp-field"><span>Show</span>
+                  <select id="libKind">
+                    <option value="">Everything</option>
+                    <option value="score">Sheet music</option>
+                    <option value="track">Practice track</option>
+                    <option value="other">Other files</option>
+                  </select>
+                </label>
+                <label class="mp-field"><span>Voice part</span>
+                  <select id="libVoice">
+                    <option value="">All parts</option>
+                    <option value="soprano">Soprano</option>
+                    <option value="alto">Alto</option>
+                    <option value="tenor">Tenor</option>
+                    <option value="bass">Bass</option>
+                    <option value="all">Full choir</option>
+                  </select>
+                </label>
               </div>
+              <div class="mp-list" id="libList"></div>
+              <form class="mp-res-form" id="libForm" novalidate hidden>
+                <h3 class="mp-sec">Add a file</h3>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Title</span>
+                    <input type="text" id="libTitle" maxlength="120" placeholder="e.g. Misa ya Amani — Alto">
+                  </label>
+                  <label class="mp-field"><span>Voice part</span>
+                    <select id="libVoiceNew">
+                      <option value="all">Full choir</option>
+                      <option value="soprano">Soprano</option>
+                      <option value="alto">Alto</option>
+                      <option value="tenor">Tenor</option>
+                      <option value="bass">Bass</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Type</span>
+                    <select id="libKindNew">
+                      <option value="score">Sheet music</option>
+                      <option value="track">Practice track</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </label>
+                  <label class="mp-field"><span>File (PDF / audio, max 20 MB)</span>
+                    <input type="file" id="libFile">
+                  </label>
+                </div>
+                <div class="mp-msg" id="libMsg" role="status"></div>
+                <button type="submit" class="mp-btn">Upload to library</button>
+              </form>
             </div>
 
-            <!-- ADMIN TAB -->
-            <div class="mp-dash-view" id="dview-admin">
-              <div class="mp-grid">
-                <div class="mp-card2 mp-card-wide" id="mpAdminCard" hidden>
-                  <h2><span data-i18n="portal.ares">Admin resources</span> <span class="mp-badge admin">Admin</span></h2>
-                  <div class="mp-list" id="mpAdminInfo"></div>
-                  <p class="mp-hint" style="margin: 12px 0;"><a class="mp-btn ghost small" href="admin.html" data-i18n="portal.adminlink">Open Admin Dashboard &rarr;</a></p>
+            <div class="mp-card2" id="mpDirCard" hidden>
+              <h2>Member directory</h2>
+              <p class="mp-hint" id="dirHint">Names and voice parts. Contact details are visible to leaders only.</p>
+              <label class="mp-field"><span>Search</span>
+                <input type="search" id="dirSearch" placeholder="Name or voice part...">
+              </label>
+              <div class="mp-list" id="dirList"></div>
+            </div>
 
-                  <h3 class="mp-sec" data-i18n="portal.manage">Manage members</h3>
-                  <div class="mp-mrow-list" id="adminMembers"></div>
+            <div class="mp-card2" id="mpLeaderCard" hidden>
+              <h2><span data-i18n="portal.lres">Leader resources</span> <span class="mp-badge leader">Leader</span></h2>
+              <div class="mp-list" id="mpLeaderInfo"></div>
+            </div>
 
-                  <h3 class="mp-sec">Members by residence</h3>
-                  <div class="mp-mrow-list" id="adminResidence"></div>
+            <div class="mp-card2" id="mpLeaderWork" hidden>
+              <h2><span data-i18n="portal.lwork">Leader workspace</span> <span class="mp-badge leader">Leader</span></h2>
+              <p class="mp-hint" id="lrHint">Your personal records for this leadership year — only you and the admins can see them.</p>
+              <form class="mp-res-form" id="lrForm" novalidate></form>
+              <div class="mp-list" id="lrList"></div>
+            </div>
 
-                  <h3 class="mp-sec">Members by voice part</h3>
-                  <div class="mp-mrow-list" id="adminVoice"></div>
+            <div class="mp-card2" id="mpAdminCard" hidden>
+              <h2><span data-i18n="portal.ares">Admin resources</span> <span class="mp-badge admin">Admin</span></h2>
+              <div class="mp-list" id="mpAdminInfo"></div>
+              <p class="mp-hint"><a class="mp-link" href="admin.html" data-i18n="portal.adminlink">Open the admin dashboard &rarr;</a> to edit the site content. &nbsp;<a href="admin.html" class="mp-nav-admin" id="mpNavAdmin" hidden data-i18n="portal.admin">Admin panel</a></p>
 
-                  <h3 class="mp-sec">Birthdays by month</h3>
-                  <div class="mp-mrow-list" id="adminBirthdays"></div>
+              <h3 class="mp-sec" data-i18n="portal.manage">Manage members</h3>
+              <div class="mp-mrow-list" id="adminMembers"></div>
 
-                  <h3 class="mp-sec" data-i18n="portal.pending">Pending registrations</h3>
-                  <div class="mp-mrow-list" id="adminPending"></div>
+              <h3 class="mp-sec">Members by residence</h3>
+              <div class="mp-mrow-list" id="adminResidence"></div>
 
-                  <h3 class="mp-sec" data-i18n="portal.invite">Invite a member</h3>
-                  <form class="mp-res-form" id="adminInviteForm" novalidate>
-                    <div class="mp-two">
-                      <label class="mp-field"><span data-i18n="portal.invite.email">Member's email</span>
-                        <input type="email" id="ivEmail" placeholder="you@example.com" autocomplete="off">
-                      </label>
-                      <label class="mp-field"><span data-i18n="portal.invite.role">Access level</span>
-                        <select id="ivRole">
-                          <option value="member" data-i18n="portal.role.member">Member</option>
-                          <option value="leader" data-i18n="portal.role.leader">Leader</option>
-                          <option value="section_leader" data-i18n="portal.role.section_leader">Section Leader</option>
-                        </select>
-                      </label>
-                    </div>
-                    <p class="mp-hint" data-i18n="portal.invite.note">Share this link with the member. They sign up through it and are activated automatically after confirming their email.</p>
-                    <div class="mp-msg" id="ivMsg" role="status"></div>
-                    <button type="submit" class="mp-btn" data-i18n="portal.invite.btn">Create invite link</button>
-                  </form>
-                  <div class="mp-invbox" id="mpInviteBox" hidden>
-                    <div class="mp-date" data-i18n="portal.invite.link">Invite link</div>
-                    <div class="mp-invrow">
-                      <code id="mpInviteLink"></code>
-                      <button type="button" class="mp-btn small" id="mpInviteCopy" data-i18n="portal.invite.copy">Copy</button>
-                    </div>
-                  </div>
+              <h3 class="mp-sec">Members by voice part</h3>
+              <div class="mp-mrow-list" id="adminVoice"></div>
 
-                  <h3 class="mp-sec" data-i18n="portal.addres">Add a resource</h3>
-                  <form class="mp-res-form" id="adminResourceForm" novalidate>
-                    <label class="mp-field"><span data-i18n="portal.title">Title</span>
-                      <input type="text" id="arTitle" placeholder="e.g. Practice plan — Sunday">
-                    </label>
-                    <label class="mp-field"><span data-i18n="portal.body">Body</span>
-                      <textarea id="arBody" rows="3" placeholder="Write the content..." data-i18n-ph="portal.bodyph"></textarea>
-                    </label>
-                    <label class="mp-field"><span data-i18n="portal.shown">Shown to</span>
-                      <select id="arAudience">
-                        <option value="member" data-i18n="portal.all">All members</option>
-                        <option value="leader" data-i18n="portal.leaders">Leaders only</option>
-                        <option value="admin" data-i18n="portal.admins">Admins only</option>
-                      </select>
-                    </label>
-                    <div class="mp-msg" id="arMsg" role="status"></div>
-                    <button type="submit" class="mp-btn" data-i18n="portal.addbtn">Add resource</button>
-                  </form>
+              <h3 class="mp-sec">Birthdays by month</h3>
+              <div class="mp-mrow-list" id="adminBirthdays"></div>
 
-                  <div class="mp-two">
-                    <div>
-                      <h3 class="mp-sec" data-i18n="portal.aud">Audition requests</h3>
-                      <div class="mp-list" id="adminAuditions"></div>
-                    </div>
-                    <div>
-                      <h3 class="mp-sec" data-i18n="portal.msg">Contact messages</h3>
-                      <div class="mp-list" id="adminMsgs"></div>
-                    </div>
-                  </div>
+              <h3 class="mp-sec" data-i18n="portal.pending">Pending registrations</h3>
+              <div class="mp-mrow-list" id="adminPending"></div>
 
+              <h3 class="mp-sec" data-i18n="portal.invite">Invite a member</h3>
+              <form class="mp-res-form" id="adminInviteForm" novalidate>
+                <label class="mp-field"><span data-i18n="portal.invite.email">Member's email</span>
+                  <input type="email" id="ivEmail" placeholder="you@example.com" autocomplete="off">
+                </label>
+                <label class="mp-field"><span data-i18n="portal.invite.role">Access level</span>
+                  <select id="ivRole">
+                    <option value="member" data-i18n="portal.role.member">Member</option>
+                    <option value="leader" data-i18n="portal.role.leader">Leader</option>
+                    <option value="section_leader" data-i18n="portal.role.section_leader">Section Leader</option>
+                  </select>
+                </label>
+                <p class="mp-hint" data-i18n="portal.invite.note">Share this link with the member. They sign up through it and are activated automatically after confirming their email.</p>
+                <div class="mp-msg" id="ivMsg" role="status"></div>
+                <button type="submit" class="mp-btn" data-i18n="portal.invite.btn">Create invite link</button>
+              </form>
+              <div class="mp-invbox" id="mpInviteBox" hidden>
+                <div class="mp-date" data-i18n="portal.invite.link">Invite link</div>
+                <div class="mp-invrow">
+                  <code id="mpInviteLink"></code>
+                  <button type="button" class="mp-btn small" id="mpInviteCopy" data-i18n="portal.invite.copy">Copy</button>
                 </div>
               </div>
+
+              <h3 class="mp-sec" data-i18n="portal.addres">Add a resource</h3>
+              <form class="mp-res-form" id="adminResourceForm" novalidate>
+                <label class="mp-field"><span data-i18n="portal.title">Title</span>
+                  <input type="text" id="arTitle" placeholder="e.g. Practice plan — Sunday">
+                </label>
+                <label class="mp-field"><span data-i18n="portal.body">Body</span>
+                  <textarea id="arBody" rows="3" placeholder="Write the content..." data-i18n-ph="portal.bodyph"></textarea>
+                </label>
+                <label class="mp-field"><span data-i18n="portal.shown">Shown to</span>
+                  <select id="arAudience">
+                    <option value="member" data-i18n="portal.all">All members</option>
+                    <option value="leader" data-i18n="portal.leaders">Leaders only</option>
+                    <option value="admin" data-i18n="portal.admins">Admins only</option>
+                  </select>
+                </label>
+                <div class="mp-msg" id="arMsg" role="status"></div>
+                <button type="submit" class="mp-btn" data-i18n="portal.addbtn">Add resource</button>
+              </form>
+
+              <h3 class="mp-sec" data-i18n="portal.aud">Audition requests</h3>
+              <div class="mp-list" id="adminAuditions"></div>
+
+              <h3 class="mp-sec" data-i18n="portal.msg">Contact messages</h3>
+              <div class="mp-list" id="adminMsgs"></div>
             </div>
 
           </div>
