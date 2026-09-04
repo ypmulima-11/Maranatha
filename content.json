@@ -1,213 +1,332 @@
 {
-  "news": [
-    {
-      "date": "2026-07-28",
-      "title": "Rehearsals continue every Thursday",
-      "body": "Our regular rehearsals take place every Thursday at 6:30 PM in the parish hall. New voices are always welcome.",
-      "linkText": "Join us",
-      "linkHref": "join.html"
-    },
-    {
-      "date": "2026-07-19",
-      "title": "Thanks for the Annual Concert",
-      "body": "We are grateful to everyone who attended and supported our Annual Concert. Highlights are now on our YouTube channel.",
-      "linkText": "Watch highlights",
-      "linkHref": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
-    },
-    {
-      "date": "2026-07-05",
-      "title": "Follow our social media",
-      "body": "Stay up to date with our performances by following us on YouTube, Instagram and TikTok.",
-      "linkText": "Follow us",
-      "linkHref": "join.html#contact"
-    }
-  ],
-  "events": [
-    {
-      "title": "Sunday Mass Performance",
-      "date": "2026-08-16",
-      "time": "9:00 AM",
-      "place": "Parish Church",
-      "tag": "Liturgy"
-    },
-    {
-      "title": "Maranatha Annual Concert",
-      "date": "2026-09-06",
-      "time": "4:00 PM",
-      "place": "Community Hall",
-      "tag": "Concert"
-    },
-    {
-      "title": "Special Worship Service",
-      "date": "2026-10-11",
-      "time": "9:00 AM",
-      "place": "Parish Church",
-      "tag": "Liturgy"
-    },
-    {
-      "title": "Christmas Carol Gala",
-      "date": "2026-12-20",
-      "time": "5:00 PM",
-      "place": "Main Auditorium",
-      "tag": "Concert"
-    }
-  ],
-  "videos": [
-    {
-      "title": "Bwana ni Mchungaji — Live",
-      "sub": "Sunday Mass · 2025",
-      "href": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
-    },
-    {
-      "title": "Maranatha Annual Gala",
-      "sub": "Concert Highlights · 2025",
-      "href": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
-    },
-    {
-      "title": "Christmas Carol Gala",
-      "sub": "Main Auditorium · 2024",
-      "href": "https://www.youtube.com/@kwayayamaranatha-udsm3802"
-    }
-  ],
-  "team": [
-    {
-      "initials": "CP",
-      "name": "Chairperson",
-      "role": "Leadership & coordination",
-      "avatar": ""
-    },
-    {
-      "initials": "DC",
-      "name": "Deputy Chairperson",
-      "role": "Lead Choir Master",
-      "avatar": ""
-    },
-    {
-      "initials": "SC",
-      "name": "Secretary",
-      "role": "Administration & records",
-      "avatar": ""
-    },
-    {
-      "initials": "AS",
-      "name": "Assistant Secretary",
-      "role": "Administration support",
-      "avatar": ""
-    },
-    {
-      "initials": "TR",
-      "name": "Treasurer",
-      "role": "Finance",
-      "avatar": ""
-    },
-    {
-      "initials": "AC",
-      "name": "Assistant Choir Master",
-      "role": "Choir conduct & support",
-      "avatar": ""
-    }
-  ],
-  "members": [
-    {
-      "part": "Soprano",
-      "initials": "EM",
-      "name": "E. Mwaijande",
-      "role": "Treasurer"
-    },
-    {
-      "part": "Soprano",
-      "initials": "JT",
-      "name": "J. Temu",
-      "role": "Soprano"
-    },
-    {
-      "part": "Alto",
-      "initials": "NK",
-      "name": "N. Komba",
-      "role": "Alto Lead"
-    },
-    {
-      "part": "Alto",
-      "initials": "LR",
-      "name": "L. Rweyemamu",
-      "role": "Alto"
-    },
-    {
-      "part": "Tenor",
-      "initials": "PM",
-      "name": "P. Mwakalinga",
-      "role": "Tenor Lead"
-    },
-    {
-      "part": "Tenor",
-      "initials": "KK",
-      "name": "K. Kimaro",
-      "role": "Tenor"
-    },
-    {
-      "part": "Bass",
-      "initials": "DN",
-      "name": "D. Nyerere",
-      "role": "Bass Lead"
-    },
-    {
-      "part": "Bass",
-      "initials": "MU",
-      "name": "M. Urio",
-      "role": "Bass"
-    }
-  ],
-  "gallery": [
-    {
-      "src": "images/uploads/1788411716242-nmo_5803.jpg",
-      "cap": "",
-      "video": ""
-    },
-    {
-      "src": "images/uploads/1788411688388-nmo_5736.jpg",
-      "cap": "",
-      "video": ""
-    },
-    {
-      "src": "images/uploads/1788411622748-nmo_5744.jpg",
-      "cap": "",
-      "video": ""
-    },
-    {
-      "src": "images/uploads/1788411592457-nmo_5735.jpg",
-      "cap": "",
-      "video": ""
-    },
-    {
-      "src": "images/uploads/1788411538374-nmo_5723.jpg",
-      "cap": "",
-      "video": ""
-    }
-  ],
-  "works": [
-    {
-      "title": "TAZAMA NAKUJA KUKUSHUKURU",
-      "sub": "By S. Mvano",
-      "year": "2026",
-      "href": "https://www.youtube.com/watch?v=abLA0PNWxN0"
-    },
-    {
-      "title": "HEKIMA NDIO BORA",
-      "sub": "By F. Nyanza",
-      "year": "2024",
-      "href": "https://www.youtube.com/watch?v=qGkhSoyPd0k"
-    },
-    {
-      "title": "HUU SASA NDIO WAKATI",
-      "sub": "By Ben Nturama",
-      "year": "Live Recording",
-      "href": "https://www.youtube.com/watch?v=_TnI9-VsxUo&pp=0gcJCRoMAYcqIYzv"
-    },
-    {
-      "title": "NITAMWIMBIA BWANA",
-      "sub": "By B.E.Magilu",
-      "year": "2023",
-      "href": "https://www.youtube.com/watch?v=YzVP5Ef3i4U"
-    }
-  ]
+    "news":  [
+                 {
+                     "date":  "2026-07-28",
+                     "title":  "Rehearsals continue every Thursday",
+                     "body":  "Our regular rehearsals take place every Thursday at 6:30 PM in the parish hall. New voices are always welcome.",
+                     "linkText":  "Join us",
+                     "linkHref":  "join.html"
+                 },
+                 {
+                     "date":  "2026-07-19",
+                     "title":  "Thanks for the Annual Concert",
+                     "body":  "We are grateful to everyone who attended and supported our Annual Concert. Highlights are now on our YouTube channel.",
+                     "linkText":  "Watch highlights",
+                     "linkHref":  "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+                 },
+                 {
+                     "date":  "2026-07-05",
+                     "title":  "Follow our social media",
+                     "body":  "Stay up to date with our performances by following us on YouTube, Instagram and TikTok.",
+                     "linkText":  "Follow us",
+                     "linkHref":  "join.html#contact"
+                 }
+             ],
+    "events":  [
+                   {
+                       "title":  "Misa II",
+                       "date":  "2026-11-29",
+                       "time":  "07:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa III",
+                       "date":  "2026-12-06",
+                       "time":  "08:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa I",
+                       "date":  "2026-12-13",
+                       "time":  "05:45 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Familia Takatifu (Misa II)",
+                       "date":  "2026-12-27",
+                       "time":  "07:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Epifania (Misa zote)",
+                       "date":  "2027-01-03",
+                       "time":  "05:45 - 08:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Ubatizo wa Yesu (Misa III)",
+                       "date":  "2027-01-10",
+                       "time":  "08:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa I",
+                       "date":  "2027-01-17",
+                       "time":  "05:45 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa II",
+                       "date":  "2027-02-07",
+                       "time":  "07:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa III",
+                       "date":  "2027-02-14",
+                       "time":  "08:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa I",
+                       "date":  "2027-02-21",
+                       "time":  "05:45 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa II",
+                       "date":  "2027-03-14",
+                       "time":  "07:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Dominika ya Matawi (Misa III)",
+                       "date":  "2027-03-21",
+                       "time":  "08:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Ijumaa Kuu",
+                       "date":  "2027-03-26",
+                       "time":  "14:00 mchana",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa I",
+                       "date":  "2027-04-04",
+                       "time":  "05:45 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa II",
+                       "date":  "2027-04-25",
+                       "time":  "07:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa III",
+                       "date":  "2027-05-02",
+                       "time":  "08:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa I",
+                       "date":  "2027-06-06",
+                       "time":  "05:45 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa II",
+                       "date":  "2027-06-27",
+                       "time":  "07:00 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa III",
+                       "date":  "2027-07-04",
+                       "time":  "08:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa I",
+                       "date":  "2027-07-11",
+                       "time":  "05:45 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Misa II",
+                       "date":  "2027-11-14",
+                       "time":  "07:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   }
+               ],
+    "videos":  [
+                   {
+                       "title":  "Bwana ni Mchungaji — Live",
+                       "sub":  "Sunday Mass · 2025",
+                       "href":  "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+                   },
+                   {
+                       "title":  "Maranatha Annual Gala",
+                       "sub":  "Concert Highlights · 2025",
+                       "href":  "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+                   },
+                   {
+                       "title":  "Christmas Carol Gala",
+                       "sub":  "Main Auditorium · 2024",
+                       "href":  "https://www.youtube.com/@kwayayamaranatha-udsm3802"
+                   }
+               ],
+    "team":  [
+                 {
+                     "initials":  "CP",
+                     "name":  "Chairperson",
+                     "role":  "Leadership \u0026 coordination",
+                     "avatar":  ""
+                 },
+                 {
+                     "initials":  "DC",
+                     "name":  "Deputy Chairperson",
+                     "role":  "Lead Choir Master",
+                     "avatar":  ""
+                 },
+                 {
+                     "initials":  "SC",
+                     "name":  "Secretary",
+                     "role":  "Administration \u0026 records",
+                     "avatar":  ""
+                 },
+                 {
+                     "initials":  "AS",
+                     "name":  "Assistant Secretary",
+                     "role":  "Administration support",
+                     "avatar":  ""
+                 },
+                 {
+                     "initials":  "TR",
+                     "name":  "Treasurer",
+                     "role":  "Finance",
+                     "avatar":  ""
+                 },
+                 {
+                     "initials":  "AC",
+                     "name":  "Assistant Choir Master",
+                     "role":  "Choir conduct \u0026 support",
+                     "avatar":  ""
+                 }
+             ],
+    "members":  [
+                    {
+                        "part":  "Soprano",
+                        "initials":  "EM",
+                        "name":  "E. Mwaijande",
+                        "role":  "Treasurer"
+                    },
+                    {
+                        "part":  "Soprano",
+                        "initials":  "JT",
+                        "name":  "J. Temu",
+                        "role":  "Soprano"
+                    },
+                    {
+                        "part":  "Alto",
+                        "initials":  "NK",
+                        "name":  "N. Komba",
+                        "role":  "Alto Lead"
+                    },
+                    {
+                        "part":  "Alto",
+                        "initials":  "LR",
+                        "name":  "L. Rweyemamu",
+                        "role":  "Alto"
+                    },
+                    {
+                        "part":  "Tenor",
+                        "initials":  "PM",
+                        "name":  "P. Mwakalinga",
+                        "role":  "Tenor Lead"
+                    },
+                    {
+                        "part":  "Tenor",
+                        "initials":  "KK",
+                        "name":  "K. Kimaro",
+                        "role":  "Tenor"
+                    },
+                    {
+                        "part":  "Bass",
+                        "initials":  "DN",
+                        "name":  "D. Nyerere",
+                        "role":  "Bass Lead"
+                    },
+                    {
+                        "part":  "Bass",
+                        "initials":  "MU",
+                        "name":  "M. Urio",
+                        "role":  "Bass"
+                    }
+                ],
+    "gallery":  [
+                    {
+                        "src":  "images/uploads/1788411716242-nmo_5803.jpg",
+                        "cap":  "",
+                        "video":  ""
+                    },
+                    {
+                        "src":  "images/uploads/1788411688388-nmo_5736.jpg",
+                        "cap":  "",
+                        "video":  ""
+                    },
+                    {
+                        "src":  "images/uploads/1788411622748-nmo_5744.jpg",
+                        "cap":  "",
+                        "video":  ""
+                    },
+                    {
+                        "src":  "images/uploads/1788411592457-nmo_5735.jpg",
+                        "cap":  "",
+                        "video":  ""
+                    },
+                    {
+                        "src":  "images/uploads/1788411538374-nmo_5723.jpg",
+                        "cap":  "",
+                        "video":  ""
+                    }
+                ],
+    "works":  [
+                  {
+                      "title":  "TAZAMA NAKUJA KUKUSHUKURU",
+                      "sub":  "By S. Mvano",
+                      "year":  "2026",
+                      "href":  "https://www.youtube.com/watch?v=abLA0PNWxN0"
+                  },
+                  {
+                      "title":  "HEKIMA NDIO BORA",
+                      "sub":  "By F. Nyanza",
+                      "year":  "2024",
+                      "href":  "https://www.youtube.com/watch?v=qGkhSoyPd0k"
+                  },
+                  {
+                      "title":  "HUU SASA NDIO WAKATI",
+                      "sub":  "By Ben Nturama",
+                      "year":  "Live Recording",
+                      "href":  "https://www.youtube.com/watch?v=_TnI9-VsxUo\u0026pp=0gcJCRoMAYcqIYzv"
+                  },
+                  {
+                      "title":  "NITAMWIMBIA BWANA",
+                      "sub":  "By B.E.Magilu",
+                      "year":  "2023",
+                      "href":  "https://www.youtube.com/watch?v=YzVP5Ef3i4U"
+                  }
+              ]
 }
