@@ -143,7 +143,27 @@
     renderEvents(list) {
       const g = El.get('evList');
       if (!g) return;
-      g.replaceChildren(...list.map(ev => {
+      
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      const twoMonthsFromNow = new Date(now);
+      twoMonthsFromNow.setMonth(now.getMonth() + 2);
+
+      const filteredList = list.filter(ev => {
+        if (!ev.date) return true;
+        const parts = ev.date.split('-');
+        if (parts.length !== 3) return true;
+        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+        if (isNaN(d)) return true;
+        return d >= now && d <= twoMonthsFromNow;
+      });
+
+      if (filteredList.length === 0) {
+        g.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--mut);font-style:italic;">No upcoming events in the next two months.</p>';
+        return;
+      }
+
+      g.replaceChildren(...filteredList.map(ev => {
         const d = El.parseDate(ev.date);
         const card = El.make('div', 'evc');
         const h = El.make('div', 'evh');
