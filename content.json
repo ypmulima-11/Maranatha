@@ -45,9 +45,37 @@
                        "tag":  "Liturgy"
                    },
                    {
+                       "title":  "Mkesha wa Noeli (UKWAKATA)",
+                       "date":  "2026-12-24",
+                       "time":  "20:00 usiku",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Noeli (Misa zote - UKWAKATA)",
+                       "date":  "2026-12-25",
+                       "time":  "11:45 - 08:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
                        "title":  "Familia Takatifu (Misa II)",
                        "date":  "2026-12-27",
                        "time":  "07:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Mkesha wa Bikira Maria Mama wa Mungu (UKWAKATA)",
+                       "date":  "2026-12-31",
+                       "time":  "20:00 usiku",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Bikira Maria Mama wa Mungu (Misa zote - UKWAKATA)",
+                       "date":  "2027-01-01",
+                       "time":  "11:45 - 08:15",
                        "place":  "Parokia",
                        "tag":  "Liturgy"
                    },
@@ -69,6 +97,13 @@
                        "title":  "Misa I",
                        "date":  "2027-01-17",
                        "time":  "05:45 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Sherehe ya Parokia (UKWAKATA)",
+                       "date":  "2027-01-30",
+                       "time":  "08:00 asubuhi",
                        "place":  "Parokia",
                        "tag":  "Liturgy"
                    },
@@ -115,6 +150,20 @@
                        "tag":  "Liturgy"
                    },
                    {
+                       "title":  "Mkesha wa Pasaka (UKWAKATA)",
+                       "date":  "2027-03-27",
+                       "time":  "20:00 usiku",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Pasaka (Misa zote - UKWAKATA)",
+                       "date":  "2027-03-28",
+                       "time":  "05:45 - 08:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
                        "title":  "Misa I",
                        "date":  "2027-04-04",
                        "time":  "05:45 asubuhi",
@@ -132,6 +181,20 @@
                        "title":  "Misa III",
                        "date":  "2027-05-02",
                        "time":  "08:15 asubuhi",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Kesha la Pentekoste (UKWAKATA)",
+                       "date":  "2027-05-15",
+                       "time":  "20:00 usiku",
+                       "place":  "Parokia",
+                       "tag":  "Liturgy"
+                   },
+                   {
+                       "title":  "Mwili na Damu (Misa zote - UKWAKATA)",
+                       "date":  "2027-05-30",
+                       "time":  "05:45 - 08:15 asubuhi",
                        "place":  "Parokia",
                        "tag":  "Liturgy"
                    },
