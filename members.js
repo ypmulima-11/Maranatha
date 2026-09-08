@@ -1002,7 +1002,9 @@
       $('mpLeaderCard').hidden = !isLeader;
       $('mpLeaderWork').hidden = !isLeader;
       $('mpAdminCard').hidden = !isAdmin;
-      $('mpNavAdmin').hidden = !isAdmin;
+      mpNavAdmin.hidden = !isAdmin;
+      if (document.getElementById('btn-dview-leader')) document.getElementById('btn-dview-leader').hidden = !isLeader;
+      if (document.getElementById('btn-dview-admin')) document.getElementById('btn-dview-admin').hidden = !isAdmin;
 
       this.renderList($('mpMemberInfo'),
         this.resources.filter(r => r.audience === 'member'),
@@ -3961,7 +3963,9 @@
       $('mpLeaderCard').hidden = !isLeader;
       $('mpLeaderWork').hidden = !isLeader;
       $('mpAdminCard').hidden = !isAdmin;
-      $('mpNavAdmin').hidden = !isAdmin;
+      mpNavAdmin.hidden = !isAdmin;
+      if (document.getElementById('btn-dview-leader')) document.getElementById('btn-dview-leader').hidden = !isLeader;
+      if (document.getElementById('btn-dview-admin')) document.getElementById('btn-dview-admin').hidden = !isAdmin;
 
       this.renderList($('mpMemberInfo'),
         this.resources.filter(r => r.audience === 'member'),
