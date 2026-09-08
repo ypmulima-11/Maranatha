@@ -1528,3 +1528,78 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 .glass-btn:active {
   transform: translateY(1px);
 }
+
+/* ---------- HORIZONTAL TABS DASHBOARD ---------- */
+
+.mp-dash-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.mp-dash-sidebar {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  scrollbar-width: none; /* Firefox */
+}
+.mp-dash-sidebar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.mp-ds-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--mut);
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  font-family: var(--f-body);
+  font-size: 0.95rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.mp-ds-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--fg);
+}
+
+.mp-ds-btn.on {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--fg);
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.mp-dash-view {
+  display: none;
+  animation: fade-in-tab 0.3s ease;
+}
+
+.mp-dash-view.on {
+  display: block;
+}
+
+@keyframes fade-in-tab {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Make sure .mp-grid behaves */
+.mp-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .mp-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
