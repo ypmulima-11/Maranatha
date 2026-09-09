@@ -1534,6 +1534,10 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 .mp-dash-layout {
   width: 100%;
   max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -1542,6 +1546,10 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 }
 
 .mp-dash-sidebar {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
   width: 100%;
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
