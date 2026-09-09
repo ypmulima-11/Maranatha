@@ -2631,7 +2631,8 @@
       if (fileInput && fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
         const path = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
-        const { error: upErr } = await this.supabase.storage.from('documents').upload(path, file);
+        const isPdf = file.name.toLowerCase().endsWith('.pdf');
+        const { error: upErr } = await this.supabase.storage.from('documents').upload(path, file, { contentType: file.type || (isPdf ? 'application/pdf' : 'application/octet-stream') });
         if (upErr) {
           if (msg) {
             msg.className = 'mp-msg err';
