@@ -8,7 +8,7 @@ CREATE OR REPLACE FUNCTION public.admin_set_directory_access(p_email text, p_acc
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER SET search_path = public
-AS $function
+AS $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM profiles 
@@ -21,7 +21,7 @@ BEGIN
   SET can_view_directory = p_access
   WHERE email = p_email;
 END;
-$function;
+$$;
 
 -- ============================================================
 -- 2) Update directory_full RPC to enforce access control
@@ -34,7 +34,7 @@ RETURNS TABLE (
 )
 LANGUAGE plpgsql
 SECURITY DEFINER SET search_path = public
-AS $function
+AS $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM profiles 
@@ -56,7 +56,7 @@ BEGIN
     ELSE 5
   END, pr.full_name;
 END;
-$function;
+$$;
 
 -- ============================================================
 -- 3) Add Katiba to Leader Resources
