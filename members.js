@@ -444,7 +444,7 @@
       const avInput = $('pfAvatar');
       if (avInput && avInput.files && avInput.files[0]) {
         const file = avInput.files[0];
-        const path = user.id + '_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+        const path = user.id + '/' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
         const { error: avErr } = await this.supabase.storage.from('avatars').upload(path, file, { upsert: true });
         if (avErr) {
           msg.className = 'mp-msg err';
