@@ -28,7 +28,7 @@
   <script src="i18n.js" defer></script>
   <script src="qrcode.min.js" defer></script>
   <script src="maranatha.js" defer></script>
-<script src="members.js?v=9" defer></script>
+<script src="members.js?v=10" defer></script>
 </head>
 <body>
 <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
@@ -211,6 +211,9 @@
               <label class="mp-field"><span>Full name</span>
                 <input type="text" id="pfName" autocomplete="name">
               </label>
+                <label class="mp-field"><span>Profile Picture (optional)</span>
+                  <input type="file" id="pfAvatar" accept="image/*">
+                </label>
               <label class="mp-field"><span>Date of birth</span>
                 <input type="date" id="pfDob">
               </label>
@@ -575,6 +578,9 @@
                 </label>
                 <label class="mp-field"><span data-i18n="portal.body">Body</span>
                   <textarea id="arBody" rows="3" placeholder="Write the content..." data-i18n-ph="portal.bodyph"></textarea>
+                </label>
+                <label class="mp-field"><span>Document Upload (optional)</span>
+                  <input type="file" id="arFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
                 </label>
                 <label class="mp-field"><span data-i18n="portal.shown">Shown to</span>
                   <select id="arAudience">

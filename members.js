@@ -436,6 +436,23 @@
 
       msg.className = 'mp-msg';
       msg.textContent = 'Saving\u2026';
+      let avatarUrl = this.profile ? this.profile.avatar_url : '';
+      const avInput = $('pfAvatar');
+      if (avInput && avInput.files && avInput.files[0]) {
+        const file = avInput.files[0];
+        const path = user.id + '_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+        const { error: avErr } = await this.supabase.storage.from('avatars').upload(path, file, { upsert: true });
+        if (avErr) {
+          msg.className = 'mp-msg err';
+          msg.textContent = 'Failed to upload profile picture: ' + avErr.message;
+          return;
+        }
+        const { data: pubUrlData } = this.supabase.storage.from('avatars').getPublicUrl(path);
+        if (pubUrlData && pubUrlData.publicUrl) {
+          avatarUrl = pubUrlData.publicUrl;
+        }
+      }
+
       const patch = {
         id: user.id,
         email: user.email,
@@ -451,6 +468,9 @@
         residence_type: resType,
         residence: residence
       };
+      if (avatarUrl) {
+        patch.avatar_url = avatarUrl;
+      }
       const res = await this.authCall(
         () => this.supabase.from('profiles').upsert(patch),
         msg
@@ -977,6 +997,20 @@
         'Signed in as ' + MemberPortal.roleLabel(this.profile.role);
 
       $('mpProfile').innerHTML = '';
+        if (this.profile.avatar_url) {
+          const imgWrap = document.createElement('div');
+          imgWrap.style.textAlign = 'center';
+          imgWrap.style.marginBottom = '16px';
+          const img = document.createElement('img');
+          img.src = this.profile.avatar_url;
+          img.style.width = '100px';
+          img.style.height = '100px';
+          img.style.borderRadius = '50%';
+          img.style.objectFit = 'cover';
+          img.style.border = '2px solid rgba(255,255,255,0.2)';
+          imgWrap.appendChild(img);
+          $('mpProfile').appendChild(imgWrap);
+        }
       [
         ['Name', this.profile.full_name],
         ['Email', this.profile.email],
@@ -1026,6 +1060,18 @@
       this.loadDirectory();
 
       if (isLeader) {
+          const form = $('adminResourceForm');
+          if (form) {
+            form.style.display = '';
+            if (!isAdmin) {
+              const aud = $('arAudience');
+              if (aud) {
+                aud.value = 'leader';
+                aud.disabled = true;
+              }
+            }
+          }
+
         $('mpSessCard').hidden = false;
         this.initLeaderSessions();
         $('mpPostCard').hidden = false;
@@ -1038,10 +1084,7 @@
         this.loadAdminPending();
         this.loadAdminResidence();
         this.loadAdminVoice();
-        this.loadAdminBirthdays();
-        const form = $('adminResourceForm');
-        if (form) form.style.display = '';
-      }
+        this.loadAdminBirthdays();}
     }
 
     /* ---------- Events + RSVP ---------- */
@@ -2570,27 +2613,62 @@
       e.preventDefault();
       const msg = $('arMsg');
       const title = $('arTitle').value.trim();
-      const body = $('arBody').value.trim();
+      let body = $('arBody').value.trim();
       const audience = $('arAudience').value;
+      const fileInput = $('arFile');
       if (!title) {
-        msg.className = 'mp-msg err';
-        msg.textContent = 'Give the resource a title.';
+        if (msg) {
+          msg.className = 'mp-msg err';
+          msg.textContent = 'Give the resource a title.';
+        }
         return;
       }
+      if (msg) {
+        msg.className = 'mp-msg';
+        msg.textContent = 'Uploading...';
+      }
+      
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const path = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+        const { error: upErr } = await this.supabase.storage.from('documents').upload(path, file);
+        if (upErr) {
+          if (msg) {
+            msg.className = 'mp-msg err';
+            msg.textContent = 'Upload failed: ' + upErr.message;
+          }
+          return;
+        }
+        const { data: pubUrlData } = this.supabase.storage.from('documents').getPublicUrl(path);
+        if (pubUrlData && pubUrlData.publicUrl) {
+          const isPdf = file.name.toLowerCase().endsWith('.pdf');
+          const linkHtml = `<br><a href="${pubUrlData.publicUrl}" target="_blank" class="mp-link" style="display:inline-block; margin-top:8px;">Pakua / Download Document</a>`;
+          body += linkHtml;
+          if (isPdf) {
+             body += `<br><iframe src="${pubUrlData.publicUrl}" style="width:100%;height:400px;border:1px solid rgba(255,255,255,0.2);margin-top:10px;border-radius:8px;"></iframe>`;
+          }
+        }
+      }
+
       const { error } = await this.supabase.from('resources').insert({
         title: title,
         body: body,
         audience: audience
       });
       if (error) {
-        msg.className = 'mp-msg err';
-        msg.textContent = error.message;
+        if (msg) {
+          msg.className = 'mp-msg err';
+          msg.textContent = error.message;
+        }
         return;
       }
       $('arTitle').value = '';
       $('arBody').value = '';
-      msg.className = 'mp-msg ok';
-      msg.textContent = 'Resource added.';
+      if (fileInput) fileInput.value = '';
+      if (msg) {
+        msg.className = 'mp-msg ok';
+        msg.textContent = 'Resource added.';
+      }
       this.loadDashboard();
     }
 
