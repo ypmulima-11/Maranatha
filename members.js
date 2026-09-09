@@ -315,6 +315,10 @@
       }
       if (p.residence_type === 'campus' && !p.residence) return false;
       if (p.residence_type === 'off_campus' && !p.residence) return false;
+      
+      const isLeaderRole = p.role === 'leader' || p.role === 'section_leader' || p.role === 'admin';
+      if (isLeaderRole && !p.avatar_url) return false;
+      
       return true;
     }
 
@@ -451,6 +455,13 @@
         if (pubUrlData && pubUrlData.publicUrl) {
           avatarUrl = pubUrlData.publicUrl;
         }
+      }
+
+      const isLeaderRole = this.profile && (this.profile.role === 'leader' || this.profile.role === 'section_leader' || this.profile.role === 'admin');
+      if (isLeaderRole && !avatarUrl) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'Profile picture is compulsory for leaders. Please upload an image.';
+        return;
       }
 
       const patch = {
@@ -1012,6 +1023,24 @@
       $('mpSub').textContent =
         (this.profile.title ? this.profile.title + ' \u00b7 ' : '') +
         'Signed in as ' + MemberPortal.roleLabel(this.profile.role);
+
+      const avatarBtnInitials = $('mpAvatarInitials');
+      const avatarBtnImg = $('mpAvatarImg');
+      if (this.profile.avatar_url) {
+        if (avatarBtnImg) {
+          avatarBtnImg.src = this.profile.avatar_url;
+          avatarBtnImg.hidden = false;
+        }
+        if (avatarBtnInitials) avatarBtnInitials.hidden = true;
+      } else {
+        if (avatarBtnImg) avatarBtnImg.hidden = true;
+        if (avatarBtnInitials) {
+          avatarBtnInitials.hidden = false;
+          avatarBtnInitials.textContent = (this.profile.full_name || '?')
+            .split(/\s+/).filter(Boolean).slice(0, 2)
+            .map(w => w[0].toUpperCase()).join('') || '?';
+        }
+      }
 
       $('mpProfile').innerHTML = '';
         if (this.profile.avatar_url) {
@@ -2719,8 +2748,31 @@
       const gBtn = $('googleBtn');
       if (gBtn) gBtn.addEventListener('click', e => this.onGoogleSignIn(e));
       $('resetForm').addEventListener('submit', e => this.onResetPassword(e));
-      $('mpOut').addEventListener('click', () => this.signOut());
       $('pvOut').addEventListener('click', () => this.signOut());
+      
+      const menuBtn = $('mpUserMenuBtn');
+      const menuDrop = $('mpUserDropdown');
+      if (menuBtn && menuDrop) {
+        menuBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          menuDrop.hidden = !menuDrop.hidden;
+        });
+        document.addEventListener('click', (e) => {
+          if (!menuDrop.contains(e.target) && !menuBtn.contains(e.target)) {
+            menuDrop.hidden = true;
+          }
+        });
+      }
+      const menuProf = $('mpMenuProfile');
+      if (menuProf) menuProf.addEventListener('click', () => {
+        if (menuDrop) menuDrop.hidden = true;
+        this.openProfileForm(false);
+      });
+      const menuLogout = $('mpMenuLogout');
+      if (menuLogout) menuLogout.addEventListener('click', () => {
+        if (menuDrop) menuDrop.hidden = true;
+        this.signOut();
+      });
       $('adminResourceForm').addEventListener('submit', e => this.addResource(e));
       $('adminInviteForm').addEventListener('submit', e => this.onInvite(e));
       const lrForm = $('lrForm');
