@@ -1024,23 +1024,26 @@
         (this.profile.title ? this.profile.title + ' \u00b7 ' : '') +
         'Signed in as ' + MemberPortal.roleLabel(this.profile.role);
 
-      const avatarBtnInitials = $('mpAvatarInitials');
+            const avatarBtnInitials = $('mpAvatarInitials');
       const avatarBtnImg = $('mpAvatarImg');
       if (this.profile.avatar_url) {
         if (avatarBtnImg) {
           avatarBtnImg.src = this.profile.avatar_url;
-          avatarBtnImg.hidden = false;
+          avatarBtnImg.style.display = 'block';
         }
-        if (avatarBtnInitials) avatarBtnInitials.hidden = true;
+        if (avatarBtnInitials) avatarBtnInitials.style.display = 'none';
       } else {
-        if (avatarBtnImg) avatarBtnImg.hidden = true;
+        if (avatarBtnImg) avatarBtnImg.style.display = 'none';
         if (avatarBtnInitials) {
-          avatarBtnInitials.hidden = false;
+          avatarBtnInitials.style.display = 'flex';
           avatarBtnInitials.textContent = (this.profile.full_name || '?')
             .split(/\s+/).filter(Boolean).slice(0, 2)
             .map(w => w[0].toUpperCase()).join('') || '?';
         }
       }
+      
+      const globMenu = $('globalUserMenu');
+      if (globMenu) globMenu.style.display = 'inline-block';
 
       $('mpProfile').innerHTML = '';
         if (this.profile.avatar_url) {
@@ -2755,22 +2758,22 @@
       if (menuBtn && menuDrop) {
         menuBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          menuDrop.hidden = !menuDrop.hidden;
+          menuDrop.style.display = menuDrop.style.display === 'none' || !menuDrop.style.display ? 'flex' : 'none';
         });
         document.addEventListener('click', (e) => {
           if (!menuDrop.contains(e.target) && !menuBtn.contains(e.target)) {
-            menuDrop.hidden = true;
+            menuDrop.style.display = 'none';
           }
         });
       }
       const menuProf = $('mpMenuProfile');
       if (menuProf) menuProf.addEventListener('click', () => {
-        if (menuDrop) menuDrop.hidden = true;
+        if (menuDrop) menuDrop.style.display = 'none';
         this.openProfileForm(false);
       });
       const menuLogout = $('mpMenuLogout');
       if (menuLogout) menuLogout.addEventListener('click', () => {
-        if (menuDrop) menuDrop.hidden = true;
+        if (menuDrop) menuDrop.style.display = 'none';
         this.signOut();
       });
       $('adminResourceForm').addEventListener('submit', e => this.addResource(e));
