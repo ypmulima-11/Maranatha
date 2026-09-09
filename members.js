@@ -963,7 +963,7 @@
       h.textContent = it.title || 'Untitled';
       card.appendChild(h);
       const p = document.createElement('p');
-      p.textContent = it.body || '';
+        p.innerHTML = it.body || '';
       card.appendChild(p);
       if (it.date) {
         const d = document.createElement('div');
