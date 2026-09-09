@@ -1003,8 +1003,6 @@
       $('mpLeaderWork').hidden = !isLeader;
       $('mpAdminCard').hidden = !isAdmin;
       $('mpNavAdmin').hidden = !isAdmin;
-      if (document.getElementById('btn-dview-leader')) document.getElementById('btn-dview-leader').hidden = !isLeader;
-      if (document.getElementById('btn-dview-admin')) document.getElementById('btn-dview-admin').hidden = !isAdmin;
 
       this.renderList($('mpMemberInfo'),
         this.resources.filter(r => r.audience === 'member'),
@@ -2741,21 +2739,3 @@
   portal.init();
 })();
 
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  const dsBtns = document.querySelectorAll('.mp-ds-btn');
-  const dsViews = document.querySelectorAll('.mp-dash-view');
-  
-  dsBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      dsBtns.forEach(b => b.classList.remove('on'));
-      dsViews.forEach(v => v.classList.remove('on'));
-      
-      btn.classList.add('on');
-      const viewId = btn.getAttribute('data-dview');
-      const view = document.getElementById(viewId);
-      if (view) view.classList.add('on');
-    });
-  });
-});

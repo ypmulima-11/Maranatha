@@ -21,14 +21,14 @@
 <meta name="twitter:image" content="https://ypmulima-11.github.io/Maranatha/images/og-cover.jpg">
 <link rel="icon" type="image/jpeg" href="images/choir-logo.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="maranatha.css?v=2">
-<link rel="stylesheet" href="members.css?v=7">
+<link rel="stylesheet" href="maranatha.css">
+<link rel="stylesheet" href="members.css?v=8">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <script src="supabase-config.js" defer></script>
   <script src="i18n.js" defer></script>
   <script src="qrcode.min.js" defer></script>
   <script src="maranatha.js" defer></script>
-<script src="members.js?v=7" defer></script>
+<script src="members.js?v=8" defer></script>
 </head>
 <body>
 <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
@@ -308,20 +308,7 @@
           </div>
 
           <div class="mp-grid">
-          <div class="mp-dash-layout">
-            <aside class="mp-dash-sidebar">
-              <button class="mp-ds-btn on" data-dview="dview-overview">Overview</button>
-              <button class="mp-ds-btn" data-dview="dview-events">Events</button>
-              <button class="mp-ds-btn" data-dview="dview-resources">Resources</button>
-              <button class="mp-ds-btn" data-dview="dview-profile">Profile</button>
-              <button class="mp-ds-btn" id="btn-dview-leader" data-dview="dview-leader" hidden>Leadership</button>
-              <button class="mp-ds-btn" id="btn-dview-admin" data-dview="dview-admin" hidden>Admin Tools</button>
-            </aside>
 
-            <div class="mp-dash-panes">
-
-              <div class="mp-dash-view on" id="dview-overview">
-                <div class="mp-grid">
             <div class="mp-card2 mp-card-wide">
               <h2 data-i18n="portal.next">Next event</h2>
               <div class="mp-list" id="mpNextEvent"></div>
@@ -332,14 +319,20 @@
               <div class="mp-list" id="mpAnnounce"></div>
             </div>
 
-                </div>
-              </div>
-
-              <div class="mp-dash-view" id="dview-events">
-                <div class="mp-grid">
             <div class="mp-card2">
               <h2 data-i18n="portal.events">Upcoming events</h2>
               <div class="mp-list" id="mpEvents"></div>
+            </div>
+
+            <div class="mp-card2">
+              <h2 data-i18n="portal.profile">My profile</h2>
+              <div class="mp-pro" id="mpProfile"></div>
+              <button type="button" class="mp-btn" id="mpEditProfile">Edit profile</button>
+            </div>
+
+            <div class="mp-card2">
+              <h2 data-i18n="portal.mres">Member resources</h2>
+              <div class="mp-list" id="mpMemberInfo"></div>
             </div>
 
             <div class="mp-card2" id="mpAttendCard" hidden>
@@ -356,89 +349,6 @@
               <div class="mp-list" id="attMine"></div>
             </div>
 
-                </div>
-              </div>
-
-              <div class="mp-dash-view" id="dview-resources">
-                <div class="mp-grid">
-            <div class="mp-card2">
-              <h2 data-i18n="portal.mres">Member resources</h2>
-              <div class="mp-list" id="mpMemberInfo"></div>
-            </div>
-
-            <div class="mp-card2 mp-card-wide" id="mpLibCard" hidden>
-              <h2>Music library</h2>
-              <p class="mp-hint">Sheet music and practice tracks, shared by the leadership. Files are private to choir members.</p>
-              <div class="mp-libfilters">
-                <label class="mp-field"><span>Show</span>
-                  <select id="libKind">
-                    <option value="">Everything</option>
-                    <option value="score">Sheet music</option>
-                    <option value="track">Practice track</option>
-                    <option value="other">Other files</option>
-                  </select>
-                </label>
-                <label class="mp-field"><span>Voice part</span>
-                  <select id="libVoice">
-                    <option value="">All parts</option>
-                    <option value="soprano">Soprano</option>
-                    <option value="alto">Alto</option>
-                    <option value="tenor">Tenor</option>
-                    <option value="bass">Bass</option>
-                    <option value="all">Full choir</option>
-                  </select>
-                </label>
-              </div>
-              <div class="mp-list" id="libList"></div>
-              <form class="mp-res-form" id="libForm" novalidate hidden>
-                <h3 class="mp-sec">Add a file</h3>
-                <div class="mp-two">
-                  <label class="mp-field"><span>Title</span>
-                    <input type="text" id="libTitle" maxlength="120" placeholder="e.g. Misa ya Amani — Alto">
-                  </label>
-                  <label class="mp-field"><span>Voice part</span>
-                    <select id="libVoiceNew">
-                      <option value="all">Full choir</option>
-                      <option value="soprano">Soprano</option>
-                      <option value="alto">Alto</option>
-                      <option value="tenor">Tenor</option>
-                      <option value="bass">Bass</option>
-                    </select>
-                  </label>
-                </div>
-                <div class="mp-two">
-                  <label class="mp-field"><span>Type</span>
-                    <select id="libKindNew">
-                      <option value="score">Sheet music</option>
-                      <option value="track">Practice track</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </label>
-                  <label class="mp-field"><span>File (PDF / audio, max 20 MB)</span>
-                    <input type="file" id="libFile">
-                  </label>
-                </div>
-                <div class="mp-msg" id="libMsg" role="status"></div>
-                <button type="submit" class="mp-btn">Upload to library</button>
-              </form>
-            </div>
-
-                </div>
-              </div>
-
-              <div class="mp-dash-view" id="dview-profile">
-                <div class="mp-grid">
-            <div class="mp-card2">
-              <h2 data-i18n="portal.profile">My profile</h2>
-              <div class="mp-pro" id="mpProfile"></div>
-              <button type="button" class="mp-btn" id="mpEditProfile">Edit profile</button>
-            </div>
-
-                </div>
-              </div>
-
-              <div class="mp-dash-view" id="dview-leader">
-                <div class="mp-grid">
             <div class="mp-card2 mp-card-wide" id="mpSessCard" hidden>
               <h2><span>Attendance sessions</span> <span class="mp-badge leader">Leader</span></h2>
               <form class="mp-res-form" id="sessForm" novalidate>
@@ -536,6 +446,63 @@
               <div class="mp-list" id="postList"></div>
             </div>
 
+            <div class="mp-card2 mp-card-wide" id="mpLibCard" hidden>
+              <h2>Music library</h2>
+              <p class="mp-hint">Sheet music and practice tracks, shared by the leadership. Files are private to choir members.</p>
+              <div class="mp-libfilters">
+                <label class="mp-field"><span>Show</span>
+                  <select id="libKind">
+                    <option value="">Everything</option>
+                    <option value="score">Sheet music</option>
+                    <option value="track">Practice track</option>
+                    <option value="other">Other files</option>
+                  </select>
+                </label>
+                <label class="mp-field"><span>Voice part</span>
+                  <select id="libVoice">
+                    <option value="">All parts</option>
+                    <option value="soprano">Soprano</option>
+                    <option value="alto">Alto</option>
+                    <option value="tenor">Tenor</option>
+                    <option value="bass">Bass</option>
+                    <option value="all">Full choir</option>
+                  </select>
+                </label>
+              </div>
+              <div class="mp-list" id="libList"></div>
+              <form class="mp-res-form" id="libForm" novalidate hidden>
+                <h3 class="mp-sec">Add a file</h3>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Title</span>
+                    <input type="text" id="libTitle" maxlength="120" placeholder="e.g. Misa ya Amani — Alto">
+                  </label>
+                  <label class="mp-field"><span>Voice part</span>
+                    <select id="libVoiceNew">
+                      <option value="all">Full choir</option>
+                      <option value="soprano">Soprano</option>
+                      <option value="alto">Alto</option>
+                      <option value="tenor">Tenor</option>
+                      <option value="bass">Bass</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="mp-two">
+                  <label class="mp-field"><span>Type</span>
+                    <select id="libKindNew">
+                      <option value="score">Sheet music</option>
+                      <option value="track">Practice track</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </label>
+                  <label class="mp-field"><span>File (PDF / audio, max 20 MB)</span>
+                    <input type="file" id="libFile">
+                  </label>
+                </div>
+                <div class="mp-msg" id="libMsg" role="status"></div>
+                <button type="submit" class="mp-btn">Upload to library</button>
+              </form>
+            </div>
+
             <div class="mp-card2" id="mpDirCard" hidden>
               <h2>Member directory</h2>
               <p class="mp-hint" id="dirHint">Names and voice parts. Contact details are visible to leaders only.</p>
@@ -557,11 +524,6 @@
               <div class="mp-list" id="lrList"></div>
             </div>
 
-                </div>
-              </div>
-
-              <div class="mp-dash-view" id="dview-admin">
-                <div class="mp-grid">
             <div class="mp-card2" id="mpAdminCard" hidden>
               <h2><span data-i18n="portal.ares">Admin resources</span> <span class="mp-badge admin">Admin</span></h2>
               <div class="mp-list" id="mpAdminInfo"></div>
@@ -634,11 +596,6 @@
 
           </div>
         </div>
-                </div>
-              </div>
-              
-            </div>
-          </div>
       </section>
 
     </div>
