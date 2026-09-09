@@ -2021,7 +2021,8 @@
     async loadDirectory() {
       if (!this.supabase) return;
       const isLeader = ['leader', 'section_leader', 'admin'].includes(this.profile.role);
-      const { data, error } = await this.supabase.rpc(isLeader ? 'directory_full' : 'directory');
+        const canViewFull = this.profile.role === 'admin' || this.profile.can_view_directory === true;
+        const { data, error } = await this.supabase.rpc(canViewFull ? 'directory_full' : 'directory');
       const box = $('dirList');
       if (!box) return;
       if (error) {
@@ -2037,9 +2038,7 @@
       }
       this.dirRows = data || [];
       const hint = $('dirHint');
-      if (hint) hint.textContent = isLeader
-        ? 'Names, voice parts and contact details \u2014 leaders only.'
-        : 'Names and voice parts. Contact details are visible to leaders only.';
+      if (hint) hint.textContent = canViewFull ? 'Names, voice parts and contact details.' : 'Names and voice parts. Contact details are restricted.';
       this.renderDirectory();
     }
 
