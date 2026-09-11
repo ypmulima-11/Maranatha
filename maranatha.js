@@ -414,6 +414,8 @@
         this.nmBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
       });
       this.nmMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => this.closeMenu()));
+      const nmClose = El.get('nmClose');
+      if (nmClose) nmClose.addEventListener('click', () => this.closeMenu());
     }
 
     bindLanguage() {

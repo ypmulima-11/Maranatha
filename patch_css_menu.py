@@ -1,76 +1,28 @@
-﻿with open("members.css", "a", encoding="utf-8") as f:
-    f.write("""
+﻿import re
 
-/* ---------- User Menu Dropdown ---------- */
-.mp-user-menu-container {
-  position: relative;
-  display: inline-block;
-}
-.mp-user-avatar-btn {
-  background: transparent;
-  border: none;
-  padding: 4px 8px 4px 4px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  color: var(--txt);
-  transition: background 0.2s;
-  border-radius: 20px;
-}
-.mp-user-avatar-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-.mp-avatar-initials {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: var(--line);
-  color: var(--txt);
-  border-radius: 50%;
-  font-weight: 600;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-.mp-avatar-img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid var(--line);
-}
-.mp-user-dropdown {
-  position: absolute;
-  top: calc(100% + 5px);
-  right: 0;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  width: 160px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-  z-index: 100;
-  overflow: hidden;
-}
-.mp-user-dropdown button {
-  background: transparent;
-  border: none;
-  color: var(--txt);
-  padding: 12px 16px;
-  text-align: left;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s;
-}
-.mp-user-dropdown button:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-.mp-user-dropdown hr {
-  border: none;
-  border-top: 1px solid var(--line);
-  margin: 0;
-}
-""")
+with open("maranatha.css", "r", encoding="utf-8") as f:
+    css = f.read()
+
+pattern = r'\.nm-menu \{\s*position: fixed; top: 0; left: 0; bottom: 0; width: 260px; z-index: 10000;\s*background: var\(--g9\); border-right: 1px solid rgba\(255,255,255,\.08\); border-bottom: none;\s*padding: 5rem 2rem 2rem; display: flex;\s*flex-direction: column; gap: 6px;\s*transform: translateX\(-100%\); opacity: 1; visibility: hidden; pointer-events: none;\s*transition: transform \.3s cubic-bezier\(0\.4, 0, 0\.2, 1\), visibility \.3s;\s*box-shadow: 10px 0 30px rgba\(0,0,0,0\.5\);\s*\}'
+
+replacement = """.nm-menu {
+    position: fixed; top: 0; left: 0; width: 260px; z-index: 10000;
+    background: rgba(9, 26, 3, 0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(255,255,255,.08); border-bottom: 1px solid rgba(255,255,255,.08);
+    border-bottom-right-radius: 16px;
+    padding: 1.5rem 2rem 2rem; display: flex;
+    flex-direction: column; gap: 6px;
+    transform: translateX(-100%); opacity: 1; visibility: hidden; pointer-events: none;
+    transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1), visibility .3s;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+  }
+  .nm-close {
+    background: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer;
+    align-self: flex-start; margin-bottom: 1rem; padding: 0; display: flex; align-items: center; justify-content: center;
+  }
+  .nm-close:hover { color: var(--al); }"""
+
+css = re.sub(pattern, replacement, css)
+
+with open("maranatha.css", "w", encoding="utf-8") as f:
+    f.write(css)
