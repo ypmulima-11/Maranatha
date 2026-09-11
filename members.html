@@ -21,14 +21,17 @@
 <meta name="twitter:image" content="https://ypmulima-11.github.io/Maranatha/images/og-cover.jpg">
 <link rel="icon" type="image/jpeg" href="images/choir-logo.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="maranatha.css">
-<link rel="stylesheet" href="members.css?v=17">
+<link rel="stylesheet" href="maranatha.css?v=18">
+<link rel="stylesheet" href="members.css?v=18">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <script src="supabase-config.js" defer></script>
   <script src="i18n.js" defer></script>
   <script src="qrcode.min.js" defer></script>
-  <script src="maranatha.js" defer></script>
-<script src="members.js?v=17" defer></script>
+  <script src="maranatha.js?v=18" defer></script>
+<script src="members.js?v=18" defer></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 </head>
 <body>
 <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
@@ -47,6 +50,9 @@
 <!-- NAV -->
 <nav>
   <div class="nb">
+      <button class="nm-btn" id="nmBtn" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
     <div class="nc"><img src="images/choir-logo.jpg" alt="Maranatha Choir logo" width="42" height="42"></div>
     <span class="nn">Maranatha Choir</span>
   </div>
@@ -73,9 +79,7 @@
           <button type="button" id="mpMenuLogout">Log out</button>
         </div>
       </div>
-      <button class="nm-btn" id="nmBtn" aria-label="Open menu" aria-expanded="false">
-    <span></span><span></span><span></span>
-  </button>
+      
     </div>
 </nav>
 <div class="nm-menu" id="nmMenu">
@@ -226,6 +230,10 @@
                 <input type="text" id="pfName" autocomplete="name">
               </label>
                 <label class="mp-field"><span>Profile Picture (optional)</span>
+                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                    <img id="pfAvatarPreview" style="width:50px; height:50px; border-radius:50%; object-fit:cover; display:none; border:1px solid rgba(255,255,255,0.2);">
+                    <button type="button" class="mp-btn small danger" id="pfAvatarDelete" style="display:none;">Remove</button>
+                  </div>
                   <input type="file" id="pfAvatar" accept="image/*">
                 </label>
               <label class="mp-field"><span>Date of birth</span>
@@ -628,7 +636,10 @@
 <footer>
   <div class="fwrap">
     <div class="fcol fbrand">
-      <div class="nb"><div class="nc"><img src="images/choir-logo.jpg" alt="Maranatha Choir logo" width="42" height="42"></div><span class="nn">Maranatha Choir</span></div>
+      <div class="nb">
+      <button class="nm-btn" id="nmBtn" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button><div class="nc"><img src="images/choir-logo.jpg" alt="Maranatha Choir logo" width="42" height="42"></div><span class="nn">Maranatha Choir</span></div>
       <p data-i18n="ft.p">Kwaya ya Maranatha — a ministry of song, discipline and prayer in the Catholic community of Dar es Salaam, Tanzania.</p>
       <div class="coso">
         <a class="cosb" href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" rel="noopener" title="YouTube" aria-label="YouTube"><svg viewBox="0 0 24 24" width="18" height="18" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12 9.545 15.568z"/></svg></a>
@@ -682,5 +693,18 @@
 
 <button class="totop" id="totop" aria-label="Back to top" data-i18n-aria="totop">&uarr;</button>
 
+
+<div id="cropModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
+  <div style="background:var(--card); border: 1px solid var(--line); padding:20px; border-radius:12px; width:90%; max-width:500px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+    <h3 style="margin-bottom:15px;">Crop Profile Picture</h3>
+    <div style="max-height:60vh; overflow:hidden; margin-bottom: 20px; background:#000;">
+      <img id="cropImage" style="max-width:100%; display:block;">
+    </div>
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button type="button" class="mp-btn" id="cropCancel">Cancel</button>
+      <button type="button" class="mp-btn on" id="cropSave" style="background:var(--au); color:#fff;">Crop & Save</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

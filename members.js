@@ -316,8 +316,7 @@
       if (p.residence_type === 'campus' && !p.residence) return false;
       if (p.residence_type === 'off_campus' && !p.residence) return false;
       
-      const isLeaderRole = p.role === 'leader' || p.role === 'section_leader' || p.role === 'admin';
-      if (isLeaderRole && !p.avatar_url) return false;
+      
       
       return true;
     }
@@ -354,6 +353,24 @@
       this.syncProfileForm();
       $('pfMsg').className = 'mp-msg';
       $('pfMsg').textContent = '';
+      
+      this.avatarBlob = null;
+      this.avatarDelete = false;
+      const avPrev = $('pfAvatarPreview');
+      const avDelBtn = $('pfAvatarDelete');
+      if (avPrev && avDelBtn) {
+        if (this.profile && this.profile.avatar_url) {
+          avPrev.src = this.profile.avatar_url;
+          avPrev.style.display = 'block';
+          avDelBtn.style.display = 'inline-block';
+        } else {
+          avPrev.src = '';
+          avPrev.style.display = 'none';
+          avDelBtn.style.display = 'none';
+        }
+      }
+      if ($('pfAvatar')) $('pfAvatar').value = '';
+
       $('mpProfileForm').hidden = false;
       $('mpEditProfile').hidden = true;
       $('pfName').focus();
@@ -441,28 +458,29 @@
       msg.className = 'mp-msg';
       msg.textContent = 'Saving\u2026';
       let avatarUrl = this.profile ? this.profile.avatar_url : '';
-      const avInput = $('pfAvatar');
-      if (avInput && avInput.files && avInput.files[0]) {
-        const file = avInput.files[0];
-        const path = user.id + '/' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
-        const { error: avErr } = await this.supabase.storage.from('avatars').upload(path, file, { upsert: true });
-        if (avErr) {
-          msg.className = 'mp-msg err';
-          msg.textContent = 'Failed to upload profile picture: ' + avErr.message;
-          return;
+              if (this.avatarDelete && avatarUrl) {
+          try {
+            const oldPath = avatarUrl.split('/').pop();
+            await this.supabase.storage.from('avatars').remove([user.id + '/' + oldPath]);
+          } catch(e) {}
+          avatarUrl = null;
         }
-        const { data: pubUrlData } = this.supabase.storage.from('avatars').getPublicUrl(path);
-        if (pubUrlData && pubUrlData.publicUrl) {
-          avatarUrl = pubUrlData.publicUrl;
-        }
-      }
 
-      const isLeaderRole = this.profile && (this.profile.role === 'leader' || this.profile.role === 'section_leader' || this.profile.role === 'admin');
-      if (isLeaderRole && !avatarUrl) {
-        msg.className = 'mp-msg err';
-        msg.textContent = 'Profile picture is compulsory for leaders. Please upload an image.';
-        return;
-      }
+        if (this.avatarBlob) {
+          const path = user.id + '/' + Date.now() + '_avatar.jpg';
+          const { error: avErr } = await this.supabase.storage.from('avatars').upload(path, this.avatarBlob, { upsert: true, contentType: 'image/jpeg' });
+          if (avErr) {
+            msg.className = 'mp-msg err';
+            msg.textContent = 'Failed to upload profile picture: ' + avErr.message;
+            return;
+          }
+          const { data: pubUrlData } = this.supabase.storage.from('avatars').getPublicUrl(path);
+          if (pubUrlData && pubUrlData.publicUrl) {
+            avatarUrl = pubUrlData.publicUrl;
+          }
+        }
+
+      
 
       const patch = {
         id: user.id,
@@ -2805,7 +2823,68 @@
         this.showDash();
         this.loadDashboard();
       });
-      $('pfOut').addEventListener('click', () => this.signOut());
+              $('pfOut').addEventListener('click', () => this.signOut());
+        
+        const avInput = $('pfAvatar');
+        const cropModal = $('cropModal');
+        const cropImage = $('cropImage');
+        const cropCancel = $('cropCancel');
+        const cropSave = $('cropSave');
+        const avDelBtn = $('pfAvatarDelete');
+        const avPrev = $('pfAvatarPreview');
+
+        if (avInput && cropModal) {
+          avInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+              const reader = new FileReader();
+              reader.onload = (re) => {
+                cropImage.src = re.target.result;
+                cropModal.style.display = 'flex';
+                if (this.cropper) { this.cropper.destroy(); }
+                this.cropper = new Cropper(cropImage, {
+                  aspectRatio: 1,
+                  viewMode: 1,
+                  background: false,
+                  autoCropArea: 1,
+                  responsive: true
+                });
+              };
+              reader.readAsDataURL(e.target.files[0]);
+            }
+          });
+          
+          cropCancel.addEventListener('click', () => {
+            cropModal.style.display = 'none';
+            avInput.value = '';
+            if (this.cropper) { this.cropper.destroy(); this.cropper = null; }
+          });
+          
+          cropSave.addEventListener('click', () => {
+            if (!this.cropper) return;
+            const canvas = this.cropper.getCroppedCanvas({ width: 400, height: 400 });
+            canvas.toBlob((blob) => {
+              this.avatarBlob = blob;
+              this.avatarDelete = false;
+              avPrev.src = URL.createObjectURL(blob);
+              avPrev.style.display = 'block';
+              avDelBtn.style.display = 'inline-block';
+              cropModal.style.display = 'none';
+              if (this.cropper) { this.cropper.destroy(); this.cropper = null; }
+            }, 'image/jpeg', 0.9);
+          });
+        }
+        
+        if (avDelBtn) {
+          avDelBtn.addEventListener('click', () => {
+            this.avatarBlob = null;
+            this.avatarDelete = true;
+            if (avInput) avInput.value = '';
+            avPrev.src = '';
+            avPrev.style.display = 'none';
+            avDelBtn.style.display = 'none';
+          });
+        }
+
       $('mpProfileForm').addEventListener('submit', e => this.onSaveProfile(e));
       $('pfStudy').addEventListener('change', () => this.syncProfileForm());
       $('pfResType').addEventListener('change', () => this.syncProfileForm());
