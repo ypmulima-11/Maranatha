@@ -1,4 +1,6 @@
 
+DROP FUNCTION IF EXISTS public.get_public_leaders();
+
 create or replace function public.get_public_leaders()
 returns table (id uuid, full_name text, voice_part text, title text, role text, avatar_url text)
 language sql security definer set search_path = public
