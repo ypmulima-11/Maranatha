@@ -1061,43 +1061,7 @@
       const globMenu = $('globalUserMenu');
       if (globMenu) globMenu.style.display = 'inline-block';
 
-      $('mpProfile').innerHTML = '';
-        if (this.profile.avatar_url) {
-          const imgWrap = document.createElement('div');
-          imgWrap.style.textAlign = 'center';
-          imgWrap.style.marginBottom = '16px';
-          const img = document.createElement('img');
-          img.src = this.profile.avatar_url;
-          img.style.width = '100px';
-          img.style.height = '100px';
-          img.style.borderRadius = '50%';
-          img.style.objectFit = 'cover';
-          img.style.border = '2px solid rgba(255,255,255,0.2)';
-          imgWrap.appendChild(img);
-          $('mpProfile').appendChild(imgWrap);
-        }
-      [
-        ['Name', this.profile.full_name],
-        ['Email', this.profile.email],
-        ['Access level', MemberPortal.roleLabel(this.profile.role)],
-        ['Title', this.profile.title || '\u2014'],
-        ['Voice part', this.profile.voice_part || '\u2014'],
-        ['Date of birth', this.fmtDob(this.profile.dob)],
-        ['Phone', this.profile.phone || '\u2014'],
-        ['Study status', this.studyLabel(this.profile)],
-        ['Residence', this.residenceLabel(this.profile)],
-        ['Member since', this.profile.created_at ? new Date(this.profile.created_at).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }) : '\u2014']
-      ].forEach(r => {
-        const k = document.createElement('div');
-        k.className = 'mp-k';
-        k.textContent = r[0];
-        const v = document.createElement('div');
-        v.className = 'mp-v';
-        v.textContent = r[1];
-        $('mpProfile').appendChild(k);
-        $('mpProfile').appendChild(v);
-      });
-
+      
       $('mpLeaderCard').hidden = !isLeader;
       $('mpLeaderWork').hidden = !isLeader;
       $('mpAdminCard').hidden = !isAdmin;
