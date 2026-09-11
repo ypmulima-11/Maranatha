@@ -58,7 +58,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 }
 .nc img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .nn { color: #fff; font-family: 'Playfair Display', serif; font-size: 20px; }
-.nl { display: none; align-items: center; gap: 1.7rem; }
+.nl { display: flex; align-items: center; gap: 1.7rem; }
 .nl a {
   color: var(--g1); font-size: 15px; transition: color .2s;
   padding-bottom: 3px; border-bottom: 1.5px solid transparent;
@@ -74,7 +74,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 }
 .nc-cta:hover { background: #EF9F27 !important; }
 .nm-btn {
-    display: flex; width: 42px; height: 42px; background: transparent;
+    display: none; width: 42px; height: 42px; background: transparent;
   border: 1px solid rgba(255,255,255,.15); border-radius: 8px;
   flex-direction: column; align-items: center; justify-content: center;
   gap: 5px; cursor: pointer; z-index: 1000;
@@ -87,14 +87,15 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .nm-btn.open span:nth-child(2) { opacity: 0; }
 .nm-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 .nm-menu {
-  position: fixed; top: 100px; left: 0; right: 0; z-index: 998;
-  background: var(--g9); border-bottom: 1px solid rgba(255,255,255,.08);
-  padding: 1rem 2.5rem 1.5rem; display: flex;
-  flex-direction: column; gap: 6px;
-  transform: translateY(-15px); opacity: 0; visibility: hidden; pointer-events: none;
-  transition: transform .3s ease, opacity .3s ease, visibility .3s ease;
-}
-.nm-menu.open { visibility: visible; transform: translateY(0); opacity: 1; pointer-events: auto; }
+    position: fixed; top: 0; left: 0; bottom: 0; width: 260px; z-index: 10000;
+    background: var(--g9); border-right: 1px solid rgba(255,255,255,.08); border-bottom: none;
+    padding: 5rem 2rem 2rem; display: flex;
+    flex-direction: column; gap: 6px;
+    transform: translateX(-100%); opacity: 1; visibility: hidden; pointer-events: none;
+    transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1), visibility .3s;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+  }
+.nm-menu.open { visibility: visible; transform: translateX(0); opacity: 1; pointer-events: auto; }
 .nm-menu a {
   color: var(--g1); font-size: 15px; padding: 10px 4px;
   border-bottom: 1px solid rgba(255,255,255,.06);

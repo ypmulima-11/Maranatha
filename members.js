@@ -372,8 +372,7 @@
       if ($('pfAvatar')) $('pfAvatar').value = '';
 
       $('mpProfileForm').hidden = false;
-      $('mpEditProfile').hidden = true;
-      $('pfName').focus();
+            $('pfName').focus();
     }
 
     syncProfileForm() {
@@ -385,8 +384,7 @@
 
     closeProfileEdit() {
       $('mpProfileForm').hidden = true;
-      $('mpEditProfile').hidden = false;
-    }
+          }
 
     async onSaveProfile(e) {
       e.preventDefault();
@@ -2817,8 +2815,7 @@
       const repBtn = $('repBtn');
       if (repBtn) repBtn.addEventListener('click', () => this.loadReport());
       $('mpInviteCopy').addEventListener('click', () => this.copyInvite());
-      $('mpEditProfile').addEventListener('click', () => this.openProfileForm(false));
-      $('pfCancel').addEventListener('click', () => {
+            $('pfCancel').addEventListener('click', () => {
         this.closeProfileEdit();
         this.showDash();
         this.loadDashboard();
