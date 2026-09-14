@@ -1,8 +1,8 @@
 :root {
   --g9: #07171a;
   --g8: #173404;
-  --au: #fbbc05;
-  --al: #fbbc05;
+  --au: #00E5FF;
+  --al: #00E5FF;
   --bg: #061d21;
   --card: #0c262b;
   --ink: #ffffff;
@@ -62,11 +62,11 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
   background: var(--au); color: #000; font-weight: 600; border: 1px solid var(--au);
   padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
   transition: .15s;
-}
+ font-size: 12.5px !important; }
 .mp-btn:hover { background: #d18a1e; }
 .mp-btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
 .mp-btn.ghost:hover { border-color: var(--au); color: var(--au); }
-.mp-btn.big { width: 100%; padding: 11px; font-size: 15px; }
+.mp-btn.big { width: 100%; padding: 11px; font-size: 15px;  font-size: 13px !important; }
 .mp-btn:disabled { opacity: .6; cursor: wait; }
 .mp-link { background: none; border: none; color: var(--au); cursor: pointer; text-decoration: underline; font-size: 13px; }
 
@@ -258,13 +258,13 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
   .mp-field input, .mp-field select, .mp-field textarea { width: 100%; box-sizing: border-box; }
   .mp-passwrap input { padding-right: 44px; }
   .mp-passbtn { width: 36px; height: 36px; }
-  .mp-btn.big { width: 100%; justify-content: center; }
+  .mp-btn.big { width: 100%; justify-content: center;  font-size: 13px !important; }
   .mp-res-form { gap: 12px; }
   .mp-mrow { flex-direction: column; gap: 8px; align-items: flex-start; }
   .mp-mrow > div:last-child { width: 100%; text-align: left; }
   .mp-mwho { width: 100%; }
   .mp-date { margin-top: 4px; }
-  .mp-btn { width: 100%; text-align: center; }
+  .mp-btn { width: 100%; text-align: center;  font-size: 12.5px !important; }
   .mp-btn.small { padding: 8px 12px; font-size: 12px; }
   .mp-list { gap: 8px; }
   .mp-item { padding: 12px; }
@@ -287,10 +287,10 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 
 @media (max-width: 480px) {
   .tb { font-size: 10px; }
-  .mp-btn.big { padding: 12px 16px; font-size: 14px; }
+  .mp-btn.big { padding: 12px 16px; font-size: 14px;  font-size: 13px !important; }
   .mp-card2 { padding: 0.875rem; }
   .mp-field input, .mp-field select, .mp-field textarea { padding: 10px 12px; }
-  .mp-btn { padding: 10px 14px; }
+  .mp-btn { padding: 10px 14px;  font-size: 12.5px !important; }
   .mp-field { margin-bottom: 10px; }
   .mp-hint { font-size: 11px; }
   .mp-sec { font-size: 13px; }
@@ -317,13 +317,10 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 
 /* ---------- Portal polish (2026-08) ---------- */
 .mp-card2 { box-shadow: 0 8px 22px -14px rgba(23,52,4,.14); }
-.mp-btn { transition: transform .15s ease, box-shadow .2s ease, background .2s ease, filter .2s ease; }
+.mp-btn { transition: transform .15s ease, box-shadow .2s ease, background .2s ease, filter .2s ease;  font-size: 12.5px !important; }
 .mp-btn:hover { transform: translateY(-1px); }
-.mp-btn.big {
-  background: linear-gradient(135deg, #FAC775 0%, #E19A3C 45%, #BA7517 100%);
-  box-shadow: 0 10px 26px -10px rgba(186,117,23,.5);
-}
-.mp-btn.big:hover { filter: brightness(1.06); box-shadow: 0 14px 30px -10px rgba(186,117,23,.6); }
+
+
 
 /* ---------- Library, directory, posting (2026-08) ---------- */
 .mp-two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
@@ -453,13 +450,13 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
   .mp-field input, .mp-field select, .mp-field textarea { width: 100%; box-sizing: border-box; }
   .mp-passwrap input { padding-right: 44px; }
   .mp-passbtn { width: 36px; height: 36px; }
-  .mp-btn.big { width: 100%; justify-content: center; }
+  .mp-btn.big { width: 100%; justify-content: center;  font-size: 13px !important; }
   .mp-res-form { gap: 12px; }
   .mp-mrow { flex-direction: column; gap: 8px; align-items: flex-start; }
   .mp-mrow > div:last-child { width: 100%; text-align: left; }
   .mp-mwho { width: 100%; }
   .mp-date { margin-top: 4px; }
-  .mp-btn { width: 100%; text-align: center; }
+  .mp-btn { width: 100%; text-align: center;  font-size: 12.5px !important; }
   .mp-btn.small { padding: 8px 12px; font-size: 12px; }
   .mp-list { gap: 8px; }
   .mp-item { padding: 12px; }
@@ -482,10 +479,10 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 
 @media (max-width: 480px) {
   .tb { font-size: 10px; }
-  .mp-btn.big { padding: 12px 16px; font-size: 14px; }
+  .mp-btn.big { padding: 12px 16px; font-size: 14px;  font-size: 13px !important; }
   .mp-card2 { padding: 0.875rem; }
   .mp-field input, .mp-field select, .mp-field textarea { padding: 10px 12px; }
-  .mp-btn { padding: 10px 14px; }
+  .mp-btn { padding: 10px 14px;  font-size: 12.5px !important; }
   .mp-field { margin-bottom: 10px; }
   .mp-hint { font-size: 11px; }
   .mp-sec { font-size: 13px; }
@@ -512,13 +509,10 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 
 /* ---------- Portal polish (2026-08) ---------- */
 .mp-card2 { box-shadow: 0 8px 22px -14px rgba(23,52,4,.14); }
-.mp-btn { transition: transform .15s ease, box-shadow .2s ease, background .2s ease, filter .2s ease; }
+.mp-btn { transition: transform .15s ease, box-shadow .2s ease, background .2s ease, filter .2s ease;  font-size: 12.5px !important; }
 .mp-btn:hover { transform: translateY(-1px); }
-.mp-btn.big {
-  background: linear-gradient(135deg, #FAC775 0%, #E19A3C 45%, #BA7517 100%);
-  box-shadow: 0 10px 26px -10px rgba(186,117,23,.5);
-}
-.mp-btn.big:hover { filter: brightness(1.06); box-shadow: 0 14px 30px -10px rgba(186,117,23,.6); }
+
+
 
 /* ---------- Library, directory, posting (2026-08) ---------- */
 .mp-two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
@@ -724,4 +718,34 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
   border-color: var(--au);
   color: var(--au);
   font-weight: 600;
+}
+
+.pf-cat {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+.pf-cat > * { margin-bottom: 0 !important; }
+
+@media (min-width: 768px) {
+  .pf-cat { grid-template-columns: 1fr 1fr; }
+  .pf-cat > .pf-cat-title, .pf-cat > .pf-nav, .pf-cat > .mp-msg { grid-column: 1 / -1; }
+}
+
+.mp-btn.big {
+  background: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 14px rgba(255,255,255,0.1);
+  border: none;
+}
+.mp-btn.big:hover {
+  background: #f0f0f0 !important;
+  transform: translateY(-1px);
+}
+
+#pfStudying:not([hidden]),
+#pfAlumni:not([hidden]),
+#pfResCampus:not([hidden]),
+#pfResOff:not([hidden]) {
+  display: contents;
 }
