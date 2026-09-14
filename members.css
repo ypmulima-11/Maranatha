@@ -674,3 +674,54 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
   border-top: 1px solid var(--line);
   margin: 0;
 }
+
+/* Profile Form Categories */
+.pf-cat {
+  background: var(--card);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  margin-bottom: 20px;
+  animation: fadeUp 0.3s ease-out;
+}
+
+.pf-cat-title {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: var(--al);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 10px;
+}
+
+.pf-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.pf-progress {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.pf-step {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  padding: 8px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ts);
+  transition: 0.3s;
+}
+
+.pf-step.active {
+  background: var(--g8);
+  border-color: var(--au);
+  color: var(--au);
+  font-weight: 600;
+}

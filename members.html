@@ -22,7 +22,7 @@
 <link rel="icon" type="image/jpeg" href="images/choir-logo.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="maranatha.css?v=31">
-<link rel="stylesheet" href="members.css?v=27">
+<link rel="stylesheet" href="members.css?v=28">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <script src="supabase-config.js" defer></script>
   <script src="i18n.js" defer></script>
@@ -225,97 +225,127 @@
           <div class="mp-form on">
             <h1 id="pfTitle">Complete your profile</h1>
             <p class="mp-hint" id="pfSub">Please fill in these details — they help the leaders organise groups and celebrations.</p>
-            <form class="mp-res-form" id="mpProfileForm" novalidate>
-              <label class="mp-field"><span>Full name</span>
-                <input type="text" id="pfName" autocomplete="name">
-              </label>
-                <label class="mp-field"><span>Profile Picture (optional)</span>
-                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-                    <img id="pfAvatarPreview" style="width:50px; height:50px; border-radius:50%; object-fit:cover; display:none; border:1px solid rgba(255,255,255,0.2);">
-                    <button type="button" class="mp-btn small danger" id="pfAvatarDelete" style="display:none;">Remove</button>
+                        <form class="mp-res-form" id="mpProfileForm" novalidate>
+                <!-- PROGRESS BAR -->
+                <div class="pf-progress">
+                  <div class="pf-step active" id="pfStep1">1. Personal</div>
+                  <div class="pf-step" id="pfStep2">2. Choir</div>
+                  <div class="pf-step" id="pfStep3">3. Academic</div>
+                </div>
+
+                <!-- CATEGORY 1 -->
+                <div class="pf-cat" id="pfCat1">
+                  <h3 class="pf-cat-title">Personal Details</h3>
+                  <label class="mp-field"><span>Profile Picture (optional)</span>
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                      <img id="pfAvatarPreview" style="width:50px; height:50px; border-radius:50%; object-fit:cover; display:none; border:1px solid rgba(255,255,255,0.2);">
+                      <button type="button" class="mp-btn small danger" id="pfAvatarDelete" style="display:none;">Remove</button>
+                    </div>
+                    <input type="file" id="pfAvatar" accept="image/*">
+                  </label>
+                  <label class="mp-field"><span>Full name</span>
+                    <input type="text" id="pfName" autocomplete="name">
+                  </label>
+                  <label class="mp-field"><span>Date of birth</span>
+                    <input type="date" id="pfDob">
+                  </label>
+                  <label class="mp-field"><span>Phone number</span>
+                    <input type="tel" id="pfPhone" placeholder="e.g. +255 7xx xxx xxx" autocomplete="tel">
+                  </label>
+                  <label class="mp-field"><span>Email address</span>
+                    <input type="email" id="pfEmail" disabled>
+                  </label>
+                  <div class="pf-nav">
+                    <button type="button" class="mp-btn ghost" id="pfCancel">Cancel</button>
+                    <button type="button" class="mp-btn" onclick="pfNext(2)">Next: Choir Info</button>
                   </div>
-                  <input type="file" id="pfAvatar" accept="image/*">
-                </label>
-              <label class="mp-field"><span>Date of birth</span>
-                <input type="date" id="pfDob">
-              </label>
-              <label class="mp-field"><span>Phone number</span>
-                <input type="tel" id="pfPhone" placeholder="e.g. +255 7xx xxx xxx" autocomplete="tel">
-              </label>
-              <label class="mp-field"><span>Email address</span>
-                <input type="email" id="pfEmail" disabled>
-              </label>
-              <label class="mp-field"><span>Voice part</span>
-                <select id="pfVoice">
-                  <option value="">Not selected</option>
-                  <option>Soprano</option>
-                  <option>Alto</option>
-                  <option>Tenor</option>
-                  <option>Bass</option>
-                </select>
-              </label>
-              <label class="mp-field"><span>Study status</span>
-                <select id="pfStudy">
-                  <option value="">Not selected</option>
-                  <option value="studying">Current Studying</option>
-                  <option value="alumni">Alumni</option>
-                </select>
-              </label>
-              <div id="pfStudying" hidden>
-                <label class="mp-field"><span>Course studying</span>
-                  <input type="text" id="pfCourse" placeholder="e.g. BSc. Computer Science">
-                </label>
-                <label class="mp-field"><span>University</span>
-                  <select id="pfUni">
-                    <option value="">Not selected</option>
-                    <option>University of Dar es Salaam</option>
-                    <option>Ardhi University</option>
-                    <option>Water Institute</option>
-                  </select>
-                </label>
-                <label class="mp-field"><span>Expected year of graduation</span>
-                  <input type="number" id="pfExpGrad" min="2026" max="2040" placeholder="e.g. 2028">
-                </label>
-              </div>
-              <div id="pfAlumni" hidden>
-                <label class="mp-field"><span>Year of graduation</span>
-                  <input type="number" id="pfGradYear" min="1960" max="2026" placeholder="e.g. 2023">
-                </label>
-              </div>
-              <label class="mp-field"><span>Place of residence</span>
-                <select id="pfResType">
-                  <option value="">Not selected</option>
-                  <option value="campus">UDSM Campus</option>
-                  <option value="off_campus">Out of UDSM Campus</option>
-                </select>
-              </label>
-              <div id="pfResCampus" hidden>
-                <label class="mp-field"><span>Hall / hostel</span>
-                  <select id="pfHall">
-                    <option value="">Not selected</option>
-                    <option>Hall 1</option>
-                    <option>Hall 2</option>
-                    <option>Hall 3</option>
-                    <option>Hall 4</option>
-                    <option>Hall 5</option>
-                    <option>Hall 6</option>
-                    <option>Hall 7</option>
-                    <option>Magufuli Hostel</option>
-                    <option>Coict Hostel</option>
-                    <option>Mabibo Hostel</option>
-                  </select>
-                </label>
-              </div>
-              <div id="pfResOff" hidden>
-                <label class="mp-field"><span>Name of the place</span>
-                  <input type="text" id="pfPlace" placeholder="e.g. Kigamboni, Mbezi Beach, Sinza...">
-                </label>
-              </div>
-              <div class="mp-msg" id="pfMsg" role="status"></div>
-              <button type="submit" class="mp-btn big">Save profile</button>
-              <button type="button" class="mp-btn ghost" id="pfCancel">Cancel</button>
-              
-            </form>
+                </div>
+
+                <!-- CATEGORY 2 -->
+                <div class="pf-cat" id="pfCat2" style="display:none;">
+                  <h3 class="pf-cat-title">Choir Info</h3>
+                  <label class="mp-field"><span>Voice part</span>
+                    <select id="pfVoice">
+                      <option value="">Not selected</option>
+                      <option>Soprano</option>
+                      <option>Alto</option>
+                      <option>Tenor</option>
+                      <option>Bass</option>
+                    </select>
+                  </label>
+                  <div class="pf-nav">
+                    <button type="button" class="mp-btn ghost" onclick="pfNext(1)">Back</button>
+                    <button type="button" class="mp-btn" onclick="pfNext(3)">Next: Academic</button>
+                  </div>
+                </div>
+
+                <!-- CATEGORY 3 -->
+                <div class="pf-cat" id="pfCat3" style="display:none;">
+                  <h3 class="pf-cat-title">Academic & Residence Info</h3>
+                  <label class="mp-field"><span>Study status</span>
+                    <select id="pfStudy">
+                      <option value="">Not selected</option>
+                      <option value="studying">Current Studying</option>
+                      <option value="alumni">Alumni</option>
+                    </select>
+                  </label>
+                  <div id="pfStudying" hidden>
+                    <label class="mp-field"><span>Course studying</span>
+                      <input type="text" id="pfCourse" placeholder="e.g. BSc. Computer Science">
+                    </label>
+                    <label class="mp-field"><span>University</span>
+                      <select id="pfUni">
+                        <option value="">Not selected</option>
+                        <option>University of Dar es Salaam</option>
+                        <option>Ardhi University</option>
+                        <option>Water Institute</option>
+                      </select>
+                    </label>
+                    <label class="mp-field"><span>Expected year of graduation</span>
+                      <input type="number" id="pfExpGrad" min="2026" max="2040" placeholder="e.g. 2028">
+                    </label>
+                  </div>
+                  <div id="pfAlumni" hidden>
+                    <label class="mp-field"><span>Year of graduation</span>
+                      <input type="number" id="pfGradYear" min="1960" max="2026" placeholder="e.g. 2023">
+                    </label>
+                  </div>
+                  <label class="mp-field"><span>Place of residence</span>
+                    <select id="pfResType">
+                      <option value="">Not selected</option>
+                      <option value="campus">UDSM Campus</option>
+                      <option value="off_campus">Out of UDSM Campus</option>
+                    </select>
+                  </label>
+                  <div id="pfResCampus" hidden>
+                    <label class="mp-field"><span>Hall / hostel</span>
+                      <select id="pfHall">
+                        <option value="">Not selected</option>
+                        <option>Hall 1</option>
+                        <option>Hall 2</option>
+                        <option>Hall 3</option>
+                        <option>Hall 4</option>
+                        <option>Hall 5</option>
+                        <option>Hall 6</option>
+                        <option>Hall 7</option>
+                        <option>Magufuli Hostel</option>
+                        <option>Coict Hostel</option>
+                        <option>Mabibo Hostel</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div id="pfResOff" hidden>
+                    <label class="mp-field"><span>Name of the place</span>
+                      <input type="text" id="pfPlace" placeholder="e.g. Kigamboni, Mbezi Beach, Sinza...">
+                    </label>
+                  </div>
+                  <div class="mp-msg" id="pfMsg" role="status"></div>
+                  <div class="pf-nav">
+                    <button type="button" class="mp-btn ghost" onclick="pfNext(2)">Back</button>
+                    <button type="submit" class="mp-btn big">Save profile</button>
+                  </div>
+                </div>
+              </form>
           </div>
         </div>
       </section>
@@ -700,5 +730,25 @@
     </div>
   </div>
 </div>
+
+  <script>
+    function pfNext(step) {
+      // Basic validation before moving forward
+      if (step === 2) {
+        if (!document.getElementById('pfName').value.trim()) {
+          alert("Please enter your Full name before proceeding.");
+          return;
+        }
+      }
+      
+      document.getElementById('pfCat1').style.display = (step === 1) ? 'block' : 'none';
+      document.getElementById('pfCat2').style.display = (step === 2) ? 'block' : 'none';
+      document.getElementById('pfCat3').style.display = (step === 3) ? 'block' : 'none';
+      
+      document.getElementById('pfStep1').classList.toggle('active', step >= 1);
+      document.getElementById('pfStep2').classList.toggle('active', step >= 2);
+      document.getElementById('pfStep3').classList.toggle('active', step >= 3);
+    }
+  </script>
 </body>
 </html>
