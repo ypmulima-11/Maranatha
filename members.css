@@ -774,3 +774,7 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
     margin-top: 0;
   }
 }
+
+#profileView .mp-card {
+  width: min(900px, 100%);
+}
