@@ -461,7 +461,7 @@
             const oldPath = avatarUrl.split('/').pop();
             await this.supabase.storage.from('avatars').remove([user.id + '/' + oldPath]);
           } catch(e) {}
-          avatarUrl = null;
+          avatarUrl = '';
         }
 
         if (this.avatarBlob) {
@@ -2786,7 +2786,7 @@
         this.showDash();
         this.loadDashboard();
       });
-              $('pfOut').addEventListener('click', () => this.signOut());
+              if ($('pfOut')) $('pfOut').addEventListener('click', () => this.signOut());
         
         const avInput = $('pfAvatar');
         const cropModal = $('cropModal');
