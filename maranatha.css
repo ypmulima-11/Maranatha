@@ -27,7 +27,7 @@ img { display: block; max-width: 100%; }
 /* ---------- TOP BAR ---------- */
 .tb {
   position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-  height: 36px; background: #070f04; border-bottom: 1px solid rgba(255,255,255,.06);
+  height: 36px; background: var(--g9); border-bottom: 1px solid rgba(255,255,255,.06);
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 2.5rem; font-size: 12px; color: rgba(255,255,255,.5);
 }
@@ -177,7 +177,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .hstats .hsl { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
 
 /* ---------- FEATURES ---------- */
-.fsw { background: #fff; border-bottom: 1px solid rgba(0,0,0,.06); }
+.fsw { background: var(--bg); border-bottom: 1px solid var(--line); }
 .fsw .sw { padding: 3.5rem 2.5rem; }
 .fsi { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.6rem; max-width: 1100px; margin: 0 auto; }
 .fsb {
@@ -227,7 +227,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .atxt p { font-size: 15px; color: var(--ts); line-height: 1.8; margin-bottom: 1rem; }
 .astats {
   display: flex; gap: 2rem; margin-top: 1.8rem;
-  padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,.08);
+  padding-top: 1.5rem; border-top: 1px solid var(--line);
 }
 .sn { font-family: 'Playfair Display', serif; font-size: 34px; color: var(--g6); }
 .sk { font-size: 12px; color: var(--ts); margin-top: 2px; }
@@ -259,14 +259,14 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .sti { max-width: 1100px; margin: 0 auto; }
 .stg { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; }
 .stc {
-  background: #fff; border: 1px solid rgba(0,0,0,.07); border-radius: 14px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
   padding: 1.8rem; display: flex; flex-direction: column; gap: 1rem;
   transition: transform .2s, box-shadow .2s;
 }
 .stc:hover { transform: translateY(-4px); box-shadow: 0 16px 36px rgba(39,80,10,.1); }
 .stq { font-family: 'Playfair Display', serif; font-size: 44px; color: var(--au); line-height: 1; }
 .stc > p { font-size: 14.5px; color: var(--tm); line-height: 1.8; font-style: italic; }
-.stm { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,.06); }
+.stm { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--line); }
 .sta {
   width: 44px; height: 44px; border-radius: 50%;
   background: var(--g7); color: var(--al);
@@ -277,12 +277,12 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .str { font-size: 12px; color: var(--ts); }
 
 /* ---------- WORKS / MUSIC ---------- */
-.muw { background: #fff; }
+.muw { background: var(--bg); }
 .mui { max-width: 1100px; margin: 0 auto; }
 .mug { display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap: 1.2rem; }
 .muc {
-  background: #fff; border-radius: 12px; display: block;
-  border: 1px solid rgba(0,0,0,.07); overflow: hidden;
+  background: var(--card); border-radius: 12px; display: block;
+  border: 1px solid var(--line); overflow: hidden;
   transition: transform .2s, box-shadow .2s;
 }
 .muc:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(23,52,4,.12); }
@@ -304,8 +304,8 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .evi { max-width: 1100px; margin: 0 auto; }
 .evg { display: grid; grid-template-columns: repeat(auto-fill,minmax(230px,1fr)); gap: 1.2rem; margin-bottom: 3.5rem; }
 .evc {
-  border: 1px solid rgba(0,0,0,.08); border-radius: 12px; overflow: hidden;
-  background: #fff; transition: transform .2s, box-shadow .2s;
+  border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+  background: var(--card); transition: transform .2s, box-shadow .2s;
 }
 .evc:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(39,80,10,.12); }
 .evh { background: var(--g8); padding: 16px 18px; display: flex; align-items: flex-end; gap: 8px; }
@@ -333,7 +333,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .evvh { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; margin-bottom: 1.4rem; }
 .vidg { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; }
 .vid {
-  background: #fff; border: 1px solid rgba(0,0,0,.07); border-radius: 12px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
   overflow: hidden; transition: transform .2s, box-shadow .2s;
 }
 .vid:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(23,52,4,.12); }
@@ -356,7 +356,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .vidp { font-size: 12px; color: var(--ts); }
 
 /* ---------- TEAM ---------- */
-.tmw { background: #fff; }
+.tmw { background: var(--bg); }
 .tmi { max-width: 1100px; margin: 0 auto; }
 .tmg { display: grid; grid-template-columns: repeat(auto-fill,minmax(155px,1fr)); gap: 1.5rem; }
 .tmc { text-align: center; }
@@ -457,7 +457,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .gact { text-align: center; margin-top: 1.5rem; }
 
 /* ---------- NEWS ---------- */
-.nww { background: #fff; }
+.nww { background: var(--bg); }
 .nwi { max-width: 1100px; margin: 0 auto; }
 .nwg { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; }
 .nwc {
@@ -479,7 +479,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .msi { max-width: 1100px; margin: 0 auto; }
 .msg { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.2rem; }
 .msp {
-  background: #fff; border: 1px solid rgba(0,0,0,.07);
+  background: var(--card); border: 1px solid var(--line);
   border-radius: 14px; padding: 1.4rem;
 }
 .msp h3 {
@@ -498,7 +498,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .msr { font-size: 11.5px; color: var(--ts); }
 
 /* ---------- JOIN US ---------- */
-.jow { background: #fff; }
+.jow { background: var(--bg); }
 .joi { max-width: 1100px; margin: 0 auto; }
 .jog { display: grid; grid-template-columns: 1fr 1.2fr; gap: 3rem; align-items: center; }
 .jinfo { display: flex; flex-direction: column; gap: 1.2rem; }
@@ -523,7 +523,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
   padding: 1.8rem; border-radius: 16px;
 }
 .jof input, .jof select, .jof textarea {
-  width: 100%; background: #fff; border: 1px solid rgba(0,0,0,.14);
+  width: 100%; background: var(--card); border: 1px solid rgba(0,0,0,.14);
   border-radius: 12px; padding: 12px 16px; color: var(--tx);
   font-size: 14.5px; font-family: inherit; outline: none; transition: all .25s ease;
   -webkit-appearance: none; appearance: none;
@@ -555,7 +555,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .doi { max-width: 1100px; margin: 0 auto; }
 .dog { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; align-items: stretch; }
 .dgc {
-  background: #fff; border: 1px solid rgba(0,0,0,.07);
+  background: var(--bg); border: 1px solid var(--line);
   border-radius: 14px; padding: 1.8rem 1.6rem; text-align: center;
   display: flex; flex-direction: column; transition: transform .2s, box-shadow .2s;
 }
@@ -576,7 +576,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 }
 .ddon:hover { background: #EF9F27; transform: translateY(-2px); }
 .dgc.feat .ddon { background: var(--al); color: var(--g9); }
-.dgc.feat .ddon:hover { background: #fff; }
+.dgc.feat .ddon:hover { background: var(--card); }
 
 /* ---------- CTA BANNER ---------- */
 .ctaw { background: var(--g8); position: relative; overflow: hidden; }
@@ -655,7 +655,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(13,42,4,
 .cof button:hover { background: #EF9F27; transform: translateY(-2px); }
 
 /* ---------- FOOTER ---------- */
-footer { background: #070f04; border-top: 1px solid rgba(255,255,255,.05); }
+footer { background: var(--g9); border-top: 1px solid rgba(255,255,255,.05); }
 .fwrap {
   max-width: 1200px; margin: 0 auto; padding: 3.5rem 2.5rem 2rem;
   display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 2.5rem;
@@ -1216,7 +1216,7 @@ footer::before {
     transition: all 0.2s !important;
     display: flex;
     align-items: center;
-    color: var(--tx) !important;
+    color: #000 !important;
   }
   
   .nl a:hover {
