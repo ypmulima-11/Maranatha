@@ -495,7 +495,9 @@
         residence_type: resType,
         residence: residence
       };
-      if (avatarUrl) {
+      if (this.avatarDelete || this.avatarBlob) {
+        patch.avatar_url = avatarUrl;
+      } else if (avatarUrl) {
         patch.avatar_url = avatarUrl;
       }
       const res = await this.authCall(
