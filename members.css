@@ -119,7 +119,7 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 .mp-or::before, .mp-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 .mp-btn.google {
   display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; background: #fff; color: var(--ink); border-color: var(--line);
+  width: 100%; background: #fff; color: #000; font-weight: 600; border-color: var(--line);
 }
 .mp-btn.google:hover { border-color: var(--au); color: var(--au); }
 .mp-btn.google svg { width: 18px; height: 18px; flex-shrink: 0; }
