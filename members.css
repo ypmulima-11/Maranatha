@@ -1,8 +1,8 @@
 :root {
   --g9: #07171a;
   --g8: #173404;
-  --au: #00E5FF;
-  --al: #00E5FF;
+  --au: #ffffff;
+  --al: #ffffff;
   --bg: #061d21;
   --card: #0c262b;
   --ink: #ffffff;
@@ -63,8 +63,9 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
   padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
   transition: .15s;
  font-size: 12.5px !important; }
-.mp-btn:hover { background: #d18a1e; }
-.mp-btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.mp-btn:hover { background: #e0e0e0; }
+.mp-btn.ghost { background: transparent !important; color: #fff !important; border: 1px solid rgba(255,255,255,0.2) !important; box-shadow: none !important; }
+.mp-btn.ghost:hover { background: rgba(255,255,255,0.05) !important; }
 .mp-btn.ghost:hover { border-color: var(--au); color: var(--au); }
 .mp-btn.big { width: 100%; padding: 11px; font-size: 15px;  font-size: 13px !important; }
 .mp-btn:disabled { opacity: .6; cursor: wait; }
@@ -173,7 +174,8 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 .mp-rsvp span { font-size: 11px; color: var(--mut); text-transform: uppercase; letter-spacing: .05em; }
 .mp-btn.small { padding: 4px 10px; font-size: 12px; }
 .mp-btn.small.on { background: var(--au); border-color: var(--au); color: #000; font-weight: 600; }
-.mp-btn.danger { background: transparent; border-color: #d98a8a; color: #b03a3a; }
+.mp-btn.danger { background: #ff4d4d !important; color: #fff !important; border: none !important; }
+.mp-btn.danger:hover { background: #ff3333 !important; }
 .mp-btn.danger:hover { background: #fbecec; border-color: #b03a3a; color: #b03a3a; }
 
 /* ---------- Admin: invite box ---------- */
@@ -365,7 +367,8 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 .mp-rsvp span { font-size: 11px; color: var(--mut); text-transform: uppercase; letter-spacing: .05em; }
 .mp-btn.small { padding: 4px 10px; font-size: 12px; }
 .mp-btn.small.on { background: var(--au); border-color: var(--au); color: #000; font-weight: 600; }
-.mp-btn.danger { background: transparent; border-color: #d98a8a; color: #b03a3a; }
+.mp-btn.danger { background: #ff4d4d !important; color: #fff !important; border: none !important; }
+.mp-btn.danger:hover { background: #ff3333 !important; }
 .mp-btn.danger:hover { background: #fbecec; border-color: #b03a3a; color: #b03a3a; }
 
 /* ---------- Admin: invite box ---------- */
@@ -714,7 +717,7 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 }
 
 .pf-step.active {
-  background: var(--g8);
+  background: rgba(255,255,255,0.05);
   border-color: var(--au);
   color: var(--au);
   font-weight: 600;
@@ -728,7 +731,7 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 .pf-cat > * { margin-bottom: 0 !important; }
 
 @media (min-width: 768px) {
-  .pf-cat { grid-template-columns: 1fr 1fr; }
+  
   .pf-cat > .pf-cat-title, .pf-cat > .pf-nav, .pf-cat > .mp-msg { grid-column: 1 / -1; }
 }
 
@@ -748,4 +751,26 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 #pfResCampus:not([hidden]),
 #pfResOff:not([hidden]) {
   display: contents;
+}
+
+@media (min-width: 768px) {
+  .pf-cat .mp-field {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 16px;
+  }
+  .pf-cat .mp-field > span {
+    flex: 0 0 160px; /* Fixed width for labels on left */
+    text-align: right;
+    margin-bottom: 0;
+  }
+  .pf-cat .mp-field > input, 
+  .pf-cat .mp-field > select, 
+  .pf-cat .mp-field > textarea, 
+  .pf-cat .mp-field > div {
+    flex: 1;
+    margin-top: 0;
+  }
 }
