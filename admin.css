@@ -1,17 +1,17 @@
 :root {
-  --g9: #0d2a04;
-  --g8: #173404;
-  --g7: #22490b;
-  --g6: #2f5c14;
-  --au: #BA7517;
-  --al: #FAC775;
-  --bg: #f4f6ef;
-  --card: #ffffff;
-  --ink: #1e2a14;
-  --mut: #5f6e51;
-  --line: #dde4d2;
-  --err: #b3261e;
-  --ok: #1e7d32;
+  --g9: #07171a;
+  --g8: #07171a;
+  --g7: #0c262b;
+  --g6: #11343a;
+  --au: #fbbc05;
+  --al: #fbbc05;
+  --bg: #061d21;
+  --card: #0c262b;
+  --ink: #ffffff;
+  --mut: #8ca3a7;
+  --line: #11343a;
+  --err: #ef4444;
+  --ok: #22c55e;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,7 +32,7 @@ input, select, textarea { font: inherit; }
 /* ---------- Header ---------- */
 .adm-h { background: var(--g9); color: #fff; padding: 0 1.5rem; }
 .adm-h-in {
-  max-width: 1100px; margin: 0 auto; height: 60px;
+  max-width: none; margin: 0; height: 60px; padding: 0 1rem;
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
 }
 .adm-brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; }
@@ -50,7 +50,7 @@ input, select, textarea { font: inherit; }
 
 /* ---------- Buttons ---------- */
 .adm-btn {
-  background: var(--au); color: #fff; border: 1px solid var(--au);
+  background: var(--au); color: #000; font-weight: 600; border: 1px solid var(--au);
   padding: 10px 18px; border-radius: 10px; cursor: pointer; font-weight: 600;
   transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(186, 117, 23, 0.2);
 }
@@ -76,7 +76,7 @@ input, select, textarea { font: inherit; }
   display: none !important;
 }
 
-.glass-card {
+.glass-card { background: var(--card); border: 1px solid var(--line); color: var(--ink);
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 24px;
@@ -213,7 +213,7 @@ input, select, textarea { font: inherit; }
 .glass-btn {
   background: var(--au);
   border: 1px solid var(--au);
-  color: #fff;
+  color: #000; font-weight: 600;
   font-size: 15px;
   font-weight: 700;
   padding: 14px;
@@ -268,9 +268,11 @@ input, select, textarea { font: inherit; }
 
 /* ---------- Workspace ---------- */
 .adm-main { min-height: calc(100vh - 60px); background-color: #f7f9f4; }
-.adm-body { max-width: 1100px; margin: 0 auto; display: flex; gap: 2rem; padding: 2.5rem 1.5rem 4rem; }
+.adm-body { max-width: none; margin: 0; display: flex; gap: 0; height: calc(100vh - 60px); overflow: hidden; }
+.adm-side { width: 250px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; background: var(--card); border-right: 1px solid var(--line); padding: 2rem 1.5rem; overflow-y: auto; }
+.adm-pane { flex: 1; padding: 2.5rem 3rem; overflow-y: auto; background: var(--bg); position: relative; }
 
-.adm-side { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; }
+
 .adm-tab {
   text-align: left; background: none; border: none;
   padding: 12px 16px; border-radius: 12px; cursor: pointer; font-weight: 600;
