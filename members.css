@@ -1,8 +1,6 @@
 :root {
   --g9: #07171a;
   --g8: #173404;
-  --au: #ffffff;
-  --al: #ffffff;
   --bg: #061d21;
   --card: #0c262b;
   --ink: #ffffff;
@@ -736,13 +734,13 @@ code { background: #eef2e7; padding: 1px 5px; border-radius: 4px; }
 }
 
 .mp-btn.big {
-  background: #ffffff !important;
+  background: var(--au) !important;
   color: #000000 !important;
-  box-shadow: 0 4px 14px rgba(255,255,255,0.1);
+  box-shadow: 0 4px 14px rgba(251,188,5,0.15);
   border: none;
 }
 .mp-btn.big:hover {
-  background: #f0f0f0 !important;
+  background: #fbbc05 !important;
   transform: translateY(-1px);
 }
 
