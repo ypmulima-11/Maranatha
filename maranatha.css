@@ -2,10 +2,10 @@
   --g9: #0d2a04; --g8: #173404; --g7: #27500A; --g6: #3B6D11;
   --g5: #639922; --g3: #97C459; --g1: #C0DD97; --g0: #EAF3DE;
   --au: #fbbc05; --al: #fbbc05; --ap: rgba(251, 188, 5, 0.1);
-  --tx: #ffffff; --tm: #97C459; --ts: #639922;
+  --tx: #ffffff; --tm: #a0a0a0; --ts: #888888;
   --bg: #0a2203;
-  --card: #0d2a04;
-  --line: #173404;
+  --card: #0f0f0f;
+  --line: #262626;
 }
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 110px; }
@@ -51,7 +51,7 @@ nav {
   justify-content: space-between; padding: 0 2.5rem; height: 64px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
-nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(6, 29, 33,.97); }
+nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(10, 34, 3, .97); }
 .nb { display: flex; align-items: center; gap: 12px; }
 .nc {
   width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--au);
