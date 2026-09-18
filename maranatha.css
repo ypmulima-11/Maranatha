@@ -233,26 +233,25 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(10, 34, 
 .sk { font-size: 12px; color: var(--ts); margin-top: 2px; }
 
 /* ---------- VALUES ---------- */
-.valw { background: var(--g9); }
+.valw { background: var(--bg); }
 .vali { max-width: 1100px; margin: 0 auto; }
-.valw .slbl { color: var(--al); }
+.valw .slbl { color: var(--g5); }
 .valw .slbl::before { background: var(--au); }
-.valw .stit { color: #fff; }
-.valw .ssub { color: var(--g1); }
+.valw .stit { color: var(--tx); }
+.valw .ssub { color: var(--ts); }
 .valg { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; }
 .valc {
-  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
-  border-radius: 14px; padding: 1.6rem; transition: transform .2s, background .2s;
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: 14px; padding: 1.6rem; transition: transform .2s, background .2s, border-color .2s, box-shadow .2s;
 }
-.valc:hover { transform: translateY(-4px); background: rgba(255,255,255,.08); }
 .valic {
-  width: 48px; height: 48px; border-radius: 12px; font-size: 22px;
-  background: rgba(186,117,23,.18); border: 1px solid rgba(186,117,23,.3);
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(251, 188, 5, 0.1); color: var(--au);
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 1rem;
+  font-size: 22px; margin-bottom: 1rem;
 }
-.valc h3 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px; }
-.valc p { font-size: 13px; color: var(--g1); line-height: 1.7; }
+.valc h3 { font-size: 15px; font-weight: 600; color: var(--tx); margin-bottom: 6px; }
+.valc p { font-size: 13px; color: var(--ts); line-height: 1.7; }
 
 /* ---------- STORIES ---------- */
 .stw { background: var(--ap); }
@@ -1152,3 +1151,6 @@ footer::before {
 .totop:hover { background: var(--gold-grad); filter: brightness(1.08); }
 
 
+
+ . v a l c : h o v e r   {   t r a n s f o r m :   t r a n s l a t e Y ( - 3 p x ) ;   b o x - s h a d o w :   0   1 0 p x   2 4 p x   r g b a ( 0 , 0 , 0 , . 0 8 ) ;   } 
+.valc:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
