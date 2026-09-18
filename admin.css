@@ -71,6 +71,11 @@ input, select, textarea { font: inherit; }
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
+  /* Light theme overrides for the login form */
+  --card: #ffffff;
+  --ink: #111111;
+  --mut: #666666;
+  --line: #e0e0e0;
 }
 .adm-login[hidden] {
   display: none !important;
