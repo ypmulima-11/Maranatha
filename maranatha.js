@@ -407,7 +407,8 @@
 
     bindMenu() {
       if (!this.nmBtn || !this.nmMenu) return;
-      this.nmBtn.addEventListener('click', () => {
+      this.nmBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const open = this.nmMenu.classList.toggle('open');
         this.nmBtn.classList.toggle('open', open);
         this.nmBtn.setAttribute('aria-expanded', open);
@@ -416,6 +417,11 @@
       this.nmMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => this.closeMenu()));
       const nmClose = El.get('nmClose');
       if (nmClose) nmClose.addEventListener('click', () => this.closeMenu());
+      document.addEventListener('click', (e) => {
+        if (this.nmMenu.classList.contains('open') && !this.nmMenu.contains(e.target) && !this.nmBtn.contains(e.target)) {
+          this.closeMenu();
+        }
+      });
     }
 
     bindLanguage() {
