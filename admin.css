@@ -5,11 +5,11 @@
   --g6: #3B6D11;
   --au: #fbbc05;
   --al: #fbbc05;
-  --bg: #0a2203;
-  --card: #0f0f0f;
-  --ink: #ffffff;
-  --mut: #a0a0a0;
-  --line: #262626;
+  --bg: #FAEEDA;
+  --card: #ffffff;
+  --ink: #111111;
+  --mut: #666666;
+  --line: rgba(0,0,0,0.1);
   --err: #b3261e;
   --ok: #1e7d32;
 }
@@ -71,11 +71,6 @@ input, select, textarea { font: inherit; }
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  /* Light theme overrides for the login form */
-  --card: #ffffff;
-  --ink: #111111;
-  --mut: #666666;
-  --line: #e0e0e0;
 }
 .adm-login[hidden] {
   display: none !important;
