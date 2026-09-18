@@ -111,6 +111,7 @@ nav.scrolled { box-shadow: 0 6px 24px rgba(0,0,0,.35); background: rgba(10, 34, 
   border-bottom: 1px solid rgba(255,255,255,.06);
 }
 .nm-menu a:hover { color: var(--al); }
+.nm-menu a.active { color: var(--al); border-bottom-color: var(--au); }
 .nm-menu a.nc-cta { text-align: center; margin-top: 8px; border-bottom: none; }
 
 /* ---------- HERO ---------- */
