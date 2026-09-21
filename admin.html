@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="admin.css?v=7">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <script src="supabase-config.js" defer></script>
-<script src="admin.js?v=2" defer></script>
+<script src="admin.js?v=4" defer></script>
 </head>
 <body>
 
@@ -74,7 +74,8 @@
   <div class="adm-body">
 
     <aside class="adm-side">
-      <button type="button" class="adm-tab on" data-tab="news">News</button>
+      <button type="button" class="adm-tab on" data-tab="hero">Background</button>
+      <button type="button" class="adm-tab" data-tab="news">News</button>
       <button type="button" class="adm-tab" data-tab="events">Events</button>
       <button type="button" class="adm-tab" data-tab="videos">Videos</button>
       <button type="button" class="adm-tab" data-tab="team">Team</button>
@@ -98,7 +99,12 @@
 
       <div class="adm-tab-wrap">
 
-        <section class="adm-pane-sec on" id="pane-news">
+        <section class="adm-pane-sec on" id="pane-hero">
+          <div class="adm-rows" id="rows-hero"></div>
+          <button type="button" class="adm-btn ghost add" data-add="hero">&plus; Add picture</button>
+        </section>
+
+        <section class="adm-pane-sec" id="pane-news">
           <div class="adm-rows" id="rows-news"></div>
           <button type="button" class="adm-btn ghost add" data-add="news">&plus; Add news item</button>
         </section>

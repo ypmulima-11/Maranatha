@@ -47,17 +47,22 @@
     static FILE_PATH = 'content.json';
 
     static TABS = {
+      hero:    { title: 'Background Slideshow', hint: 'Pictures that cycle in the background of the Home page.' },
       news:    { title: 'News & updates',        hint: 'Announcements shown in the News section.' },
-      events:  { title: 'Upcoming events',        hint: 'Events drive the calendar and the countdown timer.' },
-      videos:  { title: 'Recent performances',    hint: 'Video cards under Events — link to your YouTube videos.' },
-      team:    { title: 'Team / leadership',      hint: 'The people shown in "Meet the Team".' },
-      members: { title: 'Choir members',          hint: 'One row per singer; the site groups them by voice part.' },
-      gallery: { title: 'Gallery',                hint: 'Photos and videos from your choir life.' },
-      works:   { title: 'Music & recordings',     hint: 'Songs listed in "Our Works" — link each to YouTube or a recording.' }
+      events:  { title: 'Upcoming events',       hint: 'Events drive the calendar and the countdown timer.' },
+      videos:  { title: 'Recent performances',   hint: 'Video cards under Events \u2014 link to your YouTube videos.' },
+      team:    { title: 'Team / leadership',     hint: 'The people shown in "Meet the Team".' },
+      members: { title: 'Choir members',         hint: 'One row per singer; the site groups them by voice part.' },
+      gallery: { title: 'Gallery',               hint: 'Photos and videos from your choir life.' },
+      works:   { title: 'Music & recordings',    hint: 'Songs listed in "Our Works" \u2014 link each to YouTube or a recording.' }
     };
 
     /* Row field definitions: [key, label, type, extra] */
     static FIELDS = {
+      hero: [
+        ['src', 'Image URL (Upload or paste)', 'text'],
+        ['cap', 'Alt description', 'text']
+      ],
       news: [
         ['date', 'Date', 'date'],
         ['title', 'Headline', 'text'],
@@ -159,6 +164,16 @@
       try {
         const res = await this.api.call('read');
         this.data = JSON.parse(ApiClient.b64decode(res.content));
+        if (!this.data.hero) {
+          this.data.hero = [
+            { src: 'images/hero.jpg', cap: 'Background' },
+            { src: 'images/hero/hero1.jpg', cap: 'Background' },
+            { src: 'images/hero/hero2.jpg', cap: 'Background' },
+            { src: 'images/hero/hero3.jpg', cap: 'Background' },
+            { src: 'images/hero/hero4.jpg', cap: 'Background' },
+            { src: 'images/hero/hero5.jpg', cap: 'Background' }
+          ];
+        }
         return { ok: true };
       } catch (err) {
         const msg = 'Could not load content: ' + err.message;

@@ -57,6 +57,14 @@
 
   class SiteContent {
     static DEFAULT = {
+      hero: [
+        { src: 'images/hero.jpg', cap: 'Background' },
+        { src: 'images/hero/hero1.jpg', cap: 'Background' },
+        { src: 'images/hero/hero2.jpg', cap: 'Background' },
+        { src: 'images/hero/hero3.jpg', cap: 'Background' },
+        { src: 'images/hero/hero4.jpg', cap: 'Background' },
+        { src: 'images/hero/hero5.jpg', cap: 'Background' }
+      ],
       news: [
         { date: '2026-07-28', title: 'Rehearsals continue every Thursday', body: 'Our regular rehearsals take place every Thursday at 6:30 PM in the parish hall. New voices are always welcome.', linkText: 'Join us', linkHref: 'join.html' },
         { date: '2026-07-19', title: 'Thanks for the Annual Concert', body: 'We are grateful to everyone who attended and supported our Annual Concert. Highlights are now on our YouTube channel.', linkText: 'Watch highlights', linkHref: 'https://www.youtube.com/@kwayayamaranatha-udsm3802' },
@@ -120,6 +128,46 @@
   /* ---------- Section renderers ---------- */
 
   class SectionRenderer {
+    renderHero(list) {
+      if (!list || list.length === 0) return;
+      const hbgList = document.querySelectorAll('.hero .hbg');
+      hbgList.forEach(hbg => {
+        if (hbg.dataset.rendered === 'true') {
+           hbg.replaceChildren();
+        }
+        hbg.dataset.rendered = 'true';
+        hbg.style.backgroundImage = 'none';
+
+        if (hbg.slideshowInterval) clearInterval(hbg.slideshowInterval);
+
+        const slider = document.createElement('div');
+        slider.style.position = 'absolute';
+        slider.style.inset = '0';
+        
+        const slides = list.map((item, i) => {
+          const slide = document.createElement('div');
+          slide.style.position = 'absolute';
+          slide.style.inset = '0';
+          slide.style.background = `url('${item.src}') center / cover no-repeat`;
+          slide.style.opacity = i === 0 ? '1' : '0';
+          slide.style.transition = 'opacity 1.5s ease-in-out';
+          slider.appendChild(slide);
+          return slide;
+        });
+        
+        hbg.appendChild(slider);
+        
+        if (slides.length > 1) {
+          let curr = 0;
+          hbg.slideshowInterval = setInterval(() => {
+            slides[curr].style.opacity = '0';
+            curr = (curr + 1) % slides.length;
+            slides[curr].style.opacity = '1';
+          }, 4500);
+        }
+      });
+    }
+
     renderNews(list) {
       const g = El.get('nwList');
       if (!g) return;
@@ -379,6 +427,7 @@
 
     renderAll(d) {
       if (!d) return;
+      if (d.hero) this.renderHero(d.hero);
       this.renderNews(d.news);
       this.renderEvents(d.events);
       this.renderVideos(d.videos);
@@ -971,7 +1020,6 @@
       I18n.init();
       this.nav.bindAll();
       FormValidator.bindAll();
-      this.initHeroSlideshow();
       this.renderer.renderAll(SiteContent.DEFAULT);
       const live = await SiteContent.fetchLive();
       if (live) this.renderer.renderAll(live);
@@ -983,37 +1031,7 @@
       new GalleryCarousel().bind();
     }
 
-    initHeroSlideshow() {
-      const hbg = document.querySelector('.hero .hbg');
-      if (!hbg) return;
-      hbg.style.backgroundImage = 'none';
-      
-      const images = ['hero1.jpg', 'hero2.jpg', 'hero3.jpg', 'hero4.jpg', 'hero5.jpg'];
-      const slider = document.createElement('div');
-      slider.style.position = 'absolute';
-      slider.style.inset = '0';
-      
-      const slides = images.map((img, i) => {
-        const slide = document.createElement('div');
-        slide.style.position = 'absolute';
-        slide.style.inset = '0';
-        slide.style.background = `url('images/hero/${img}') center / cover no-repeat`;
-        slide.style.opacity = i === 0 ? '1' : '0';
-        slide.style.transition = 'opacity 1.5s ease-in-out';
-        slider.appendChild(slide);
-        return slide;
-      });
-      
-      hbg.appendChild(slider);
-      
-      let curr = 0;
-      setInterval(() => {
-        slides[curr].style.opacity = '0';
-        curr = (curr + 1) % slides.length;
-        slides[curr].style.opacity = '1';
-      }, 4500);
     }
-  }
 
   new SiteApp().boot();
 })();
