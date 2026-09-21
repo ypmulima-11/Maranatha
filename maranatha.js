@@ -971,6 +971,7 @@
       I18n.init();
       this.nav.bindAll();
       FormValidator.bindAll();
+      this.initHeroSlideshow();
       this.renderer.renderAll(SiteContent.DEFAULT);
       const live = await SiteContent.fetchLive();
       if (live) this.renderer.renderAll(live);
@@ -980,6 +981,37 @@
       player.bind();
       new GalleryLightbox().bind();
       new GalleryCarousel().bind();
+    }
+
+    initHeroSlideshow() {
+      const hbg = document.querySelector('.hero .hbg');
+      if (!hbg) return;
+      hbg.style.backgroundImage = 'none';
+      
+      const images = ['hero1.jpg', 'hero2.jpg', 'hero3.jpg', 'hero4.jpg', 'hero5.jpg'];
+      const slider = document.createElement('div');
+      slider.style.position = 'absolute';
+      slider.style.inset = '0';
+      
+      const slides = images.map((img, i) => {
+        const slide = document.createElement('div');
+        slide.style.position = 'absolute';
+        slide.style.inset = '0';
+        slide.style.background = `url('images/hero/${img}') center / cover no-repeat`;
+        slide.style.opacity = i === 0 ? '1' : '0';
+        slide.style.transition = 'opacity 1.5s ease-in-out';
+        slider.appendChild(slide);
+        return slide;
+      });
+      
+      hbg.appendChild(slider);
+      
+      let curr = 0;
+      setInterval(() => {
+        slides[curr].style.opacity = '0';
+        curr = (curr + 1) % slides.length;
+        slides[curr].style.opacity = '1';
+      }, 4500);
     }
   }
 
