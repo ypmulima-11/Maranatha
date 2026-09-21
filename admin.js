@@ -358,20 +358,41 @@
 
     uploadImage(file, dataUrl, srcInput, msg, btn) {
       btn.disabled = true;
-      msg.textContent = 'Uploading\u2026';
-      const base64 = dataUrl.split(',')[1];
-      const name = Date.now() + '-' + file.name.toLowerCase().replace(/[^a-z0-9.\-_]+/g, '-');
-      const path = 'images/uploads/' + name;
-      this.api.call('upload', { path: path, content: base64 })
-        .then(() => {
-          btn.disabled = false;
-          srcInput.value = path;
-          msg.textContent = 'Uploaded \u2713 (will appear after you Save)';
-        })
-        .catch(err => {
-          btn.disabled = false;
-          msg.textContent = 'Upload failed: ' + err.message;
-        });
+      msg.textContent = 'Processing\u2026';
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        const maxW = 1200;
+        if (w > maxW) { h = Math.round(h * (maxW / w)); w = maxW; }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        const base64 = compressedDataUrl.split(',')[1];
+        
+        msg.textContent = 'Uploading\u2026';
+        const baseName = file.name.toLowerCase().replace(/[^a-z0-9.\-_]+/g, '-').replace(/\.[^.]+$/, '');
+        const name = Date.now() + '-' + baseName + '.jpg';
+        const path = 'images/uploads/' + name;
+        
+        this.api.call('upload', { path: path, content: base64 })
+          .then(() => {
+            btn.disabled = false;
+            srcInput.value = path;
+            msg.textContent = 'Uploaded \u2713 (will appear after you Save)';
+          })
+          .catch(err => {
+            btn.disabled = false;
+            msg.textContent = 'Upload failed: ' + err.message;
+          });
+      };
+      img.onerror = () => {
+        btn.disabled = false;
+        msg.textContent = 'Invalid image file.';
+      };
+      img.src = dataUrl;
     }
 
     /* ---------- Save ---------- */
