@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="admin.css?v=7">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <script src="supabase-config.js" defer></script>
-<script src="admin.js?v=4" defer></script>
+<script src="admin.js?v=5" defer></script>
 </head>
 <body>
 
@@ -102,6 +102,7 @@
         <section class="adm-pane-sec on" id="pane-hero">
           <div class="adm-rows" id="rows-hero"></div>
           <button type="button" class="adm-btn ghost add" data-add="hero">&plus; Add picture</button>
+          <button type="button" class="adm-btn ghost multi-add" data-multi="hero">&plus; Upload multiple pictures</button>
         </section>
 
         <section class="adm-pane-sec" id="pane-news">
@@ -133,6 +134,7 @@
           <p class="adm-hint">Images: type a path (e.g. <code>images/gallery1.jpg</code>) or upload a picture straight to the site. Videos: paste a YouTube link to embed it in the gallery.</p>
           <div class="adm-rows" id="rows-gallery"></div>
           <button type="button" class="adm-btn ghost add" data-add="gallery">&plus; Add gallery item</button>
+          <button type="button" class="adm-btn ghost multi-add" data-multi="gallery">&plus; Upload multiple images</button>
         </section>
 
         <section class="adm-pane-sec" id="pane-works">

@@ -463,12 +463,70 @@
         b.addEventListener('click', () => this.switchTab(b.dataset.tab))
       );
 
-      document.querySelectorAll('[data-add]').forEach(b =>
+            document.querySelectorAll('[data-add]').forEach(b =>
         b.addEventListener('click', () => {
           const tab = b.dataset.add;
           if (!Array.isArray(this.data[tab])) this.data[tab] = [];
           this.data[tab].push({});
           this.renderTab(tab);
+        })
+      );
+
+      document.querySelectorAll('[data-multi]').forEach(b =>
+        b.addEventListener('click', () => {
+          const tab = b.dataset.multi;
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'image/*';
+          input.multiple = true;
+          input.addEventListener('change', () => {
+            if (!input.files || input.files.length === 0) return;
+            this.setStatus('admStatus', 'Uploading ' + input.files.length + ' pictures...', 'busy');
+            
+            if (!Array.isArray(this.data[tab])) this.data[tab] = [];
+            
+            let completed = 0;
+            const total = input.files.length;
+            
+            for (let i = 0; i < total; i++) {
+              const file = input.files[i];
+              const reader = new FileReader();
+              reader.onload = () => {
+                const img = new Image();
+                img.onload = () => {
+                  const canvas = document.createElement('canvas');
+                  let w = img.width, h = img.height;
+                  const maxW = 1200;
+                  if (w > maxW) { h = Math.round(h * (maxW / w)); w = maxW; }
+                  canvas.width = w; canvas.height = h;
+                  const ctx = canvas.getContext('2d');
+                  ctx.drawImage(img, 0, 0, w, h);
+                  
+                  const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+                  const baseName = file.name.toLowerCase().replace(/[^a-z0-9.\-_]+/g, '-').replace(/\.[^.]+$/, '');
+                  const name = Date.now() + '-' + i + '-' + baseName + '.jpg';
+                  const path = 'images/uploads/' + name;
+                  
+                  this.api.call('upload', { path: path, content: base64 })
+                    .then(() => {
+                      this.data[tab].push({ src: path, cap: '' });
+                    })
+                    .finally(() => {
+                      completed++;
+                      if (completed === total) {
+                        this.setStatus('admStatus', 'All pictures uploaded ✓ (will appear after you Save)', 'ok');
+                        this.renderTab(tab);
+                      } else {
+                        this.setStatus('admStatus', 'Uploading... (' + completed + '/' + total + ')', 'busy');
+                      }
+                    });
+                };
+                img.src = reader.result;
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+          input.click();
         })
       );
 
