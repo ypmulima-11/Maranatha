@@ -2130,41 +2130,52 @@
         box.appendChild(p);
         return;
       }
-      let lastPart = null;
+      
+      const groups = {};
       list.forEach(r => {
         const part = r.voice_part || 'Other';
-        if (part !== lastPart) {
-          lastPart = part;
-          const h = document.createElement('h3');
-          h.className = 'mp-sec';
-          h.textContent = part;
-          box.appendChild(h);
-        }
-        const row = document.createElement('div');
-        row.className = 'att-row';
-        const who = document.createElement('div');
-        const nm = document.createElement('span');
-        nm.textContent = r.full_name || 'Member';
-        who.appendChild(nm);
-        const sub = [r.title, r.role === 'admin' ? 'Admin' : null].filter(Boolean).join(' \u00b7 ');
-        if (sub) {
-          const s = document.createElement('div');
-          s.className = 'mp-date';
-          s.textContent = sub;
-          who.appendChild(s);
-        }
-        if (r.phone || r.email) {
-          const c = document.createElement('div');
-          c.className = 'mp-date';
-          c.textContent = [r.phone, r.email].filter(Boolean).join(' \u00b7 ');
-          who.appendChild(c);
-        }
-        row.appendChild(who);
-        box.appendChild(row);
+        if (!groups[part]) groups[part] = [];
+        groups[part].push(r);
+      });
+      
+      Object.keys(groups).forEach(part => {
+        const h = document.createElement('h3');
+        h.className = 'mp-sec';
+        h.textContent = part;
+        box.appendChild(h);
+        
+        const groupBox = document.createElement('div');
+        
+        groups[part].forEach(r => {
+          const row = document.createElement('div');
+          row.className = 'att-row';
+          const who = document.createElement('div');
+          const nm = document.createElement('span');
+          nm.textContent = r.full_name || 'Member';
+          who.appendChild(nm);
+          const sub = [r.title, r.role === 'admin' ? 'Admin' : null].filter(Boolean).join(' · ');
+          if (sub) {
+            const s = document.createElement('div');
+            s.className = 'mp-date';
+            s.textContent = sub;
+            who.appendChild(s);
+          }
+          if (r.phone || r.email) {
+            const c = document.createElement('div');
+            c.className = 'mp-date';
+            c.textContent = [r.phone, r.email].filter(Boolean).join(' · ');
+            who.appendChild(c);
+          }
+          row.appendChild(who);
+          groupBox.appendChild(row);
+        });
+        
+        box.appendChild(groupBox);
+        this.applyViewMore(groupBox, part, 3);
       });
     }
 
-    /* ---------- Attendance season report ---------- */
+      /* ---------- Attendance season report ---------- */
 
     async loadReport() {
       const box = $('repBox');
