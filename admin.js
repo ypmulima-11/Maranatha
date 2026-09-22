@@ -279,6 +279,42 @@
       });
       row.appendChild(grid);
 
+      if (tab === 'hero' || tab === 'gallery') {
+        const previewWrap = document.createElement('div');
+        previewWrap.style.marginTop = '15px';
+        previewWrap.style.textAlign = 'center';
+        previewWrap.style.background = 'var(--au)';
+        previewWrap.style.borderRadius = '8px';
+        previewWrap.style.padding = '10px';
+        previewWrap.style.border = '1px solid var(--line)';
+        
+        const imgPreview = document.createElement('img');
+        imgPreview.style.maxWidth = '100%';
+        imgPreview.style.maxHeight = '180px';
+        imgPreview.style.objectFit = 'contain';
+        imgPreview.style.borderRadius = '4px';
+        
+        if (item['src']) {
+          imgPreview.src = item['src'];
+        } else {
+          imgPreview.style.display = 'none';
+        }
+        
+        if (inputs['src']) {
+          inputs['src'].addEventListener('input', () => {
+            if (inputs['src'].value.trim()) {
+              imgPreview.src = inputs['src'].value;
+              imgPreview.style.display = 'inline-block';
+            } else {
+              imgPreview.style.display = 'none';
+            }
+          });
+        }
+        
+        previewWrap.appendChild(imgPreview);
+        row.appendChild(previewWrap);
+      }
+
       if (tab === 'gallery') {
         const up = document.createElement('div');
         up.className = 'adm-upload full';
