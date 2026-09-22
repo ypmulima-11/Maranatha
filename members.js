@@ -2208,6 +2208,88 @@
       });
     }
 
+    
+    applyViewMore(box, title, maxItems = 5) {
+      if (!box) return;
+      // Filter out any elements that shouldn't be counted (e.g. empty messages)
+      const items = Array.from(box.children);
+      if (items.length <= maxItems) return;
+      
+      for (let i = maxItems; i < items.length; i++) {
+        items[i].style.display = 'none';
+      }
+      
+      const btn = document.createElement('button');
+      btn.className = 'mp-btn';
+      btn.style.marginTop = '15px';
+      btn.style.width = '100%';
+      btn.textContent = `View all ${items.length} in popup...`;
+      
+      btn.addEventListener('click', () => {
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.background = 'rgba(0,0,0,0.85)';
+        overlay.style.zIndex = '999999';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.padding = '20px';
+        
+        const content = document.createElement('div');
+        content.style.background = 'var(--card)';
+        content.style.border = '1px solid var(--line)';
+        content.style.borderRadius = '12px';
+        content.style.width = '100%';
+        content.style.maxWidth = '600px';
+        content.style.maxHeight = '85vh';
+        content.style.display = 'flex';
+        content.style.flexDirection = 'column';
+        
+        const header = document.createElement('div');
+        header.style.padding = '20px';
+        header.style.borderBottom = '1px solid var(--line)';
+        header.style.display = 'flex';
+        header.style.justifyContent = 'space-between';
+        header.style.alignItems = 'center';
+        
+        const h3 = document.createElement('h3');
+        h3.textContent = title;
+        h3.style.margin = '0';
+        
+        const close = document.createElement('button');
+        close.className = 'mp-btn small danger';
+        close.textContent = 'Close';
+        
+        header.appendChild(h3);
+        header.appendChild(close);
+        content.appendChild(header);
+        
+        const list = document.createElement('div');
+        list.style.padding = '20px';
+        list.style.overflowY = 'auto';
+        
+        items.forEach(item => {
+          item.style.display = '';
+          list.appendChild(item);
+        });
+        
+        close.addEventListener('click', () => {
+          items.forEach((item, i) => {
+            if (i >= maxItems) item.style.display = 'none';
+            box.insertBefore(item, btn);
+          });
+          document.body.removeChild(overlay);
+        });
+        
+        content.appendChild(list);
+        overlay.appendChild(content);
+        document.body.appendChild(overlay);
+      });
+      
+      box.appendChild(btn);
+    }
+
     /* ---------- Admin: pending registrations + invites ---------- */
 
     async setMemberStatus(email, status) {
@@ -2321,7 +2403,7 @@
     async loadAdminMembers() {
       const box = $('adminMembers');
       if (!box) return;
-      const { data } = await this.supabase.from('profiles').select('*').order('full_name');
+      const { data } = await this.supabase.from('profiles').select('*').eq('status', 'active').order('full_name');
       box.innerHTML = '';
       (data || []).forEach(m => {
         const row = document.createElement('div');
@@ -2424,7 +2506,8 @@
         row.appendChild(det);
         box.appendChild(row);
       });
-    }
+      this.applyViewMore($('adminMembers'), 'Manage Members');
+      }
 
     /* ---------- Admin: members grouped by residence and birthday month ---------- */
 
@@ -2479,7 +2562,8 @@
           box.appendChild(row);
         });
       });
-    }
+      this.applyViewMore($('adminResidence'), 'Members by Residence');
+      }
 
     async loadAdminVoice() {
       const box = $('adminVoice');
@@ -2523,7 +2607,8 @@
           box.appendChild(row);
         });
       });
-    }
+      this.applyViewMore($('adminVoice'), 'Members by Voice Part');
+      }
 
     async loadAdminBirthdays() {
       const box = $('adminBirthdays');
@@ -2566,7 +2651,8 @@
           box.appendChild(row);
         });
       });
-    }
+      this.applyViewMore($('adminBirthdays'), 'Birthdays by Month');
+      }
 
     /* ---------- Admin: inbox (auditions + contact messages) ---------- */
 
@@ -2578,8 +2664,10 @@
       const box = $('adminAuditions');
       if (box) {
         box.innerHTML = '';
+        const fourWeeksAgo = new Date();
+        fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
         const { data, error } = await this.supabase
-          .from('auditions').select('*').order('created_at', { ascending: false }).limit(30);
+          .from('auditions').select('*').gte('created_at', fourWeeksAgo.toISOString()).order('created_at', { ascending: false }).limit(30);
         if (error) { console.warn('auditions:', error); }
         const list = data || [];
         if (!list.length) { box.appendChild(empty.cloneNode(true)); }
