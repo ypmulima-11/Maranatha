@@ -350,9 +350,9 @@
             msg.textContent = 'Image is too large (max 4 MB).';
             return;
           }
-          const reader = new FileReader();
-          reader.onload = () => this.uploadImage(f, reader.result, inputs.src, msg, btn);
-          reader.readAsDataURL(f);
+          this.processImageFile(f, (processedFile, dataUrl) => {
+              this.uploadImage(processedFile, dataUrl, inputs.src, msg, btn);
+            });
         });
         up.appendChild(btn);
         up.appendChild(file);
@@ -381,9 +381,9 @@
             msg.textContent = 'Avatar is too large (max 2 MB).';
             return;
           }
-          const reader = new FileReader();
-          reader.onload = () => this.uploadImage(f, reader.result, inputs.avatar, msg, btn);
-          reader.readAsDataURL(f);
+          this.processImageFile(f, (processedFile, dataUrl) => {
+              this.uploadImage(processedFile, dataUrl, inputs.avatar, msg, btn);
+            });
         });
         up.appendChild(btn);
         up.appendChild(file);
@@ -420,6 +420,24 @@
     }
 
     /* ---------- Image upload ---------- */
+
+    async processImageFile(file, callback) {
+      let f = file;
+      if (f.name.toLowerCase().match(/\.hei[fc]$/)) {
+        if (typeof heic2any !== 'undefined') {
+          try {
+            const blob = await heic2any({ blob: f, toType: 'image/jpeg' });
+            const singleBlob = Array.isArray(blob) ? blob[0] : blob;
+            f = new File([singleBlob], f.name.replace(/\.hei[fc]$/i, '.jpg'), { type: 'image/jpeg' });
+          } catch (e) {
+            console.error("HEIC conversion error:", e);
+          }
+        }
+      }
+      const reader = new FileReader();
+      reader.onload = () => callback(f, reader.result);
+      reader.readAsDataURL(f);
+    }
 
     uploadImage(file, dataUrl, srcInput, msg, btn) {
       btn.disabled = true;
@@ -539,11 +557,10 @@
             const total = input.files.length;
             
             for (let i = 0; i < total; i++) {
-              const file = input.files[i];
-              const reader = new FileReader();
-              reader.onload = () => {
-                const img = new Image();
-                img.onload = () => {
+              const originalFile = input.files[i];
+                this.processImageFile(originalFile, (file, dataUrl) => {
+                  const img = new Image();
+                  img.onload = () => {
                   const canvas = document.createElement('canvas');
                   let w = img.width, h = img.height;
                   const maxW = 1200;
@@ -571,9 +588,8 @@
                       }
                     });
                 };
-                img.src = reader.result;
-              };
-              reader.readAsDataURL(file);
+                  img.src = dataUrl;
+                });
             }
           });
           input.click();
