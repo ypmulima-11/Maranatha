@@ -2506,7 +2506,7 @@
         row.appendChild(det);
         box.appendChild(row);
       });
-      this.applyViewMore($('adminMembers'), 'Manage Members');
+      this.applyViewMore($('adminMembers'), 'Manage Members', 2);
       }
 
     /* ---------- Admin: members grouped by residence and birthday month ---------- */
@@ -2562,7 +2562,7 @@
           box.appendChild(row);
         });
       });
-      this.applyViewMore($('adminResidence'), 'Members by Residence');
+      this.applyViewMore($('adminResidence'), 'Members by Residence', 2);
       }
 
     async loadAdminVoice() {
@@ -2607,7 +2607,7 @@
           box.appendChild(row);
         });
       });
-      this.applyViewMore($('adminVoice'), 'Members by Voice Part');
+      this.applyViewMore($('adminVoice'), 'Members by Voice Part', 2);
       }
 
     async loadAdminBirthdays() {
@@ -2651,7 +2651,7 @@
           box.appendChild(row);
         });
       });
-      this.applyViewMore($('adminBirthdays'), 'Birthdays by Month');
+      this.applyViewMore($('adminBirthdays'), 'Birthdays by Month', 2);
       }
 
     /* ---------- Admin: inbox (auditions + contact messages) ---------- */
