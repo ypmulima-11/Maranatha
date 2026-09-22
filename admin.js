@@ -280,39 +280,53 @@
       row.appendChild(grid);
 
       if (tab === 'hero' || tab === 'gallery') {
-        const previewWrap = document.createElement('div');
-        previewWrap.style.marginTop = '15px';
-        previewWrap.style.textAlign = 'center';
-        previewWrap.style.background = 'var(--au)';
-        previewWrap.style.borderRadius = '8px';
-        previewWrap.style.padding = '10px';
-        previewWrap.style.border = '1px solid var(--line)';
+        const previewBtn = document.createElement('button');
+        previewBtn.type = 'button';
+        previewBtn.className = 'adm-btn small ghost';
+        previewBtn.style.marginTop = '10px';
+        previewBtn.textContent = '🖼️ Preview Image';
         
-        const imgPreview = document.createElement('img');
-        imgPreview.style.maxWidth = '100%';
-        imgPreview.style.maxHeight = '180px';
-        imgPreview.style.objectFit = 'contain';
-        imgPreview.style.borderRadius = '4px';
-        
-        if (item['src']) {
-          imgPreview.src = item['src'];
-        } else {
-          imgPreview.style.display = 'none';
-        }
-        
-        if (inputs['src']) {
-          inputs['src'].addEventListener('input', () => {
-            if (inputs['src'].value.trim()) {
-              imgPreview.src = inputs['src'].value;
-              imgPreview.style.display = 'inline-block';
-            } else {
-              imgPreview.style.display = 'none';
-            }
+        previewBtn.addEventListener('click', () => {
+          let src = item['src'];
+          if (inputs['src']) {
+            src = inputs['src'].value.trim();
+          }
+          if (!src) {
+             alert('No image to preview!');
+             return;
+          }
+          
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'rgba(0,0,0,0.85)';
+          overlay.style.display = 'flex';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+          overlay.style.zIndex = '999999';
+          overlay.style.cursor = 'pointer';
+          
+          const img = document.createElement('img');
+          img.src = src;
+          img.style.maxWidth = '90%';
+          img.style.maxHeight = '90%';
+          img.style.borderRadius = '8px';
+          img.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+          
+          overlay.appendChild(img);
+          
+          // Close on click anywhere
+          overlay.addEventListener('click', () => {
+            document.body.removeChild(overlay);
           });
-        }
+          
+          document.body.appendChild(overlay);
+        });
         
-        previewWrap.appendChild(imgPreview);
-        row.appendChild(previewWrap);
+        row.appendChild(previewBtn);
       }
 
       if (tab === 'gallery') {
