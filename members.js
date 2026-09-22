@@ -2223,7 +2223,7 @@
       btn.className = 'mp-btn';
       btn.style.marginTop = '15px';
       btn.style.width = '100%';
-      btn.textContent = `View all ${items.length} in popup...`;
+      btn.textContent = 'View all';
       
       btn.addEventListener('click', () => {
         const overlay = document.createElement('div');
