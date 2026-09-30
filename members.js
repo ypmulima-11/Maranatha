@@ -1110,6 +1110,7 @@
       }
 
       if (isAdmin) {
+        await this.checkAdminNotifications();
         this.loadAdminMembers();
         this.loadAdminInbox();
         this.loadAdminPending();
@@ -2665,6 +2666,44 @@
       this.applyViewMore($('adminBirthdays'), 'Birthdays by Month', 2);
       }
 
+    
+    async checkAdminNotifications() {
+      if (this._adminNotified) return;
+      this._adminNotified = true;
+
+      let msgParts = [];
+
+      try {
+        const { count: pendingCount } = await this.supabase
+          .from('profiles').select('*', { count: 'exact', head: true }).eq('status', 'pending');
+        if (pendingCount > 0) msgParts.push(`${pendingCount} pending registration(s)`);
+
+        const { count: auditionCount } = await this.supabase
+          .from('auditions').select('*', { count: 'exact', head: true }).eq('status', 'new');
+        if (auditionCount > 0) msgParts.push(`${auditionCount} new audition request(s)`);
+
+        const { count: contactCount } = await this.supabase
+          .from('contact_msgs').select('*', { count: 'exact', head: true }).eq('is_read', false);
+        if (contactCount > 0) msgParts.push(`${contactCount} new contact message(s)`);
+
+        if (msgParts.length > 0) {
+          this.showAdminPopup("You have: " + msgParts.join(', '));
+        }
+      } catch (e) {
+        console.warn("Notifications check failed", e);
+      }
+    }
+
+    showAdminPopup(msg) {
+      const p = document.createElement('div');
+      p.style.cssText = 'position:fixed;top:20px;right:20px;background:#ff9800;color:#fff;padding:15px 20px;border-radius:4px;box-shadow:0 4px 6px rgba(0,0,0,0.1);z-index:9999;font-weight:bold;cursor:pointer;opacity:0;transition:opacity 0.3s;';
+      p.textContent = msg;
+      p.onclick = () => p.remove();
+      document.body.appendChild(p);
+      setTimeout(() => { p.style.opacity = '1'; }, 10);
+      setTimeout(() => { p.style.opacity = '0'; setTimeout(() => p.remove(), 300); }, 8000);
+    }
+
     /* ---------- Admin: inbox (auditions + contact messages) ---------- */
 
     async loadAdminInbox() {
@@ -2712,7 +2751,22 @@
         const { data, error } = await this.supabase
           .from('contact_msgs').select('*').order('created_at', { ascending: false }).limit(30);
         if (error) { console.warn('contact_msgs:', error); }
-        const list = data || [];
+        let list = data || [];
+        
+        const now = new Date();
+        list = list.filter(m => {
+          if (m.viewed_at) {
+            const v = new Date(m.viewed_at);
+            if ((now - v) > 2 * 24 * 60 * 60 * 1000) return false;
+          }
+          return true;
+        });
+
+        const unreadIds = list.filter(m => !m.is_read || !m.viewed_at).map(m => m.id);
+        if (unreadIds.length > 0) {
+           this.supabase.from('contact_msgs').update({ is_read: true, viewed_at: now.toISOString() }).in('id', unreadIds).then();
+        }
+
         if (!list.length) { mBox.appendChild(empty); }
         list.forEach(m => {
           const card = document.createElement('div');
