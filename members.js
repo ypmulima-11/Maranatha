@@ -1110,6 +1110,7 @@
       }
 
       if (isAdmin) {
+        this.subscribeAdminRealtime();
         this.checkAdminNotifications().then(() => {
           this.loadAdminMembers();
           this.loadAdminInbox();
@@ -2706,6 +2707,35 @@
       setTimeout(() => { p.style.opacity = '0'; setTimeout(() => p.remove(), 300); }, 8000);
     }
 
+
+    subscribeAdminRealtime() {
+      if (this._adminRealtimeSubscribed) return;
+      this._adminRealtimeSubscribed = true;
+
+      this.supabase.channel('admin-notifications')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'contact_msgs' }, payload => {
+           this.showAdminPopup('New contact message from ' + (payload.new.name || 'someone'));
+           this.loadAdminInbox();
+        })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'auditions' }, payload => {
+           this.showAdminPopup('New audition request from ' + (payload.new.name || 'someone'));
+           this.loadAdminInbox();
+        })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profiles' }, payload => {
+           if (payload.new.status === 'pending') {
+             this.showAdminPopup('New pending registration: ' + (payload.new.full_name || 'someone'));
+             this.loadAdminPending();
+           }
+        })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles' }, payload => {
+           if (payload.new.status === 'pending' && payload.old.status !== 'pending') {
+             this.showAdminPopup('New pending registration: ' + (payload.new.full_name || 'someone'));
+             this.loadAdminPending();
+           }
+        })
+        .subscribe();
+    }
+
     /* ---------- Admin: inbox (auditions + contact messages) ---------- */
 
     async loadAdminInbox() {
@@ -2767,12 +2797,26 @@
         const unreadIds = list.filter(m => !m.is_read || !m.viewed_at).map(m => m.id);
         if (unreadIds.length > 0) {
            this.supabase.from('contact_msgs').update({ is_read: true, viewed_at: now.toISOString() }).in('id', unreadIds).then();
+           list.forEach(m => {
+               if (unreadIds.includes(m.id)) m.viewed_at = now.toISOString();
+           });
         }
 
         if (!list.length) { mBox.appendChild(empty); }
         list.forEach(m => {
           const card = document.createElement('div');
           card.className = 'mp-item';
+          card.style.transition = 'opacity 0.3s';
+          
+          if (m.viewed_at) {
+             const timeToHide = (10 * 60 * 1000) - (Date.now() - new Date(m.viewed_at).getTime());
+             if (timeToHide > 0) {
+                 setTimeout(() => {
+                     card.style.opacity = '0';
+                     setTimeout(() => card.remove(), 300);
+                 }, timeToHide);
+             }
+          }
           const h = document.createElement('h3');
           h.textContent = m.subject || '(no subject)';
           card.appendChild(h);
