@@ -1110,13 +1110,15 @@
       }
 
       if (isAdmin) {
-        await this.checkAdminNotifications();
-        this.loadAdminMembers();
-        this.loadAdminInbox();
-        this.loadAdminPending();
-        this.loadAdminResidence();
-        this.loadAdminVoice();
-        this.loadAdminBirthdays();}
+        this.checkAdminNotifications().then(() => {
+          this.loadAdminMembers();
+          this.loadAdminInbox();
+          this.loadAdminPending();
+          this.loadAdminResidence();
+          this.loadAdminVoice();
+          this.loadAdminBirthdays();
+        });
+      }
     }
 
     /* ---------- Events + RSVP ---------- */
@@ -2757,7 +2759,7 @@
         list = list.filter(m => {
           if (m.viewed_at) {
             const v = new Date(m.viewed_at);
-            if ((now - v) > 2 * 24 * 60 * 60 * 1000) return false;
+            if ((now - v) > 10 * 60 * 1000) return false;
           }
           return true;
         });
