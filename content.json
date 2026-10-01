@@ -50,6 +50,13 @@
   ],
   "events": [
     {
+      "title": "Kikao",
+      "date": "2026-11-28",
+      "time": "Jumamosi",
+      "place": "",
+      "tag": "Wanakwaya"
+    },
+    {
       "title": "Misa II",
       "date": "2026-11-29",
       "time": "07:15 asubuhi",
@@ -69,6 +76,13 @@
       "time": "05:45 asubuhi",
       "place": "Parokia",
       "tag": "Liturgy"
+    },
+    {
+      "title": "Welcome first year / Kikao na walezi",
+      "date": "2026-12-13",
+      "time": "Jumapili",
+      "place": "",
+      "tag": "Wanakwaya"
     },
     {
       "title": "Mkesha wa Noeli (UKWAKATA)",
@@ -106,11 +120,25 @@
       "tag": "Liturgy"
     },
     {
+      "title": "Charity",
+      "date": "2027-01-02",
+      "time": "Jumamosi",
+      "place": "",
+      "tag": "Wanakwaya"
+    },
+    {
       "title": "Epifania (Misa zote)",
       "date": "2027-01-03",
       "time": "05:45 - 08:15 asubuhi",
       "place": "Parokia",
       "tag": "Liturgy"
+    },
+    {
+      "title": "Maranatha Day",
+      "date": "2027-01-03",
+      "time": "Jumapili",
+      "place": "",
+      "tag": "Wanakwaya"
     },
     {
       "title": "Ubatizo wa Yesu (Misa III)",
@@ -127,11 +155,32 @@
       "tag": "Liturgy"
     },
     {
+      "title": "Mtoko1",
+      "date": "2027-01-24",
+      "time": "Jumapili",
+      "place": "",
+      "tag": "Wanakwaya"
+    },
+    {
       "title": "Sherehe ya Parokia (UKWAKATA)",
       "date": "2027-01-30",
       "time": "08:00 asubuhi",
       "place": "Parokia",
       "tag": "Liturgy"
+    },
+    {
+      "title": "Mtoko2",
+      "date": "2027-01-31",
+      "time": "Jumapili",
+      "place": "",
+      "tag": "Wanakwaya"
+    },
+    {
+      "title": "Mafungo",
+      "date": "2027-02-06",
+      "time": "Jumamosi",
+      "place": "",
+      "tag": "Wanakwaya"
     },
     {
       "title": "Misa II",
@@ -148,11 +197,25 @@
       "tag": "Liturgy"
     },
     {
+      "title": "Uchaguzi",
+      "date": "2027-02-20",
+      "time": "Jumamosi",
+      "place": "",
+      "tag": "Wanakwaya"
+    },
+    {
       "title": "Misa I",
       "date": "2027-02-21",
       "time": "05:45 asubuhi",
       "place": "Parokia",
       "tag": "Liturgy"
+    },
+    {
+      "title": "Mtoko3",
+      "date": "2027-02-28",
+      "time": "Jumapili",
+      "place": "",
+      "tag": "Wanakwaya"
     },
     {
       "title": "Misa II",
@@ -190,11 +253,32 @@
       "tag": "Liturgy"
     },
     {
+      "title": "Pasaka (Mlo wa Pamoja)",
+      "date": "2027-03-28",
+      "time": "Jumapili",
+      "place": "",
+      "tag": "Wanakwaya"
+    },
+    {
       "title": "Misa I",
       "date": "2027-04-04",
       "time": "05:45 asubuhi",
       "place": "Parokia",
       "tag": "Liturgy"
+    },
+    {
+      "title": "Charity",
+      "date": "2027-04-10",
+      "time": "Jumamosi",
+      "place": "",
+      "tag": "Wanakwaya"
+    },
+    {
+      "title": "Kikao",
+      "date": "2027-04-18",
+      "time": "Jumapili",
+      "place": "",
+      "tag": "Viongozi Wateule na Wazamani"
     },
     {
       "title": "Misa II",
@@ -204,6 +288,13 @@
       "tag": "Liturgy"
     },
     {
+      "title": "Kikao",
+      "date": "2027-04-25",
+      "time": "Jumapili",
+      "place": "",
+      "tag": "Wanakwaya na Walezi"
+    },
+    {
       "title": "Misa III",
       "date": "2027-05-02",
       "time": "08:15 asubuhi",
@@ -211,11 +302,25 @@
       "tag": "Liturgy"
     },
     {
+      "title": "Mtoko4",
+      "date": "2027-05-09",
+      "time": "Jumapili",
+      "place": "",
+      "tag": "Wanakwaya"
+    },
+    {
       "title": "Kesha la Pentekoste (UKWAKATA)",
       "date": "2027-05-15",
       "time": "20:00 usiku",
       "place": "Parokia",
       "tag": "Liturgy"
+    },
+    {
+      "title": "Mtoko5",
+      "date": "2027-05-23",
+      "time": "Jumapili",
+      "place": "",
+      "tag": "Wanakwaya"
     },
     {
       "title": "Mwili na Damu (Misa zote - UKWAKATA)",
@@ -230,6 +335,20 @@
       "time": "05:45 asubuhi",
       "place": "Parokia",
       "tag": "Liturgy"
+    },
+    {
+      "title": "Michezo",
+      "date": "2027-06-12",
+      "time": "Jumamosi",
+      "place": "",
+      "tag": "Wanakwaya"
+    },
+    {
+      "title": "Mafungo",
+      "date": "2027-06-19",
+      "time": "Jumamosi",
+      "place": "",
+      "tag": "Wanakwaya"
     },
     {
       "title": "Misa II",
@@ -251,6 +370,13 @@
       "time": "05:45 asubuhi",
       "place": "Parokia",
       "tag": "Liturgy"
+    },
+    {
+      "title": "Kuwaaga Finalist",
+      "date": "2027-07-18",
+      "time": "Jumapili",
+      "place": "",
+      "tag": "Wanakwaya"
     },
     {
       "title": "Misa II",

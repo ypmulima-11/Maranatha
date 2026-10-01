@@ -361,7 +361,21 @@
         const l = El.make('div', 'msl');
         groups[part].forEach(s => {
           const row = El.make('div', 'msm');
-          row.appendChild(El.make('div', 'msa', s.initials));
+          const av = document.createElement('div');
+          av.className = 'msa';
+          if (s.avatar || s.avatar_url) {
+            const im = document.createElement('img');
+            im.src = s.avatar || s.avatar_url;
+            im.alt = s.name || '';
+            im.style.width = '100%';
+            im.style.height = '100%';
+            im.style.objectFit = 'cover';
+            im.style.borderRadius = '50%';
+            av.appendChild(im);
+          } else {
+            av.textContent = s.initials || '?';
+          }
+          row.appendChild(av);
           const x = El.make('div', 'msx');
           x.appendChild(El.make('div', 'msn', s.name));
           x.appendChild(El.make('div', 'msr', s.role));

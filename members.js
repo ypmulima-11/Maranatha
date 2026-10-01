@@ -32,6 +32,8 @@
       $('pendingView').hidden = true;
       $('profileView').hidden = true;
       $('authView').hidden = false;
+      const globMenu = $('globalUserMenu');
+      if (globMenu) globMenu.style.display = 'none';
     }
 
     showDash() {
@@ -500,6 +502,24 @@
       } else if (avatarUrl) {
         patch.avatar_url = avatarUrl;
       }
+      
+      // Instant UI update for the header avatar
+      const avatarBtnInitials = document.getElementById('mpAvatarInitials');
+      const avatarBtnImg = document.getElementById('mpAvatarImg');
+      if (patch.avatar_url) {
+        if (avatarBtnImg) {
+          avatarBtnImg.src = patch.avatar_url;
+          avatarBtnImg.style.display = 'block';
+        }
+        if (avatarBtnInitials) avatarBtnInitials.style.display = 'none';
+      } else {
+        if (avatarBtnImg) avatarBtnImg.style.display = 'none';
+        if (avatarBtnInitials) {
+          avatarBtnInitials.style.display = 'flex';
+          avatarBtnInitials.textContent = (name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('') || '?';
+        }
+      }
+
       const res = await this.authCall(
         () => this.supabase.from('profiles').upsert(patch),
         msg
@@ -2680,14 +2700,9 @@
         const { count: pendingCount } = await this.supabase
           .from('profiles').select('*', { count: 'exact', head: true }).eq('status', 'pending');
         if (pendingCount > 0) msgParts.push(`${pendingCount} pending registration(s)`);
-
-        const { count: auditionCount } = await this.supabase
-          .from('auditions').select('*', { count: 'exact', head: true }).eq('status', 'new');
-        if (auditionCount > 0) msgParts.push(`${auditionCount} new audition request(s)`);
-
-        const { count: contactCount } = await this.supabase
-          .from('contact_msgs').select('*', { count: 'exact', head: true }).eq('is_read', false);
-        if (contactCount > 0) msgParts.push(`${contactCount} new contact message(s)`);
+        
+        // Removed auditions and contact_msgs from the initial popup to avoid persistent notifications
+        // since they don't have a reliable "read" state mechanism for all admins.
 
         if (msgParts.length > 0) {
           this.showAdminPopup("You have: " + msgParts.join(', '));
