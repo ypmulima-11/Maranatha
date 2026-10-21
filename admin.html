@@ -7,21 +7,27 @@
 <title>Maranatha Admin</title>
 <link rel="icon" type="image/jpeg" href="images/choir-logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="admin.css?v=31">
+<link rel="stylesheet" href="ui.css?v=1">
+<link rel="stylesheet" href="admin.css?v=33">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <script src="supabase-config.js" defer></script>
-<script src="admin.js?v=5" defer></script>
+<script src="ui.js?v=2" defer></script>
+<script src="admin.js?v=7" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js" defer></script>
 </head>
 <body>
 
 <header class="adm-h">
   <div class="adm-h-in">
-    <div class="adm-brand"><span class="adm-wordmark">Maranatha Choir</span><span class="adm-role">Admin</span></div>
+    <div class="adm-brand">
+      <span class="adm-logo"><img src="images/choir-logo.png" alt=""></span>
+      <span class="adm-wordmark">Maranatha Choir</span>
+      <span class="adm-role">Admin</span>
+    </div>
     <div class="adm-hr">
       <span class="adm-repo" id="admRepo"></span>
-      <a id="admView" class="adm-link" href="https://maranathachoir.netlify.app/" target="_blank" rel="noopener">View site <svg class="ic ic-16" aria-hidden="true"><use href="assets/icons.svg#i-arrowRight"/></svg></a>
-      <button type="button" class="adm-btn ghost" id="admOut" hidden>Sign out</button>
+      <a id="admView" class="adm-link" href="https://ypmulima-11.github.io/Maranatha/" target="_blank" rel="noopener">View site <svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-arrowRight"/></svg></a>
+      <button type="button" class="adm-btn ghost" id="admOut" hidden><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-logout"/></svg> Sign out</button>
     </div>
   </div>
 </header>
@@ -36,19 +42,19 @@
         <span class="glass-title">Admin Panel</span>
       </div>
     </div>
-    
+
     <div class="glass-login-label">LOGIN</div>
-    
+
     <label class="adm-field glass-field">
       <span class="glass-label">Email address</span>
       <div class="glass-input-wrap">
         <span class="glass-icon">
           <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="5" width="18" height="14" rx="2"></rect><polyline points="3 7 12 13 21 7"></polyline></svg>
         </span>
-        <input type="email" id="admEmail" placeholder="Enter your e-mail address or username" autocomplete="email">
+        <input type="email" id="admEmail" placeholder="Enter your e-mail address" autocomplete="email">
       </div>
     </label>
-    
+
     <label class="adm-field glass-field">
       <span class="glass-label">Password</span>
       <div class="glass-input-wrap">
@@ -56,14 +62,14 @@
           <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         </span>
         <input type="password" id="admPass" placeholder="Enter your password" autocomplete="current-password">
-        <button type="button" class="glass-eye" id="toggleAdmPass" aria-label="Toggle password visibility">
+        <button type="button" class="glass-eye" id="toggleAdmPass" aria-label="Show password">
           <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
         </button>
       </div>
     </label>
 
     <div class="glass-actions">
-      <a href="#" class="glass-forgot">Forgot password?</a>
+      <button type="button" class="glass-forgot" id="admForgot">Forgot password?</button>
     </div>
 
     <button type="button" class="adm-btn big glass-btn" id="admSignIn">LOGIN</button>
@@ -76,14 +82,14 @@
   <div class="adm-body">
 
     <aside class="adm-side">
-      <button type="button" class="adm-tab on" data-tab="hero">Background</button>
-      <button type="button" class="adm-tab" data-tab="news">News</button>
-      <button type="button" class="adm-tab" data-tab="events">Events</button>
-      <button type="button" class="adm-tab" data-tab="videos">Performances</button>
-      <button type="button" class="adm-tab" data-tab="team">Team</button>
-      <button type="button" class="adm-tab" data-tab="members">Members</button>
-      <button type="button" class="adm-tab" data-tab="gallery">Gallery</button>
-      <button type="button" class="adm-tab" data-tab="works">Works</button>
+      <button type="button" class="adm-tab on" data-tab="hero"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-image"/></svg>Background</button>
+      <button type="button" class="adm-tab" data-tab="news"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-book"/></svg>News</button>
+      <button type="button" class="adm-tab" data-tab="events"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-calendar"/></svg>Events</button>
+      <button type="button" class="adm-tab" data-tab="videos"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-play"/></svg>Performances</button>
+      <button type="button" class="adm-tab" data-tab="team"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-users"/></svg>Team</button>
+      <button type="button" class="adm-tab" data-tab="members"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-mic"/></svg>Members</button>
+      <button type="button" class="adm-tab" data-tab="gallery"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-camera"/></svg>Gallery</button>
+      <button type="button" class="adm-tab" data-tab="works"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-music"/></svg>Works</button>
     </aside>
 
     <div class="adm-pane">
@@ -94,8 +100,8 @@
         </div>
         <div class="adm-bar-actions">
           <span class="adm-status" id="admStatus" role="status"></span>
-          <button type="button" class="adm-btn ghost" id="admReload">Discard changes</button>
-          <button type="button" class="adm-btn" id="admSave">Save changes</button>
+          <button type="button" class="adm-btn ghost" id="admReload"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-arrowLeft"/></svg> Discard changes</button>
+          <button type="button" class="adm-btn" id="admSave"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-check"/></svg> Save changes</button>
         </div>
       </div>
 
@@ -103,45 +109,61 @@
 
         <section class="adm-pane-sec on" id="pane-hero">
           <div class="adm-rows" id="rows-hero"></div>
-          <button type="button" class="adm-btn ghost add" data-add="hero">&plus; Add picture</button>
-          <button type="button" class="adm-btn ghost multi-add" data-multi="hero">&plus; Upload multiple pictures</button>
+          <div class="adm-actions">
+            <button type="button" class="adm-ib add" data-add="hero"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg> Add picture</button>
+            <button type="button" class="adm-ib multi-add" data-multi="hero"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-upload"/></svg> Upload multiple pictures</button>
+          </div>
         </section>
 
         <section class="adm-pane-sec" id="pane-news">
           <div class="adm-rows" id="rows-news"></div>
-          <button type="button" class="adm-btn ghost add" data-add="news">&plus; Add news item</button>
+          <div class="adm-actions">
+            <button type="button" class="adm-ib add" data-add="news"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg> Add news item</button>
+          </div>
         </section>
 
         <section class="adm-pane-sec" id="pane-events">
           <div class="adm-rows" id="rows-events"></div>
-          <button type="button" class="adm-btn ghost add" data-add="events">&plus; Add event</button>
+          <div class="adm-actions">
+            <button type="button" class="adm-ib add" data-add="events"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg> Add event</button>
+          </div>
         </section>
 
         <section class="adm-pane-sec" id="pane-videos">
           <div class="adm-rows" id="rows-videos"></div>
-          <button type="button" class="adm-btn ghost add" data-add="videos">&plus; Add video</button>
+          <div class="adm-actions">
+            <button type="button" class="adm-ib add" data-add="videos"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg> Add video</button>
+          </div>
         </section>
 
         <section class="adm-pane-sec" id="pane-team">
           <div class="adm-rows" id="rows-team"></div>
-          <button type="button" class="adm-btn ghost add" data-add="team">&plus; Add team member</button>
+          <div class="adm-actions">
+            <button type="button" class="adm-ib add" data-add="team"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg> Add team member</button>
+          </div>
         </section>
 
         <section class="adm-pane-sec" id="pane-members">
           <div class="adm-rows" id="rows-members"></div>
-          <button type="button" class="adm-btn ghost add" data-add="members">&plus; Add member</button>
+          <div class="adm-actions">
+            <button type="button" class="adm-ib add" data-add="members"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg> Add member</button>
+          </div>
         </section>
 
         <section class="adm-pane-sec" id="pane-gallery">
           <p class="adm-hint">Images: type a path (e.g. <code>images/hero/hero1.jpg</code>) or upload a picture straight to the site. Videos: paste a YouTube link to embed it in the gallery.</p>
           <div class="adm-rows" id="rows-gallery"></div>
-          <button type="button" class="adm-btn ghost add" data-add="gallery">&plus; Add gallery item</button>
-          <button type="button" class="adm-btn ghost multi-add" data-multi="gallery">&plus; Upload multiple images</button>
+          <div class="adm-actions">
+            <button type="button" class="adm-ib add" data-add="gallery"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg> Add gallery item</button>
+            <button type="button" class="adm-ib multi-add" data-multi="gallery"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-upload"/></svg> Upload multiple images</button>
+          </div>
         </section>
 
         <section class="adm-pane-sec" id="pane-works">
           <div class="adm-rows" id="rows-works"></div>
-          <button type="button" class="adm-btn ghost add" data-add="works">&plus; Add song</button>
+          <div class="adm-actions">
+            <button type="button" class="adm-ib add" data-add="works"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-plus"/></svg> Add song</button>
+          </div>
         </section>
 
       </div>
@@ -151,4 +173,3 @@
 
 </body>
 </html>
-

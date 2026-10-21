@@ -1,0 +1,185 @@
+/* =====================================================================
+   UI KIT — shared controls for the whole site
+   ---------------------------------------------------------------------
+   Loaded by every page. Styles the custom select (ui.js) and the custom
+   calendar (ui.js) so dropdowns and date pickers look identical in the
+   public site, the member portal and the admin panel.
+
+   Palette hooks (--ui-*) are overridden per stylesheet when a page uses a
+   different surface colour.
+   ===================================================================== */
+
+/* ---------- Icon base (shared with maranatha.css) ---------- */
+
+.ic {
+  width: 1em; height: 1em;
+  display: inline-block; vertical-align: -.14em;
+  stroke: currentColor; fill: none; stroke-width: 1.5;
+  flex: none; overflow: visible;
+}
+.ic-12 { width: 12px; height: 12px; }
+.ic-14 { width: 14px; height: 14px; }
+.ic-16 { width: 16px; height: 16px; }
+.ic-18 { width: 18px; height: 18px; }
+.ic-20 { width: 20px; height: 20px; }
+.ic-22 { width: 22px; height: 22px; }
+.ic-24 { width: 24px; height: 24px; }
+.ic-26 { width: 26px; height: 26px; }
+.ic-32 { width: 32px; height: 32px; }
+
+.ui-sel, .ui-date { position: relative; display: block; width: 100%; }
+
+/* The native control stays in the DOM: it keeps the form value, the
+   name attribute and the browser's own validation. It is only invisible. */
+.ui-sel-native, .ui-date-native {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  margin: 0; padding: 0; border: 0; opacity: 0; pointer-events: none;
+  appearance: none; -webkit-appearance: none;
+}
+
+/* ---------- Button (shared by select + date trigger) ---------- */
+
+.ui-ctl {
+  display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+  width: 100%; min-height: 44px;
+  padding: 11px 12px 11px 14px;
+  font-family: inherit; font-size: 1rem; line-height: 1.35; text-align: left;
+  color: var(--ui-ink, #111111);
+  background: var(--ui-bg, #FFFFFF);
+  border: 1px solid var(--ui-line, rgba(0, 0, 0, .18));
+  border-radius: var(--ui-radius, 10px);
+  cursor: pointer;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.ui-ctl:hover { border-color: var(--ui-line-hi, rgba(0, 0, 0, .45)); }
+.ui-ctl:focus-visible { outline: none; border-color: var(--ui-ink, #000); box-shadow: 0 0 0 3px rgba(0, 0, 0, .13); }
+.ui-ctl[disabled] { opacity: .55; cursor: not-allowed; }
+
+.ui-ctl-val {
+  flex: 1 1 auto; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ui-ctl-val.is-ph { color: var(--ui-ph, #6B6B6B); }
+.ui-ctl-ic { flex: none; color: var(--ui-mut, #6B6B6B); }
+.ui-ctl-ic.ic-cal { color: var(--ui-mut, #6B6B6B); }
+
+.ui-sel.open .ui-ctl,
+.ui-date.open .ui-ctl { border-color: var(--ui-ink, #000); box-shadow: 0 0 0 3px rgba(0, 0, 0, .10); }
+.ui-sel.open .ui-ctl-ic.chev,
+.ui-date.open .ui-ctl-ic.chev { transform: rotate(180deg); }
+.ui-ctl-ic.chev { transition: transform .18s ease; }
+
+/* ---------- Listbox ---------- */
+
+.ui-sel-list {
+  position: absolute; z-index: 400;
+  left: 0; right: 0; top: calc(100% + 6px);
+  padding: 6px; max-height: 300px; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--ui-bg, #FFFFFF);
+  border: 1px solid var(--ui-line, rgba(0, 0, 0, .14));
+  border-radius: var(--ui-radius, 10px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .16);
+  display: none;
+}
+.ui-sel.open .ui-sel-list { display: block; }
+.ui-sel-list.up { top: auto; bottom: calc(100% + 6px); }
+
+.ui-sel-opt {
+  display: flex; align-items: center; gap: .55rem; width: 100%;
+  padding: 10px 10px; border: 0; border-radius: 8px;
+  font: inherit; font-size: .95rem; line-height: 1.3; text-align: left;
+  color: inherit; background: none; cursor: pointer;
+}
+.ui-sel-opt:hover { background: var(--ui-hover, rgba(0, 0, 0, .05)); }
+.ui-sel-opt.act { background: var(--ui-hover, rgba(0, 0, 0, .05)); }
+.ui-sel-opt[aria-selected="true"] { font-weight: 600; }
+.ui-sel-opt .ic { margin-left: auto; flex: none; }
+
+/* ---------- Calendar ---------- */
+
+.ui-cal {
+  position: absolute; z-index: 420;
+  left: 0; top: calc(100% + 6px); width: 296px;
+  padding: 14px;
+  background: var(--ui-bg, #FFFFFF);
+  border: 1px solid var(--ui-line, rgba(0, 0, 0, .14));
+  border-radius: 14px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .16);
+  display: none;
+}
+.ui-date.open .ui-cal { display: block; }
+.ui-cal.up { top: auto; bottom: calc(100% + 6px); }
+
+.ui-cal-hd { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.ui-cal-title { font-weight: 700; font-size: .95rem; color: var(--ui-ink, #111); }
+.ui-cal-nav {
+  width: 30px; height: 30px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--ui-line, rgba(0, 0, 0, .14)); border-radius: 8px;
+  background: var(--ui-bg, #fff); color: var(--ui-ink, #111); cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+.ui-cal-nav:hover { background: var(--ui-hover, rgba(0, 0, 0, .05)); border-color: var(--ui-line-hi, rgba(0, 0, 0, .45)); }
+
+.ui-cal-wd, .ui-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.ui-cal-wd span {
+  font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--ui-mut, #6B6B6B); text-align: center; padding: 6px 0;
+}
+.ui-cal-day {
+  aspect-ratio: 1 / 1; min-height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 9px; background: none;
+  font: inherit; font-size: .85rem; color: inherit; cursor: pointer;
+}
+.ui-cal-day:hover { background: var(--ui-hover, rgba(0, 0, 0, .06)); }
+.ui-cal-day.mut { color: #AFAFAF; }
+.ui-cal-day.today { font-weight: 700; box-shadow: inset 0 0 0 1.5px var(--ui-ink, #000); }
+.ui-cal-day.sel { background: var(--ui-ink, #000); color: #fff; font-weight: 600; box-shadow: none; }
+
+.ui-cal-time { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--ui-line, rgba(0, 0, 0, .12)); }
+.ui-cal-time label { font-size: .78rem; color: var(--ui-mut, #6B6B6B); }
+.ui-cal-time input {
+  flex: 1; min-width: 0; font: inherit; font-size: .875rem;
+  padding: 8px 10px; color: var(--ui-ink, #111);
+  background: var(--ui-bg, #fff);
+  border: 1px solid var(--ui-line, rgba(0, 0, 0, .18)); border-radius: 8px;
+}
+.ui-cal-time input:focus { outline: none; border-color: var(--ui-ink, #000); box-shadow: 0 0 0 3px rgba(0, 0, 0, .10); }
+
+.ui-cal-ft { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--ui-line, rgba(0, 0, 0, .12)); }
+.ui-cal-ft .ui-cal-ft-b { display: flex; gap: 6px; }
+.ui-cal-tb {
+  border: 1px solid var(--ui-line, rgba(0, 0, 0, .16)); border-radius: 8px;
+  background: var(--ui-bg, #fff); color: var(--ui-ink, #111);
+  font: inherit; font-size: .78rem; font-weight: 600; padding: 7px 12px; cursor: pointer;
+}
+.ui-cal-tb:hover { background: var(--ui-hover, rgba(0, 0, 0, .05)); }
+.ui-cal-tb.plain { border-color: transparent; color: var(--ui-mut, #6B6B6B); }
+
+/* ---------- Lightbox (admin image preview) ---------- */
+
+.ui-lb {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  padding: 3vmin;
+  background: rgba(0, 0, 0, .88);
+}
+.ui-lb[hidden] { display: none !important; }
+.ui-lb img { max-width: 100%; max-height: 92vh; border-radius: 10px; box-shadow: 0 24px 70px rgba(0, 0, 0, .6); background: #fff; }
+.ui-lb-x {
+  position: absolute; top: 14px; right: 14px;
+  width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(255, 255, 255, .35); background: rgba(0, 0, 0, .5); color: #fff;
+  cursor: pointer;
+}
+.ui-lb-x:hover { background: rgba(0, 0, 0, .8); }
+.ui-lb-cap { position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; color: rgba(255, 255, 255, .85); font-size: .9rem; }
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 480px) {
+  .ui-cal { width: min(296px, calc(100vw - 32px)); }
+  .ui-ctl { min-height: 46px; }
+}

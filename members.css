@@ -106,6 +106,12 @@ code { background: rgba(0, 0, 0, .06); padding: 1px 5px; border-radius: 4px; }
 }
 .mp-field textarea { resize: vertical; min-height: 90px; }
 .mp-field input:focus, .mp-field select:focus, .mp-field textarea:focus { outline: none; border-color: var(--au); box-shadow: 0 0 0 2px rgba(0,0,0,.10); }
+.mp-field .ui-ctl { margin-top: 5px; border-radius: 12px; padding: 12px 14px; }
+.mp-field .ui-ctl:focus-visible { border-color: var(--au); box-shadow: 0 0 0 2px rgba(0,0,0,.10); }
+.mp-field.err .ui-ctl { border-color: var(--err, #C62828); }
+.mp-mrow .ui-ctl { border-radius: 7px; padding: 6px 10px; font-size: 13px; min-height: 0; }
+.mp-mrow .ui-ctl-ic { display: none; }
+.mp-mrow .ui-sel-list { border-radius: 8px; }
 
 .mp-role {
   background: #F4F4F4; border: 1px solid rgba(0,0,0,.14); color: #1A1A1A;
@@ -311,7 +317,7 @@ code { background: rgba(0, 0, 0, .06); padding: 1px 5px; border-radius: 4px; }
   color: var(--ts); cursor: pointer; display: flex; align-items: center; justify-content: center;
   border-radius: 6px; transition: background .15s, color .15s;
 }
-.mp-passbtn:hover { background: var(--g0); color: var(--g6); }
+.mp-passbtn:hover { background: var(--g0); color: var(--mut); }
 .mp-passbtn:focus-visible { outline: 2px solid var(--au); outline-offset: 2px; }
 .mp-passbtn svg { display: block; }
 
@@ -503,7 +509,7 @@ code { background: rgba(0, 0, 0, .06); padding: 1px 5px; border-radius: 4px; }
   color: var(--ts); cursor: pointer; display: flex; align-items: center; justify-content: center;
   border-radius: 6px; transition: background .15s, color .15s;
 }
-.mp-passbtn:hover { background: var(--g0); color: var(--g6); }
+.mp-passbtn:hover { background: var(--g0); color: var(--mut); }
 .mp-passbtn:focus-visible { outline: 2px solid var(--au); outline-offset: 2px; }
 .mp-passbtn svg { display: block; }
 
@@ -605,7 +611,7 @@ code { background: rgba(0, 0, 0, .06); padding: 1px 5px; border-radius: 4px; }
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  color: var(--txt);
+  color: var(--ink);
   transition: background 0.2s;
   border-radius: 20px;
 }
@@ -619,7 +625,7 @@ code { background: rgba(0, 0, 0, .06); padding: 1px 5px; border-radius: 4px; }
   width: 36px;
   height: 36px;
   background: var(--line);
-  color: var(--txt);
+  color: var(--ink);
   border-radius: 50%;
   font-weight: 600;
   font-size: 14px;
@@ -649,7 +655,7 @@ code { background: rgba(0, 0, 0, .06); padding: 1px 5px; border-radius: 4px; }
 .mp-user-dropdown button {
   background: transparent;
   border: none;
-  color: var(--txt);
+  color: var(--ink);
   padding: 12px 16px;
   text-align: left;
   cursor: pointer;
@@ -771,8 +777,20 @@ code { background: rgba(0, 0, 0, .06); padding: 1px 5px; border-radius: 4px; }
   width: min(900px, 100%);
 }
 
-.mp-app .slbl { color: var(--g5); }
+.mp-app .slbl { color: var(--mut); }
 .mp-app .slbl::before { background: var(--au); }
 .mp-app .ssub { color: var(--mut); }
 
 .mp-link .ic { width: 13px; height: 13px; vertical-align: -1px; fill: currentColor; }
+
+/* ---------- custom controls (ui.js) ---------- */
+.mp-field .ui-ctl, .mp-mrow .ui-ctl {
+  --ui-radius: 12px;
+  --ui-line: rgba(0, 0, 0, .14);
+  --ui-line-hi: rgba(0, 0, 0, .45);
+  --ui-hover: rgba(0, 0, 0, .05);
+  --ui-bg: #FFFFFF;
+  --ui-ink: #000000;
+  --ui-mut: #6B6B6B;
+}
+.mp-cal { border-radius: 12px; }

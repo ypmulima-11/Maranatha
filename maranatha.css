@@ -154,7 +154,7 @@ button { font-family: inherit; }
   transition: background var(--t) var(--ease), color var(--t) var(--ease);
 }
 .bg:hover, .jof button:hover, .cof button:hover, .fnews-form button:hover, .ddon:hover {
-  background: var(--grey);
+  background: #6B6B6B;
 }
 .bo, .nwlink {
   background: transparent; color: var(--ink);
@@ -313,7 +313,7 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
   border-radius: var(--pill); padding: 15px 26px;
   background: #000; color: #fff; font-weight: 600;
 }
-.nm-menu a.nc-cta:hover { opacity: 1; background: var(--grey); }
+.nm-menu a.nc-cta:hover { opacity: 1; background: #6B6B6B; }
 
 /* =====================================================================
    HERO — full bleed, moving images
@@ -328,6 +328,14 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
 .hbg {
   position: absolute; inset: 0; z-index: 0;
   overflow: hidden;
+}
+/* legibility scrim: the nav sits over the photo and the headline over the
+   lower edge — both need a guaranteed contrast floor on every frame */
+.hbg::after {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, .58) 0%, rgba(0, 0, 0, .50) 14%, rgba(0, 0, 0, 0) 30%),
+    linear-gradient(0deg, rgba(0, 0, 0, .62) 0%, rgba(0, 0, 0, .40) 22%, rgba(0, 0, 0, 0) 46%);
 }
 .hbg > div {
   position: absolute; inset: 0;
@@ -381,10 +389,11 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
   margin-bottom: 2.5rem;
 }
 .hbtns { display: flex; gap: 1rem; flex-wrap: wrap; }
-.hbtns .bg { background: #fff; color: var(--ink); }
-.hbtns .bg:hover { background: #fff; color: var(--grey); }
-.hbtns .bo { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .7); }
-.hbtns .bo:hover { background: #fff; color: var(--ink); border-color: #fff; }
+/* on dark grounds (hero + closing band) the pills invert */
+.hero .hbtns .bg, .ctaw .hbtns .bg { background: #fff; color: var(--ink); }
+.hero .hbtns .bg:hover, .ctaw .hbtns .bg:hover { background: #fff; color: #6B6B6B; }
+.hero .hbtns .bo, .ctaw .hbtns .bo { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .7); }
+.hero .hbtns .bo:hover, .ctaw .hbtns .bo:hover { background: #fff; color: var(--ink); border-color: #fff; }
 
 /* hero dot navigation */
 
@@ -500,7 +509,7 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
 .fsl-n {
   font-size: .75rem; font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--grey); padding-top: .45rem;
+  color: var(--ink-mute); padding-top: .45rem;
   transition: color var(--t);
 }
 .fsl-i {
@@ -547,7 +556,7 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
   border-radius: var(--pill);
   transition: background var(--t) var(--ease), color var(--t) var(--ease);
 }
-.nwlink:hover { background: var(--grey); color: #fff; }
+.nwlink:hover { background: #6B6B6B; color: #fff; }
 .nwlink .ic { width: 18px; height: 18px; }
 
 /* =====================================================================
@@ -621,7 +630,7 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
   content: counter(fam) '.';
   position: absolute; left: 0;
   font-size: .8125rem; font-weight: 700;
-  color: var(--grey);
+  color: var(--ink-mute);
   font-variant-numeric: tabular-nums;
 }
 
@@ -637,12 +646,12 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
 }
 .org-step.lvl-1 { background: #000; color: #fff; }
 .org-step.lvl-2 { background: #1A1A1A; color: #fff; }
-.org-step.lvl-3 { background: #8D8D8D; color: #fff; }
+.org-step.lvl-3 { background: #6B6B6B; color: #fff; }
 .org-step.lvl-4 { background: transparent; color: #1A1A1A; box-shadow: inset 0 0 0 2px #1A1A1A; }
 .org-step.lvl-5 { background: #F4F4F4; color: #6B6B6B; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
 .org-arrow {
   display: flex; align-items: center; justify-content: center;
-  height: 30px; color: var(--grey);
+  height: 30px; color: var(--ink-mute);
 }
 
 /* =====================================================================
@@ -677,13 +686,13 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
   transition: background var(--t);
 }
 .stc:hover { background: #FAFAFA; }
-.stq { color: var(--grey); }
+.stq { color: var(--ink-mute); }
 .stq .ic { width: 28px; height: 28px; }
 .stc > p { font-size: 1rem; color: var(--ink-soft); line-height: 1.7; }
 .stm { display: flex; align-items: center; gap: .875rem; margin-top: auto; padding-top: 1.25rem; border-top: 1px solid var(--line-2); }
 .sta {
   width: 44px; height: 44px; flex: none;
-  background: var(--grey); color: #fff;
+  background: #6B6B6B; color: #fff;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: .9375rem; font-weight: 600;
@@ -762,7 +771,7 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
 .vid:hover .vpc { background: var(--ink); color: #fff; }
 .vidb { padding: 1.25rem 1.4rem 1.4rem; }
 .vidt { font-size: 1.0625rem; font-weight: 700; margin-bottom: .3rem; line-height: 1.25; }
-.vid:hover .vidt { color: var(--grey); }
+.vid:hover .vidt { color: var(--ink-mute); }
 .vidp { font-size: .875rem; color: var(--ink-mute); }
 
 /* =====================================================================
@@ -837,6 +846,7 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
 .gam:hover .gaov { opacity: 1; }
 .gapl {
   width: 48px; height: 48px;
+  background: rgba(0, 0, 0, .45);
   border: 1px solid rgba(255, 255, 255, .7); border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   color: #fff;
@@ -902,12 +912,13 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%236B6B6B' stroke-width='1.5'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 16px center; cursor: pointer;
 }
-.jof input::placeholder, .jof select::placeholder, .jof textarea::placeholder { color: #9E9E9E; }
+.jof input::placeholder, .jof select::placeholder, .jof textarea::placeholder { color: #6B6B6B; }
 .jof input:focus, .jof select:focus, .jof textarea:focus { border-color: var(--ink); }
 .jof textarea { min-height: 120px; resize: vertical; }
 .jof button { align-self: flex-start; }
 .jof .fld .fmsg { color: var(--err); }
 .jof .fld.err input, .jof .fld.err select, .jof .fld.err textarea { border-color: var(--err); }
+.jof .fld.err .ui-ctl { border-color: var(--err); }
 .jportal { margin-top: 1.75rem; }
 .jportal a { display: inline-flex; align-items: center; gap: .55rem; font-size: 1rem; font-weight: 600; border-bottom: 2px solid var(--grey); padding-bottom: 3px; transition: border-color var(--t); }
 .jportal a:hover { border-bottom-color: var(--ink); }
@@ -934,7 +945,7 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
 .dgc.feat .dam, .dgc.feat p { color: #fff; }
 .dgc.feat p { color: rgba(255, 255, 255, .8); }
 .dgc.feat .ddon { background: #fff; color: var(--ink); }
-.dgc.feat .ddon:hover { background: var(--grey); color: #fff; }
+.dgc.feat .ddon:hover { background: #6B6B6B; color: #fff; }
 .ddon { margin-top: auto; align-self: center; }
 
 /* =====================================================================
@@ -943,11 +954,14 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
 .ctaw { background: #000; }
 .ctai { max-width: var(--container); margin: 0 auto; }
 .ctaw .stit { color: #fff; max-width: 22ch; }
+.ctaw .eyebrow, .ctaw .eyebrow .num { color: rgba(255, 255, 255, .72); }
+.ctaw .eyebrow::after { background: rgba(255, 255, 255, .2); }
 .ctaw .ssub { color: rgba(255, 255, 255, .78); margin-bottom: 2.25rem; max-width: 52ch; }
 .ctaw .bo { color: #fff; border-color: rgba(255, 255, 255, .7); }
 .ctaw .bo:hover { background: #fff; color: var(--ink); border-color: #fff; }
 .ctaw .bg { background: #fff; color: var(--ink); }
-.ctaw .bg:hover { background: var(--grey); color: #fff; }
+.ctaw .bg { background: #fff; color: var(--ink); }
+.ctaw .bg:hover { background: #6B6B6B; color: #fff; }
 
 /* =====================================================================
    CONTACT
@@ -1063,7 +1077,7 @@ footer { background: #000; color: #fff; }
 .fnews-form input::placeholder { color: rgba(255, 255, 255, .5); }
 .fnews-form input:focus { border-color: #fff; }
 .fnews-form button { background: #fff; color: var(--ink); }
-.fnews-form button:hover { background: var(--grey); color: #fff; }
+.fnews-form button:hover { background: #6B6B6B; color: #fff; }
 .fnews-form .form-ok { flex-basis: 100%; }
 
 .fbot {
@@ -1132,7 +1146,7 @@ footer { background: #000; color: #fff; }
   cursor: pointer;
   transition: background var(--t), color var(--t);
 }
-.plr-btn:hover { background: var(--grey); }
+.plr-btn:hover { background: #6B6B6B; }
 .plr-b { display: flex; flex-direction: column; gap: .5rem; min-width: 200px; flex: 1; }
 .plr-bar { height: 4px; background: var(--grey-soft); border-radius: 4px; overflow: hidden; }
 .plr-fill { height: 100%; width: 0; background: var(--ink); transition: width .2s linear; }
@@ -1187,7 +1201,7 @@ footer { background: #000; color: #fff; }
   transition: opacity var(--t), transform var(--t), background var(--t), color var(--t);
 }
 .totop.show { opacity: 1; pointer-events: auto; transform: none; }
-.totop:hover { background: var(--grey); }
+.totop:hover { background: #6B6B6B; }
 
 /* =====================================================================
    FORMS
@@ -1385,7 +1399,7 @@ footer { background: #000; color: #fff; }
 .trk-n {
   font-size: .8125rem; font-weight: 500;
   font-variant-numeric: tabular-nums;
-  color: var(--grey);
+  color: var(--ink-mute);
   transition: color var(--t);
 }
 .trk-m { min-width: 0; }
@@ -1474,7 +1488,7 @@ footer { background: #000; color: #fff; }
   transition: color var(--t);
 }
 .nextp-a svg { width: .62em; height: .62em; transition: transform var(--t); }
-.nextp-a:hover { color: var(--grey); }
+.nextp-a:hover { color: var(--ink-mute); }
 .nextp-a:hover svg { transform: translateX(6px); }
 
 /* ---------------------------------------------------------------------
@@ -1521,3 +1535,24 @@ footer { background: #000; color: #fff; }
   .fsl-i { width: 40px; height: 40px; }
   .fsl-i .ic { width: 18px; height: 18px; }
 }
+
+
+/* =====================================================================
+   CUSTOM CONTROLS (ui.js) — dropdowns and date pickers
+   ===================================================================== */
+.jof .ui-ctl, .cof .ui-ctl, .fnews-form .ui-ctl, .fld .ui-ctl {
+  border-radius: 4px;
+  padding: 14px 14px 14px 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 1rem;
+  --ui-radius: 4px;
+  --ui-line: var(--line);
+  --ui-line-hi: rgba(0, 0, 0, .45);
+  --ui-hover: rgba(0, 0, 0, .05);
+}
+.jof .ui-ctl:hover, .cof .ui-ctl:hover, .fnews-form .ui-ctl:hover { border-color: rgba(0, 0, 0, .35); }
+.jof .ui-ctl:focus-visible, .cof .ui-ctl:focus-visible { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(0, 0, 0, .10); }
+.jof .ui-sel-list, .cof .ui-sel-list, .fnews-form .ui-sel-list { border-radius: 6px; }
+.jof .ui-cal, .cof .ui-cal { border-radius: 8px; }

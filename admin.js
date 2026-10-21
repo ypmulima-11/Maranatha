@@ -258,7 +258,8 @@
       const del = document.createElement('button');
       del.type = 'button';
       del.className = 'adm-del';
-      del.textContent = 'Remove';
+      del.appendChild(UI.icon('i-trash', 'ic-16'));
+      del.appendChild(document.createTextNode('Remove'));
       del.addEventListener('click', () => {
         this.data[tab].splice(ix, 1);
         this.renderTab(tab);
@@ -282,50 +283,19 @@
       if (tab === 'hero' || tab === 'gallery') {
         const previewBtn = document.createElement('button');
         previewBtn.type = 'button';
-        previewBtn.className = 'adm-btn small ghost';
+        previewBtn.className = 'adm-ib';
         previewBtn.style.marginTop = '10px';
-        previewBtn.textContent = '🖼️ Preview Image';
-        
+        previewBtn.appendChild(UI.icon('i-eye', 'ic-16'));
+        previewBtn.appendChild(document.createTextNode('Preview image'));
         previewBtn.addEventListener('click', () => {
           let src = item['src'];
-          if (inputs['src']) {
-            src = inputs['src'].value.trim();
-          }
+          if (inputs['src']) src = inputs['src'].value.trim();
           if (!src) {
-             alert('No image to preview!');
-             return;
+            this.setStatus('admStatus', 'Add an image path first, then preview it.', 'err');
+            return;
           }
-          
-          const overlay = document.createElement('div');
-          overlay.style.position = 'fixed';
-          overlay.style.top = '0';
-          overlay.style.left = '0';
-          overlay.style.width = '100vw';
-          overlay.style.height = '100vh';
-          overlay.style.backgroundColor = 'rgba(0,0,0,0.85)';
-          overlay.style.display = 'flex';
-          overlay.style.alignItems = 'center';
-          overlay.style.justifyContent = 'center';
-          overlay.style.zIndex = '999999';
-          overlay.style.cursor = 'pointer';
-          
-          const img = document.createElement('img');
-          img.src = src;
-          img.style.maxWidth = '90%';
-          img.style.maxHeight = '90%';
-          img.style.borderRadius = '8px';
-          img.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
-          
-          overlay.appendChild(img);
-          
-          // Close on click anywhere
-          overlay.addEventListener('click', () => {
-            document.body.removeChild(overlay);
-          });
-          
-          document.body.appendChild(overlay);
+          UI.lightbox(src, (inputs['cap'] && inputs['cap'].value.trim()) || '');
         });
-        
         row.appendChild(previewBtn);
       }
 
@@ -335,7 +305,8 @@
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'adm-btn ghost adm-upbtn';
-        btn.textContent = 'Upload image\u2026';
+        btn.appendChild(UI.icon('i-upload', 'ic-16'));
+        btn.appendChild(document.createTextNode('Upload image\u2026'));
         const msg = document.createElement('span');
         msg.className = 'adm-upmsg';
         const file = document.createElement('input');
@@ -366,7 +337,8 @@
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'adm-btn ghost adm-upbtn';
-        btn.textContent = 'Upload avatar\u2026';
+        btn.appendChild(UI.icon('i-upload', 'ic-16'));
+        btn.appendChild(document.createTextNode('Upload avatar\u2026'));
         const msg = document.createElement('span');
         msg.className = 'adm-upmsg';
         const file = document.createElement('input');
@@ -464,7 +436,7 @@
           .then(() => {
             btn.disabled = false;
             srcInput.value = path;
-            msg.textContent = 'Uploaded \u2713 (will appear after you Save)';
+            msg.textContent = 'Uploaded (will appear after you Save)';
           })
           .catch(err => {
             btn.disabled = false;
@@ -493,7 +465,7 @@
       this.api.call('save', { content: b64 })
         .then(() => {
           this.data = body;
-          this.setStatus('admStatus', 'Saved \u2713 \u2014 the site republishes in about a minute.', 'ok');
+          this.setStatus('admStatus', 'Saved \u2014 the site republishes in about a minute.', 'ok');
         })
         .catch(err => {
           this.setStatus('admStatus', 'Save failed: ' + err.message, 'err');
@@ -509,12 +481,42 @@
     signOut() {
       this.data = {};
       if (this.supabase) this.supabase.auth.signOut();
+      document.querySelectorAll('.adm-rows').forEach(box => box.replaceChildren());
       $('admMain').hidden = true;
       $('admOut').hidden = true;
       $('admRepo').textContent = '';
+      $('admStatus').textContent = '';
       $('admLogin').hidden = false;
       $('admLogin').style.display = '';
       $('admPass').value = '';
+      $('admEmail').focus();
+    }
+
+    /* ---------- Forgot password ---------- */
+
+    async forgotPassword() {
+      const email = $('admEmail').value.trim().toLowerCase();
+      const msg = $('admLoginMsg');
+      if (!email) {
+        msg.className = 'adm-msg err';
+        msg.textContent = 'Type your email address first, then use the reset link.';
+        $('admEmail').focus();
+        return;
+      }
+      if (!window.supabase || !SUPABASE_READY) {
+        msg.className = 'adm-msg err';
+        msg.textContent = 'Supabase is not configured. Check supabase-config.js.';
+        return;
+      }
+      msg.className = 'adm-msg';
+      msg.textContent = 'Sending the reset link\u2026';
+      const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname
+      });
+      msg.className = 'adm-msg ' + (error ? 'err' : 'ok');
+      msg.textContent = error
+        ? error.message
+        : 'Reset email sent \u2014 open the link in it to set a new password.';
     }
 
     /* ---------- Wire up + boot ---------- */
@@ -581,7 +583,7 @@
                     .finally(() => {
                       completed++;
                       if (completed === total) {
-                        this.setStatus('admStatus', 'All pictures uploaded ✓ (will appear after you Save)', 'ok');
+                        this.setStatus('admStatus', 'All pictures uploaded (will appear after you Save)', 'ok');
                         this.renderTab(tab);
                       } else {
                         this.setStatus('admStatus', 'Uploading... (' + completed + '/' + total + ')', 'busy');
@@ -598,16 +600,19 @@
 
       $('admSignIn').addEventListener('click', () => this.signIn());
       $('admPass').addEventListener('keydown', e => { if (e.key === 'Enter') this.signIn(); });
-      
+      $('admEmail').addEventListener('keydown', e => { if (e.key === 'Enter') $('admPass').focus(); });
+
+      const forgot = $('admForgot');
+      if (forgot) forgot.addEventListener('click', () => this.forgotPassword());
+
       const toggleAdmPass = $('toggleAdmPass');
       if (toggleAdmPass) {
         toggleAdmPass.addEventListener('click', () => {
           const passInput = $('admPass');
-          if (passInput.type === 'password') {
-            passInput.type = 'text';
-          } else {
-            passInput.type = 'password';
-          }
+          const show = passInput.type === 'password';
+          passInput.type = show ? 'text' : 'password';
+          toggleAdmPass.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+          toggleAdmPass.replaceChildren(UI.icon(show ? 'i-eyeOff' : 'i-eye', 'ic-16'));
         });
       }
 
