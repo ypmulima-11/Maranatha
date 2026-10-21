@@ -100,10 +100,10 @@
         { part: 'Bass', initials: 'MU', name: 'M. Urio', role: 'Bass' }
       ],
       gallery: [
-        { src: 'images/gallery1.jpg', cap: 'Choir performance' },
-        { src: 'images/gallery2.jpg', cap: 'Choir performance' },
-        { src: 'images/gallery3.jpg', cap: 'Choir performance' },
-        { src: 'images/gallery4.jpg', cap: 'Choir performance' }
+        { src: 'images/hero/hero1.jpg', cap: 'Choir performance' },
+        { src: 'images/hero/hero2.jpg', cap: 'Choir performance' },
+        { src: 'images/hero/hero3.jpg', cap: 'Choir performance' },
+        { src: 'images/hero/hero4.jpg', cap: 'Choir performance' }
       ],
       works: [
         { title: 'Bwana ni Mchungaji', sub: 'Hymn · Live Recording', year: '2025', href: 'https://www.youtube.com/@kwayayamaranatha-udsm3802' },
@@ -130,41 +130,55 @@
   class SectionRenderer {
     renderHero(list) {
       if (!list || list.length === 0) return;
-      const hbgList = document.querySelectorAll('.hero .hbg');
-      hbgList.forEach(hbg => {
+
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      document.querySelectorAll('.hero .hbg').forEach(hbg => {
         if (hbg.dataset.rendered === 'true') {
-           hbg.replaceChildren();
+          hbg.replaceChildren();
+          if (hbg.slideshowInterval) { clearInterval(hbg.slideshowInterval); hbg.slideshowInterval = null; }
         }
         hbg.dataset.rendered = 'true';
         hbg.style.backgroundImage = 'none';
 
-        if (hbg.slideshowInterval) clearInterval(hbg.slideshowInterval);
-
-        const slider = document.createElement('div');
-        slider.style.position = 'absolute';
-        slider.style.inset = '0';
-        
-        const slides = list.map((item, i) => {
+        const slides = list.map(item => {
           const slide = document.createElement('div');
-          slide.style.position = 'absolute';
-          slide.style.inset = '0';
-          slide.style.background = `url('${item.src}') center / cover no-repeat`;
-          slide.style.opacity = i === 0 ? '1' : '0';
-          slide.style.transition = 'opacity 1.5s ease-in-out';
-          slider.appendChild(slide);
+          slide.style.backgroundImage = `url('${item.src}')`;
+          slide.setAttribute('role', 'img');
+          slide.setAttribute('aria-label', item.cap || 'Maranatha Choir');
+          hbg.appendChild(slide);
           return slide;
         });
-        
-        hbg.appendChild(slider);
-        
-        if (slides.length > 1) {
-          let curr = 0;
-          hbg.slideshowInterval = setInterval(() => {
-            slides[curr].style.opacity = '0';
-            curr = (curr + 1) % slides.length;
-            slides[curr].style.opacity = '1';
-          }, 4500);
+
+        let curr = 0;
+        function go(next) {
+          if (next === curr) return;
+          slides[curr].classList.remove('is-on');
+          curr = (next + slides.length) % slides.length;
+          // restart the Ken Burns drift on the incoming slide
+          const incoming = slides[curr];
+          incoming.classList.remove('is-on');
+          void incoming.offsetWidth;
+          incoming.classList.add('is-on');
         }
+
+        // prime the first slide
+        slides[0].classList.add('is-on');
+
+        if (slides.length > 1 && !reduce) {
+          hbg.slideshowInterval = setInterval(() => go(curr + 1), 6000);
+        }
+
+        // pause the drift while the tab is hidden
+        document.addEventListener('visibilitychange', () => {
+          if (!hbg.slideshowInterval) return;
+          if (document.hidden) {
+            clearInterval(hbg.slideshowInterval);
+            hbg.slideshowInterval = null;
+          } else if (slides.length > 1 && !reduce) {
+            hbg.slideshowInterval = setInterval(() => go(curr + 1), 6000);
+          }
+        });
       });
     }
 
@@ -180,9 +194,12 @@
         art.appendChild(wd);
         art.appendChild(El.make('h3', null, n.title));
         art.appendChild(El.make('p', null, n.body));
-        const a = El.make('a', 'nwlink', (n.linkText || 'Read more') + ' \u2192');
+        const a = El.make('a', 'nwlink');
+        a.appendChild(document.createTextNode(n.linkText || 'Read more'));
+        a.insertAdjacentHTML('beforeend', `<svg class="ic ic-18" aria-hidden="true"><use href="assets/icons.svg#i-arrowRight"/></svg>`);
         a.href = n.linkHref || '#';
         if (/^https?:/.test(a.href)) a.target = '_blank';
+        if (/youtube|youtu\.be/i.test(a.href)) a.classList.add('yt');
         art.appendChild(a);
         return art;
       }));
@@ -228,7 +245,7 @@
         if (ev.tag) b.appendChild(El.make('span', 'evtg', ev.tag));
         const cal = SectionRenderer.buildCal(ev);
         if (cal) {
-          const a = El.make('a', 'evcal', 'Add to calendar \u21d7');
+          const a = El.make('a', 'evcal', 'Add to calendar');
           a.href = cal;
           a.target = '_blank';
           a.rel = 'noopener';
@@ -282,7 +299,7 @@
           th.style.backgroundPosition = 'center';
         }
         const vpc = El.make('div', 'vpc');
-        vpc.appendChild(El.make('div', 'vpt', null));
+        vpc.innerHTML = "<svg class='ic ic-24' aria-hidden='true'><use href='assets/icons.svg#i-play'/></svg>";
         th.appendChild(vpc);
         a.appendChild(th);
         const b = El.make('div', 'vidb');
@@ -392,9 +409,11 @@
       if (!g) return;
       g.replaceChildren(...(list || []).map(item => {
         const card = El.make('div', 'gam');
-        if (item.video) {
+if (item.video) {
           card.dataset.video = item.video;
-          card.appendChild(El.make('div', 'gvthumb', '\u25B6'));
+          const vt = El.make('div', 'gvthumb');
+          vt.innerHTML = "<svg class='ic ic-32' aria-hidden='true'><use href='assets/icons.svg#i-play'/></svg>";
+          card.appendChild(vt);
         } else {
           const img = document.createElement('img');
           img.src = item.src || '';
@@ -414,29 +433,29 @@
     renderWorks(list) {
       const g = El.get('muList');
       if (!g) return;
-      g.replaceChildren(...(list || []).map(w => {
-        const a = El.make('a', 'muc');
+      const rows = (list || []).map((w, i) => {
+        const a = El.make('a', 'trk');
         a.href = w.href || '#';
         a.target = '_blank';
-        const th = El.make('div', 'muth');
-        const ytid = El.getYTID(w.href);
-        if (ytid) {
-          th.style.backgroundImage = `url('https://img.youtube.com/vi/${ytid}/mqdefault.jpg')`;
-          th.style.backgroundSize = 'cover';
-          th.style.backgroundPosition = 'center';
-        }
-        const pc = El.make('div', 'pc');
-        pc.appendChild(El.make('div', 'pt', null));
-        th.appendChild(pc);
-        th.appendChild(El.make('div', 'eq', null));
-        a.appendChild(th);
-        const b = El.make('div', 'mub');
-        b.appendChild(El.make('div', 'mut', w.title));
-        b.appendChild(El.make('div', 'mutp', w.sub));
-        b.appendChild(El.make('div', 'muy', w.year));
-        a.appendChild(b);
+        a.rel = 'noopener';
+        a.setAttribute('aria-label', `Play ${w.title || 'recording'}`);
+
+        a.appendChild(El.make('span', 'trk-n',
+          String(i + 1).padStart(2, '0')));
+
+        const meta = El.make('div', 'trk-m');
+        meta.appendChild(El.make('div', 'trk-t', w.title || ''));
+        if (w.sub) meta.appendChild(El.make('div', 'trk-s', w.sub));
+        a.appendChild(meta);
+
+        a.appendChild(El.make('span', 'trk-y', w.year || ''));
+
+        const p = El.make('span', 'trk-p');
+        p.innerHTML = "<svg class='ic ic-18' aria-hidden='true'><use href='assets/icons.svg#i-play'/></svg>";
+        a.appendChild(p);
         return a;
-      }));
+      });
+      g.replaceChildren(...rows);
     }
 
     renderAll(d) {
@@ -445,7 +464,9 @@
       this.renderNews(d.news);
       this.renderEvents(d.events);
       this.renderVideos(d.videos);
-      // this.renderTeam(d.team); — removed: team page uses live DB leaders only
+      // static roster from content.json; renderTeamLive() overrides it when
+      // the database has active leaders, so the page is never empty
+      this.renderTeam(d.team || []);
       this.renderMembers(d.members);
       this.renderGallery(d.gallery);
       this.renderWorks(d.works);
@@ -466,6 +487,8 @@
       this.nmBtn.classList.remove('open');
       this.nmBtn.setAttribute('aria-expanded', 'false');
       this.nmBtn.setAttribute('aria-label', 'Open menu');
+      document.documentElement.classList.remove('nav-open');
+      document.body.style.overflow = '';
     }
 
     bindMenu() {
@@ -476,6 +499,8 @@
         this.nmBtn.classList.toggle('open', open);
         this.nmBtn.setAttribute('aria-expanded', open);
         this.nmBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        document.documentElement.classList.toggle('nav-open', open);
+        document.body.style.overflow = open ? 'hidden' : '';
       });
       this.nmMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => this.closeMenu()));
       const nmClose = El.get('nmClose');
@@ -638,7 +663,7 @@
       this.cdH.textContent = El.pad2(h);
       this.cdM.textContent = El.pad2(m);
       this.cdS.textContent = El.pad2(s);
-      if (this.cdTitle) this.cdTitle.textContent = next.title ? '\u2192 ' + next.title : '';
+      if (this.cdTitle) this.cdTitle.textContent = next.title || '';
     }
 
     start() {
@@ -733,7 +758,9 @@
     }
 
     setUI(playing) {
-      this.plrBtn.innerHTML = playing ? '&#10073;&#10073;' : '&#9654;';
+      this.plrBtn.innerHTML = playing
+        ? "<svg class='ic ic-22' aria-hidden='true'><use href='assets/icons.svg#i-pause'/></svg>"
+        : "<svg class='ic ic-22' aria-hidden='true'><use href='assets/icons.svg#i-play'/></svg>";
       this.plrBtn.setAttribute('aria-label', playing ? 'Pause demo song' : 'Play demo song');
       if (this.plrEq) this.plrEq.classList.toggle('playing', playing);
       this.cards.forEach((c, ci) => c.classList.toggle('playing', playing && ci === this.trackIdx));
@@ -1044,8 +1071,7 @@
       new GalleryLightbox().bind();
       new GalleryCarousel().bind();
     }
-
-    }
+  }
 
   new SiteApp().boot();
 })();

@@ -19,7 +19,9 @@ function corsRes(body: unknown, status = 200) {
   });
 }
 
-async function requireAdmin(req: Request) {
+type AdminGuard = { ok: true } | { ok: false; res: Response };
+
+async function requireAdmin(req: Request): Promise<AdminGuard> {
   const auth = req.headers.get("Authorization") ?? "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
   if (!token) return { ok: false, res: corsRes({ error: "Not signed in." }, 401) };
@@ -68,7 +70,7 @@ Deno.serve(async (req) => {
     return corsRes({ error: "Server not configured yet: add the GITHUB_TOKEN secret." }, 500);
   }
 
-  const auth = await requireAdmin(req);
+  const auth: AdminGuard = await requireAdmin(req);
   if (!auth.ok) return auth.res;
 
   let body: any;

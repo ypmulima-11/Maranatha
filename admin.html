@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Maranatha Admin</title>
-<link rel="icon" type="image/jpeg" href="images/choir-logo.jpg">
-<link rel="stylesheet" href="admin.css?v=7">
+<link rel="icon" type="image/jpeg" href="images/choir-logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css?v=31">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <script src="supabase-config.js" defer></script>
 <script src="admin.js?v=5" defer></script>
@@ -16,10 +17,10 @@
 
 <header class="adm-h">
   <div class="adm-h-in">
-    <div class="adm-brand"><span class="adm-logo"><img src="images/choir-logo.jpg" alt="Maranatha Choir logo" width="34" height="34"></span><span>Maranatha Admin</span></div>
+    <div class="adm-brand"><span class="adm-wordmark">Maranatha Choir</span><span class="adm-role">Admin</span></div>
     <div class="adm-hr">
       <span class="adm-repo" id="admRepo"></span>
-      <a id="admView" class="adm-link" href="https://maranathachoir.netlify.app/" target="_blank" rel="noopener">View site &nearr;</a>
+      <a id="admView" class="adm-link" href="https://maranathachoir.netlify.app/" target="_blank" rel="noopener">View site <svg class="ic ic-16" aria-hidden="true"><use href="assets/icons.svg#i-arrowRight"/></svg></a>
       <button type="button" class="adm-btn ghost" id="admOut" hidden>Sign out</button>
     </div>
   </div>
@@ -29,7 +30,7 @@
 <section class="adm-login" id="admLogin">
   <div class="adm-card glass-card">
     <div class="glass-header">
-      <img src="images/choir-logo.jpg" alt="Maranatha Choir logo" class="glass-logo">
+      <img src="images/choir-logo.png" alt="Maranatha Choir logo" class="glass-logo">
       <div class="glass-title-wrap">
         <span class="glass-subtitle">MARANATHA CHOIR</span>
         <span class="glass-title">Admin Panel</span>
@@ -132,7 +133,7 @@
         </section>
 
         <section class="adm-pane-sec" id="pane-gallery">
-          <p class="adm-hint">Images: type a path (e.g. <code>images/gallery1.jpg</code>) or upload a picture straight to the site. Videos: paste a YouTube link to embed it in the gallery.</p>
+          <p class="adm-hint">Images: type a path (e.g. <code>images/hero/hero1.jpg</code>) or upload a picture straight to the site. Videos: paste a YouTube link to embed it in the gallery.</p>
           <div class="adm-rows" id="rows-gallery"></div>
           <button type="button" class="adm-btn ghost add" data-add="gallery">&plus; Add gallery item</button>
           <button type="button" class="adm-btn ghost multi-add" data-multi="gallery">&plus; Upload multiple images</button>
