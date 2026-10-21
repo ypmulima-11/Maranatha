@@ -978,24 +978,31 @@ if (item.video) {
             payload[inp.dataset.sb || inp.name] = inp.value.trim();
           });
           const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
-          const req = table === 'newsletter_subs'
-            ? sb.from(table).upsert(payload, { onConflict: 'email', ignoreDuplicates: true })
-            : sb.from(table).insert(payload);
+          // upsert() needs UPDATE rights, which the anon role does not have (RLS rejects it),
+          // so subscribe with insert() and treat a unique violation as "already subscribed".
+          const req = sb.from(table).insert(payload);
           req.then(r => {
-            if (r.error) {
+            const dup = r.error && r.error.code === '23505';
+            if (r.error && !dup) {
               console.error('Form save failed:', r.error);
               if (okEl) {
+                if (okEl._hideTimer) { clearTimeout(okEl._hideTimer); okEl._hideTimer = null; }
                 okEl.classList.add('show');
                 okEl.textContent = 'Could not send right now \u2014 please try again later.';
-                setTimeout(() => okEl.classList.remove('show'), 6000);
+                okEl._hideTimer = setTimeout(() => okEl.classList.remove('show'), 6000);
               }
               return;
             }
             this.form.reset();
             if (okEl) {
+              if (okEl._hideTimer) { clearTimeout(okEl._hideTimer); okEl._hideTimer = null; }
               okEl.classList.add('show');
               okEl.setAttribute('role', 'status');
-              setTimeout(() => okEl.classList.remove('show'), 5000);
+              // the error path overwrites the text — restore the translated original
+              const key = okEl.dataset.i18n;
+              const tr = key && window.I18n ? window.I18n.lookup(key) : null;
+              okEl.textContent = tr != null ? tr : (okEl.dataset.i18nOrig || okEl.textContent);
+              okEl._hideTimer = setTimeout(() => okEl.classList.remove('show'), 5000);
             }
           });
           return;

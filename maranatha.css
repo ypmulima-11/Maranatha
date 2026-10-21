@@ -229,6 +229,9 @@ nav {
   display: flex; align-items: center; justify-content: space-between;
   gap: 2rem;
   padding: 3.6rem var(--gut) 1.1rem;
+  /* the transparent pad above the nav sits over the top bar — it must not
+     swallow clicks on the email link or the EN/SW toggle */
+  pointer-events: none;
   transition: background var(--t) var(--ease), padding var(--t) var(--ease);
 }
 nav.scrolled {
@@ -257,7 +260,7 @@ nav.scrolled {
 .nl a.active { opacity: .6; }
 .nl a.nc-cta { opacity: 1; color: var(--ink); }
 .nl a.nc-cta:hover { opacity: 1; background: var(--ink); color: #fff; }
-nav .nb, nav .nl { border-bottom: 0; }
+nav .nb, nav .nl { border-bottom: 0; pointer-events: auto; }
 nav::after {
   content: ''; position: absolute; left: var(--gut); right: var(--gut); bottom: 0;
   height: 1px; background: rgba(255, 255, 255, .5);
