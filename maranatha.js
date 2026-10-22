@@ -694,10 +694,10 @@ if (item.video) {
 
     constructor() {
       this.btn = El.get('plrBtn');
-      this.cards = [...document.querySelectorAll('.muc')];
+      this.cards = [...document.querySelectorAll('.trk, .muc')];
       this.tracks = this.cards.map((c, i) => ({
-        title: (c.querySelector('.mut') || { textContent: '' }).textContent.trim() || 'Song',
-        sub: (c.querySelector('.mutp') || { textContent: '' }).textContent.trim() || '',
+        title: (c.querySelector('.trk-t, .mut') || { textContent: '' }).textContent.trim() || 'Song',
+        sub: (c.querySelector('.trk-s, .mutp') || { textContent: '' }).textContent.trim() || '',
         seq: DemoPlayer.DEMO_SEQS[i % DemoPlayer.DEMO_SEQS.length]
       }));
       this.plrEq = El.get('plrEq');
@@ -823,7 +823,7 @@ if (item.video) {
       });
       this.syncLabels();
       this.cards.forEach((card, i) => {
-        const btn = card.querySelector('.pc');
+        const btn = card.querySelector('.trk-p, .pc') || card;
         if (!btn) return;
         btn.setAttribute('role', 'button');
         btn.setAttribute('tabindex', '0');

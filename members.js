@@ -1089,6 +1089,31 @@
       $('mpAdminCard').hidden = !isAdmin;
       $('mpNavAdmin').hidden = !isAdmin;
 
+      if ($('mpProfile')) {
+        $('mpProfile').innerHTML = '';
+        [
+          ['Name', this.profile.full_name],
+          ['Email', this.profile.email],
+          ['Access level', MemberPortal.roleLabel(this.profile.role)],
+          ['Title', this.profile.title || '\u2014'],
+          ['Voice part', this.profile.voice_part || '\u2014'],
+          ['Date of birth', this.fmtDob(this.profile.dob)],
+          ['Phone', this.profile.phone || '\u2014'],
+          ['Study status', this.studyLabel(this.profile)],
+          ['Residence', this.residenceLabel(this.profile)],
+          ['Member since', this.profile.created_at ? new Date(this.profile.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '\u2014']
+        ].forEach(r => {
+          const k = document.createElement('div');
+          k.className = 'mp-k';
+          k.textContent = r[0];
+          const v = document.createElement('div');
+          v.className = 'mp-v';
+          v.textContent = r[1];
+          $('mpProfile').appendChild(k);
+          $('mpProfile').appendChild(v);
+        });
+      }
+
       this.renderList($('mpMemberInfo'),
         this.resources.filter(r => r.audience === 'member'),
         'Nothing here yet \u2014 the leaders will add member resources soon.');
@@ -3001,6 +3026,8 @@
         this.loadDashboard();
       });
               if ($('pfOut')) $('pfOut').addEventListener('click', () => this.signOut());
+      if ($('mpOut')) $('mpOut').addEventListener('click', () => this.signOut());
+      if ($('mpEditProfile')) $('mpEditProfile').addEventListener('click', () => this.openProfileForm(false));
         
         const avInput = $('pfAvatar');
         const cropModal = $('cropModal');

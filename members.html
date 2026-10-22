@@ -154,6 +154,7 @@
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                   </span>
                   <input type="password" id="siPass" placeholder="Your password" data-i18n-ph="portal.passph" autocomplete="current-password">
+                  <button type="button" class="mp-passbtn" data-target="siPass" aria-label="Show password"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
                 </div>
               </label>
               <div class="mp-msg" id="siMsg" role="status"></div>
@@ -200,7 +201,10 @@
             <h1 data-i18n="portal.rs1">Set a new password</h1>
             <p class="mp-hint" data-i18n="portal.rshint">Choose a new password for your account.</p>
             <label class="mp-field"><span data-i18n="portal.rslabel">New password (at least 6 characters)</span>
-              <input type="password" id="rsPass" placeholder="New password" data-i18n-ph="portal.rspassph" autocomplete="new-password">
+              <div class="mp-passwrap">
+                <input type="password" id="rsPass" placeholder="New password" data-i18n-ph="portal.rspassph" autocomplete="new-password">
+                <button type="button" class="mp-passbtn" data-target="rsPass" aria-label="Show password"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              </div>
             </label>
             <div class="mp-msg" id="rsMsg" role="status"></div>
             <button type="submit" class="mp-btn big" data-i18n="portal.rsbtn">Update password</button>
@@ -344,6 +348,7 @@
                   <div class="pf-nav">
                     <button type="button" class="mp-btn ghost" onclick="pfNext(2)">Back</button>
                     <button type="submit" class="mp-btn big">Save profile</button>
+                    <button type="button" class="mp-btn ghost danger" id="pfOut" data-i18n="portal.signout">Sign out</button>
                   </div>
                 </div>
               </form>
@@ -360,7 +365,15 @@
               <div class="mp-greet" id="mpGreet"></div>
               <div class="mp-sub" id="mpSub"></div>
             </div>
-            
+            <button type="button" class="mp-btn ghost" id="mpOut" data-i18n="portal.signout">Sign out</button>
+          </div>
+
+          <div class="mp-card2" id="mpProfileCard">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+              <h2 data-i18n="portal.profile" style="margin:0;">My profile</h2>
+              <button type="button" class="mp-btn" id="mpEditProfile">Edit profile</button>
+            </div>
+            <div class="mp-pro" id="mpProfile"></div>
           </div>
 
           <div class="mp-grid">
