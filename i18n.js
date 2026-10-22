@@ -231,7 +231,7 @@
           'hero.sub1': 'Kwaya ya Maranatha — kwaya ya Kikatoliki yenye makao yake Dar es Salaam, Tanzania.',
           'hero.sub2': 'Ibada, nidhamu, urafiki na ubora wa muziki.',
           'hero.bt1': 'Gundua hadithi yetu',
-          'hero.bt2': '\\u25B6 Sikiliza muziki wetu',
+          'hero.bt2': 'Sikiliza muziki wetu',
           'hero.stat1': 'Wanachama',
           'hero.stat2': 'Miaka',
           'hero.stat3': 'Matamasha',
