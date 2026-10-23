@@ -106,10 +106,10 @@
         { src: 'images/hero/hero4.jpg', cap: 'Choir performance' }
       ],
       works: [
-        { title: 'Bwana ni Mchungaji', sub: 'Hymn · Live Recording', year: '2025', href: 'https://www.youtube.com/@kwayayamaranatha-udsm3802' },
-        { title: 'Mungu ni Mwema', sub: 'Praise · Studio', year: '2025', href: 'https://www.youtube.com/@kwayayamaranatha-udsm3802' },
-        { title: 'Neema ya Bwana', sub: 'Worship · Live Recording', year: '2024', href: 'https://www.youtube.com/@kwayayamaranatha-udsm3802' },
-        { title: 'Shangwe na Furaha', sub: 'Hymn · Studio', year: '2024', href: 'https://www.youtube.com/@kwayayamaranatha-udsm3802' }
+        { title: 'TAZAMA NAKUJA KUKUSHUKURU', sub: 'By S. Mvano', year: '2026', href: 'https://www.youtube.com/watch?v=abLA0PNWxN0' },
+        { title: 'HEKIMA NDIO BORA', sub: 'By F. Nyanza', year: '2024', href: 'https://www.youtube.com/watch?v=qGkhSoyPd0k' },
+        { title: 'HUU SASA NDIO WAKATI', sub: 'By Ben Nturama', year: 'Live Recording', href: 'https://www.youtube.com/watch?v=_TnI9-VsxUo&pp=0gcJCRoMAYcqIYzv' },
+        { title: 'NITAMWIMBIA BWANA', sub: 'By B.E.Magilu', year: '2023', href: 'https://www.youtube.com/watch?v=YzVP5Ef3i4U' }
       ]
     };
 
@@ -433,29 +433,29 @@ if (item.video) {
     renderWorks(list) {
       const g = El.get('muList');
       if (!g) return;
-      const rows = (list || []).map((w, i) => {
-        const a = El.make('a', 'trk');
+      g.replaceChildren(...(list || []).map(w => {
+        const a = El.make('a', 'muc');
         a.href = w.href || '#';
         a.target = '_blank';
         a.rel = 'noopener';
-        a.setAttribute('aria-label', `Play ${w.title || 'recording'}`);
-
-        a.appendChild(El.make('span', 'trk-n',
-          String(i + 1).padStart(2, '0')));
-
-        const meta = El.make('div', 'trk-m');
-        meta.appendChild(El.make('div', 'trk-t', w.title || ''));
-        if (w.sub) meta.appendChild(El.make('div', 'trk-s', w.sub));
-        a.appendChild(meta);
-
-        a.appendChild(El.make('span', 'trk-y', w.year || ''));
-
-        const p = El.make('span', 'trk-p');
-        p.innerHTML = "<svg class='ic ic-18' aria-hidden='true'><use href='assets/icons.svg#i-play'/></svg>";
-        a.appendChild(p);
+        const th = El.make('div', 'muth');
+        const ytid = El.getYTID(w.href);
+        if (ytid) {
+          th.style.backgroundImage = `url('https://img.youtube.com/vi/${ytid}/hqdefault.jpg')`;
+          th.style.backgroundSize = 'cover';
+          th.style.backgroundPosition = 'center';
+        }
+        const pc = El.make('div', 'pc');
+        pc.appendChild(El.make('div', 'pt', null));
+        th.appendChild(pc);
+        a.appendChild(th);
+        const b = El.make('div', 'mub');
+        b.appendChild(El.make('div', 'mut', w.title));
+        b.appendChild(El.make('div', 'mutp', w.sub));
+        b.appendChild(El.make('div', 'muy', w.year));
+        a.appendChild(b);
         return a;
-      });
-      g.replaceChildren(...rows);
+      }));
     }
 
     renderAll(d) {

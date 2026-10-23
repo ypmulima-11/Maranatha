@@ -25,13 +25,13 @@
 <meta name="twitter:image" content="https://ypmulima-11.github.io/Maranatha/images/og-cover.jpg">
 <link rel="icon" type="image/jpeg" href="images/choir-logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="maranatha.css?v=69">
+<link rel="stylesheet" href="maranatha.css?v=70">
 <link rel="stylesheet" href="ui.css?v=1">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <script src="supabase-config.js" defer></script>
 <script src="i18n.js?v=17" defer></script>
 <script src="ui.js?v=2" defer></script>
-<script src="maranatha.js?v=66" defer></script>
+<script src="maranatha.js?v=67" defer></script>
 </head>
 <body>
 <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
@@ -92,58 +92,20 @@
   </div>
 </section>
 
-<!-- RECORDINGS -->
+<!-- WORKS -->
 <div class="muw">
   <div class="sw">
-    <div class="sin">
-      <div class="eyebrow"><span class="num">01</span><span data-i18n="mu.eyebrow">Discography</span></div>
-      <h2 class="stit" data-i18n="mu.h2">Recordings</h2>
-      <p class="ssub" data-i18n="mu.ssub">Original compositions and arrangements by the choir, recorded across our concert seasons.</p>
+    <div class="mui">
       <!-- Song list is rendered from content.json (editable in admin.html) -->
-      <div class="trk-list rev-stagger" id="muList"></div>
-      <div class="hbtns" style="margin-top: 1.5rem;">
-        <a href="join.html#contact" class="bo" data-i18n="mu.cta">Request our full song list</a>
-      </div>
-      <div class="plr">
-        <div class="plr-eq" id="plrEq" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
-        <div class="plr-i">
-          <div class="plr-n" id="plrName">Bwana ni Mchungaji</div>
-          <div class="plr-s" id="plrSub">Hymn &middot; Live Demo</div>
-        </div>
-        <button class="plr-btn" id="plrBtn" type="button" aria-label="Play demo song">&#9654;</button>
-        <div class="plr-b">
-          <div class="plr-bar"><div class="plr-fill" id="plrFill"></div></div>
-          <div class="plr-t"><span id="plrCur">0:00</span><span id="plrDur">0:00</span></div>
-        </div>
-      </div>
-      <div class="plr-note" data-i18n="plr.note">Demo playback for preview only &mdash; replace with your real recordings whenever you are ready.</div>
-    </div>
-  </div>
-</div>
+      <div class="mug rev-stagger" id="muList"></div>
 
-<!-- WATCH -->
-<div class="vww">
-  <div class="sw">
-    <div class="sin">
-      <div class="eyebrow"><span class="num">02</span><span data-i18n="mu.eyebrow2">Watch</span></div>
-      <h2 class="stit" data-i18n="mu.h2b">Live performances</h2>
-      <p class="ssub" data-i18n="mu.ssubb">Services, concerts and studio sessions from our YouTube channel.</p>
-      <div class="vidg rev-stagger" id="vidList"></div>
-      <div class="hbtns" style="margin-top: 2.5rem;">
-        <a href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" rel="noopener" class="bo">
-          <svg class="ic ic-18" aria-hidden="true"><use href="assets/icons.svg#i-play"></use></svg>
+      <div style="text-align: center; margin-top: 3rem;">
+        <a href="https://www.youtube.com/@kwayayamaranatha-udsm3802" target="_blank" rel="noopener" class="bg" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12 9.545 15.568z"/></svg>
           <span data-i18n="mu.yt">See more on YouTube</span>
         </a>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- NEXT PAGE -->
-<div class="nextp">
-  <div class="nextp-in">
-    <div class="nextp-k" data-i18n="np.next">Next</div>
-    <a class="nextp-a" href="events.html"><span data-i18n="np.works">Upcoming Events</span><svg aria-hidden="true"><use href="assets/icons.svg#i-arrowRight"></use></svg></a>
   </div>
 </div>
 

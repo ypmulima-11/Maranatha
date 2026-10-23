@@ -704,7 +704,64 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
 /* =====================================================================
    WORKS / MUSIC
    ===================================================================== */
-.muw { background: #fff; }
+.muw { background: var(--bg); }
+.mui { max-width: var(--container); margin: 0 auto; }
+.mug {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+.muc {
+  background: var(--card);
+  border-radius: 12px;
+  display: block;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.muc:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .10);
+}
+.muth {
+  background: var(--g8);
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.pc {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .28);
+  transition: transform .2s ease, background .2s ease;
+  z-index: 2;
+}
+.muc:hover .pc {
+  transform: scale(1.1);
+  background: #fff;
+}
+.pt {
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 14px solid #000;
+  margin-left: 3px;
+}
+.mub { padding: 16px 18px; }
+.mut { font-size: .95rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; line-height: 1.35; }
+.mutp { font-size: .825rem; color: var(--ink-mute); }
+.muy { font-size: .75rem; color: var(--ink-mute); margin-top: 6px; font-weight: 600; }
 
 /* =====================================================================
    EVENTS
