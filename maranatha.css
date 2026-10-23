@@ -46,7 +46,8 @@
   --err: #C62828;
 
   /* ---- type ---- */
-  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --serif: 'Playfair Display', Georgia, serif;
 
   /* ---- geometry ---- */
   --container: 1145px;
@@ -241,7 +242,7 @@ nav.scrolled {
 }
 /* wordmark — uppercase text, no image (reference uses a wide wordmark) */
 .brand {
-  font-family: var(--sans);
+  font-family: 'Playfair Display', serif;
   font-size: 1.0625rem; font-weight: 700;
   letter-spacing: .16em;
   text-transform: uppercase;
@@ -371,7 +372,7 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
   display: flex; align-items: center; gap: .75rem;
 }
 .hero h1 {
-  font-family: var(--sans);
+  font-family: 'Playfair Display', serif;
   font-size: clamp(2.75rem, 8.2vw, 5.85rem);
   font-weight: 700;
   line-height: 1;
@@ -438,7 +439,7 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
 
 /* display heading */
 .stit {
-  font-family: var(--sans);
+  font-family: 'Playfair Display', serif;
   font-size: clamp(2rem, 4.6vw, 3.6rem);
   font-weight: 700;
   line-height: 1.05;
@@ -1556,3 +1557,23 @@ footer { background: #000; color: #fff; }
 .jof .ui-ctl:focus-visible, .cof .ui-ctl:focus-visible { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(0, 0, 0, .10); }
 .jof .ui-sel-list, .cof .ui-sel-list, .fnews-form .ui-sel-list { border-radius: 6px; }
 .jof .ui-cal, .cof .ui-cal { border-radius: 8px; }
+
+/* =====================================================================
+   DISPLAY SERIF TYPOGRAPHY (Playfair Display)
+   ===================================================================== */
+.nc, .nn, .brand,
+.hero h1, .ph-h, .phead h1,
+.hstats span, .sn,
+.stit,
+.stq, .sta,
+.evd, .evvh,
+.tma, .msa,
+.nwd span,
+.msp h3, .famc h3,
+.dam,
+.fnews h4, .ftr-mission,
+.cdl, .cdx span,
+.plr-n,
+.nextp-a {
+  font-family: 'Playfair Display', serif;
+}
