@@ -378,8 +378,8 @@
 
     async renderTeamLive() {
       const g = El.get('tmList');
-      if (!g || !window.supabase || !SUPABASE_READY) return;
-      const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+      const sb = getSbClient();
+      if (!g || !sb) return;
       try {
         const { data, error } = await sb.rpc('get_public_leaders');
         if (error) { console.warn('team live:', error); return; }
@@ -997,7 +997,7 @@ if (item.video) {
         const table = this.form.dataset.sbTable;
         const honeypot = this.form.querySelector('input[name="website"]');
 
-        if (table && window.supabase && SUPABASE_READY) {
+        if (table && window.supabase && typeof SUPABASE_READY !== 'undefined' && SUPABASE_READY) {
           if (honeypot && honeypot.value.trim()) {
             this.form.reset();
             return;
@@ -1007,7 +1007,7 @@ if (item.video) {
             if (inp.name === 'website') return;
             payload[inp.dataset.sb || inp.name] = inp.value.trim();
           });
-          const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+          const sb = getSbClient();
           // upsert() needs UPDATE rights, which the anon role does not have (RLS rejects it),
           // so subscribe with insert() and treat a unique violation as "already subscribed".
           const req = sb.from(table).insert(payload);
@@ -1086,6 +1086,211 @@ if (item.video) {
     }
   }
 
+  /* ---------- Shared Supabase client & Global Header User Menu ---------- */
+
+  function getSbClient() {
+    if (!window.supabase || typeof SUPABASE_READY === 'undefined' || !SUPABASE_READY) return null;
+    if (!window.__maranathaSb) {
+      window.__maranathaSb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    }
+    return window.__maranathaSb;
+  }
+
+  class GlobalUserMenu {
+    static CACHE_KEY = 'maranatha_user_cache';
+    static _bound = false;
+
+    static computeInitials(name, email) {
+      const src = (name || '').trim();
+      if (src) {
+        const parts = src.split(/\s+/).filter(Boolean);
+        if (parts.length >= 2) {
+          return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        return src.substring(0, 2).toUpperCase();
+      }
+      const em = (email || '').trim();
+      return em ? em.substring(0, 2).toUpperCase() : 'MC';
+    }
+
+    static render(userData) {
+      const menu = El.get('globalUserMenu');
+      const nav = document.querySelector('nav');
+      if (!menu) return;
+      if (!userData) {
+        this.hide();
+        return;
+      }
+
+      menu.style.display = 'inline-block';
+      if (nav) nav.classList.add('has-user');
+
+      const initialsEl = El.get('mpAvatarInitials');
+      const imgEl = El.get('mpAvatarImg');
+      const initials = this.computeInitials(userData.full_name, userData.email);
+      if (initialsEl) initialsEl.textContent = initials;
+
+      if (userData.avatar_url && imgEl) {
+        imgEl.onerror = () => {
+          imgEl.style.display = 'none';
+          if (initialsEl) initialsEl.style.display = 'flex';
+        };
+        imgEl.src = userData.avatar_url;
+        imgEl.style.display = 'block';
+        if (initialsEl) initialsEl.style.display = 'none';
+      } else {
+        if (imgEl) {
+          imgEl.removeAttribute('src');
+          imgEl.style.display = 'none';
+        }
+        if (initialsEl) initialsEl.style.display = 'flex';
+      }
+
+      try {
+        localStorage.setItem(this.CACHE_KEY, JSON.stringify({
+          full_name: userData.full_name || '',
+          avatar_url: userData.avatar_url || '',
+          email: userData.email || ''
+        }));
+      } catch (e) { /* ignore storage errors */ }
+    }
+
+    static hide() {
+      const menu = El.get('globalUserMenu');
+      const dd = El.get('mpUserDropdown');
+      const btn = El.get('mpUserMenuBtn');
+      const nav = document.querySelector('nav');
+      if (menu) menu.style.display = 'none';
+      if (dd) dd.style.display = 'none';
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+      if (nav) nav.classList.remove('has-user');
+      try { localStorage.removeItem(this.CACHE_KEY); } catch (e) { /* ignore */ }
+    }
+
+    static closeDropdown() {
+      const dd = El.get('mpUserDropdown');
+      const btn = El.get('mpUserMenuBtn');
+      if (dd) dd.style.display = 'none';
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+
+    static bind() {
+      if (this._bound) return;
+      const menu = El.get('globalUserMenu');
+      const btn = El.get('mpUserMenuBtn');
+      const dd = El.get('mpUserDropdown');
+      if (!menu || !btn || !dd) return;
+      this._bound = true;
+
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const open = dd.style.display === 'none' || !dd.style.display;
+        dd.style.display = open ? 'flex' : 'none';
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+
+      document.addEventListener('click', e => {
+        if (!menu.contains(e.target)) this.closeDropdown();
+      });
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') this.closeDropdown();
+      });
+
+      const profBtn = El.get('mpMenuProfile');
+      if (profBtn) {
+        profBtn.addEventListener('click', () => {
+          this.closeDropdown();
+          if (window.portal && typeof window.portal.openProfileView === 'function') {
+            window.portal.openProfileView();
+          } else {
+            window.location.href = 'members.html?view=profile#portal';
+          }
+        });
+      }
+
+      const outBtn = El.get('mpMenuLogout');
+      if (outBtn) {
+        outBtn.addEventListener('click', async () => {
+          this.closeDropdown();
+          if (window.portal && typeof window.portal.signOut === 'function') {
+            await window.portal.signOut();
+            return;
+          }
+          const sb = getSbClient();
+          if (sb) {
+            try { await sb.auth.signOut(); } catch (e) { /* ignore */ }
+          }
+          this.hide();
+        });
+      }
+    }
+
+    static async syncSession() {
+      const sb = getSbClient();
+      if (!sb) return;
+      try {
+        const { data } = await sb.auth.getSession();
+        const session = data && data.session;
+        if (!session || !session.user) {
+          this.hide();
+          return;
+        }
+        const user = session.user;
+        const meta = user.user_metadata || {};
+        let fullName = meta.full_name || meta.name || '';
+        let avatarUrl = meta.avatar_url || '';
+
+        const { data: prof } = await sb
+          .from('profiles')
+          .select('full_name, avatar_url')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (prof) {
+          if (prof.full_name) fullName = prof.full_name;
+          if (prof.avatar_url != null) avatarUrl = prof.avatar_url;
+        }
+
+        this.render({
+          full_name: fullName,
+          avatar_url: avatarUrl,
+          email: user.email || ''
+        });
+      } catch (err) {
+        console.warn('GlobalUserMenu sync:', err);
+      }
+    }
+
+    static init() {
+      this.bind();
+      try {
+        const cached = localStorage.getItem(this.CACHE_KEY);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && (parsed.full_name || parsed.email || parsed.avatar_url)) {
+            this.render(parsed);
+          }
+        }
+      } catch (e) { /* ignore */ }
+
+      this.syncSession();
+
+      const sb = getSbClient();
+      if (sb) {
+        sb.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_OUT' || !session) {
+            this.hide();
+          } else if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+            this.syncSession();
+          }
+        });
+      }
+    }
+  }
+
+  window.MaranathaUserMenu = GlobalUserMenu;
+
   /* ---------- App bootstrap ---------- */
 
   class SiteApp {
@@ -1097,6 +1302,7 @@ if (item.video) {
     async boot() {
       I18n.init();
       this.nav.bindAll();
+      GlobalUserMenu.init();
       FormValidator.bindAll();
       this.renderer.renderAll(SiteContent.DEFAULT);
       const live = await SiteContent.fetchLive();

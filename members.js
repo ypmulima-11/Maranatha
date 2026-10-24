@@ -32,8 +32,12 @@
       $('pendingView').hidden = true;
       $('profileView').hidden = true;
       $('authView').hidden = false;
-      const globMenu = $('globalUserMenu');
-      if (globMenu) globMenu.style.display = 'none';
+      if (window.MaranathaUserMenu) {
+        window.MaranathaUserMenu.hide();
+      } else {
+        const globMenu = $('globalUserMenu');
+        if (globMenu) globMenu.style.display = 'none';
+      }
     }
 
     showDash() {
@@ -63,12 +67,12 @@
     /* ---------- Hide public page content once signed in ---------- */
 
     setMemberMode(on) {
-      document.querySelectorAll('.hero.ph, .msw, footer').forEach(el => {
+      document.body.classList.toggle('member-mode', !!on);
+      document.querySelectorAll('.phead, .hero.ph, .msw, footer, #mpIntro').forEach(el => {
         el.style.display = on ? 'none' : '';
       });
       if (on) {
-        const portal = $('portal');
-        if (portal && portal.scrollIntoView) portal.scrollIntoView({ block: 'start' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
 
@@ -323,15 +327,33 @@
       return true;
     }
 
-    openProfileForm(mandatory) {
+    openProfileView() {
+      if (this.profile && !this.profileComplete(this.profile)) {
+        this.openProfileForm(true);
+        return;
+      }
       $('authView').hidden = true;
       $('dashView').hidden = true;
       $('resetView').hidden = true;
       $('pendingView').hidden = true;
       $('profileView').hidden = false;
+      if ($('pfSummaryView')) $('pfSummaryView').hidden = false;
+      if ($('pfEditWrap')) $('pfEditWrap').hidden = true;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    openProfileForm(mandatory) {
+      this._mandatoryProfile = !!mandatory;
+      $('authView').hidden = true;
+      $('dashView').hidden = true;
+      $('resetView').hidden = true;
+      $('pendingView').hidden = true;
+      $('profileView').hidden = false;
+      if ($('pfSummaryView')) $('pfSummaryView').hidden = true;
+      if ($('pfEditWrap')) $('pfEditWrap').hidden = false;
       $('pfTitle').textContent = mandatory ? 'Complete your profile' : 'Edit your profile';
       $('pfSub').textContent = mandatory
-        ? 'Please fill in these details first â€” they help the leaders organise groups and celebrations.'
+        ? 'Please fill in these details first \u2014 they help the leaders organise groups and celebrations.'
         : 'Update your details at any time.';
       $('pfCancel').hidden = !!mandatory;
       this.openProfileEdit();
@@ -374,7 +396,7 @@
       if ($('pfAvatar')) $('pfAvatar').value = '';
 
       $('mpProfileForm').hidden = false;
-            $('pfName').focus();
+      $('pfName').focus();
     }
 
     syncProfileForm() {
@@ -385,8 +407,8 @@
     }
 
     closeProfileEdit() {
-      $('mpProfileForm').hidden = true;
-          }
+      if ($('pfEditWrap')) $('pfEditWrap').hidden = true;
+    }
 
     async onSaveProfile(e) {
       e.preventDefault();
@@ -458,29 +480,27 @@
       msg.className = 'mp-msg';
       msg.textContent = 'Saving\u2026';
       let avatarUrl = this.profile ? this.profile.avatar_url : '';
-              if (this.avatarDelete && avatarUrl) {
-          try {
-            const oldPath = avatarUrl.split('/').pop();
-            await this.supabase.storage.from('avatars').remove([user.id + '/' + oldPath]);
-          } catch(e) {}
-          avatarUrl = '';
-        }
+      if (this.avatarDelete && avatarUrl) {
+        try {
+          const oldPath = avatarUrl.split('/').pop();
+          await this.supabase.storage.from('avatars').remove([user.id + '/' + oldPath]);
+        } catch(e) {}
+        avatarUrl = '';
+      }
 
-        if (this.avatarBlob) {
-          const path = user.id + '/' + Date.now() + '_avatar.jpg';
-          const { error: avErr } = await this.supabase.storage.from('avatars').upload(path, this.avatarBlob, { upsert: true, contentType: 'image/jpeg' });
-          if (avErr) {
-            msg.className = 'mp-msg err';
-            msg.textContent = 'Failed to upload profile picture: ' + avErr.message;
-            return;
-          }
-          const { data: pubUrlData } = this.supabase.storage.from('avatars').getPublicUrl(path);
-          if (pubUrlData && pubUrlData.publicUrl) {
-            avatarUrl = pubUrlData.publicUrl;
-          }
+      if (this.avatarBlob) {
+        const path = user.id + '/' + Date.now() + '_avatar.jpg';
+        const { error: avErr } = await this.supabase.storage.from('avatars').upload(path, this.avatarBlob, { upsert: true, contentType: 'image/jpeg' });
+        if (avErr) {
+          msg.className = 'mp-msg err';
+          msg.textContent = 'Failed to upload profile picture: ' + avErr.message;
+          return;
         }
-
-      
+        const { data: pubUrlData } = this.supabase.storage.from('avatars').getPublicUrl(path);
+        if (pubUrlData && pubUrlData.publicUrl) {
+          avatarUrl = pubUrlData.publicUrl;
+        }
+      }
 
       const patch = {
         id: user.id,
@@ -502,22 +522,13 @@
       } else if (avatarUrl) {
         patch.avatar_url = avatarUrl;
       }
-      
-      // Instant UI update for the header avatar
-      const avatarBtnInitials = document.getElementById('mpAvatarInitials');
-      const avatarBtnImg = document.getElementById('mpAvatarImg');
-      if (patch.avatar_url) {
-        if (avatarBtnImg) {
-          avatarBtnImg.src = patch.avatar_url;
-          avatarBtnImg.style.display = 'block';
-        }
-        if (avatarBtnInitials) avatarBtnInitials.style.display = 'none';
-      } else {
-        if (avatarBtnImg) avatarBtnImg.style.display = 'none';
-        if (avatarBtnInitials) {
-          avatarBtnInitials.style.display = 'flex';
-          avatarBtnInitials.textContent = (name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('') || '?';
-        }
+
+      if (window.MaranathaUserMenu) {
+        window.MaranathaUserMenu.render({
+          full_name: name,
+          avatar_url: patch.avatar_url || '',
+          email: user.email || ''
+        });
       }
 
       const res = await this.authCall(
@@ -531,10 +542,16 @@
         return;
       }
       this.profile = Object.assign({}, this.profile, patch);
+      const wasMandatory = !!this._mandatoryProfile;
+      this._mandatoryProfile = false;
       this.closeProfileEdit();
       if (this.profileComplete(this.profile)) {
-        this.showDash();
-        this.loadDashboard();
+        await this.loadDashboard();
+        if (!wasMandatory) {
+          this.openProfileView();
+        } else {
+          this.showDash();
+        }
       } else {
         this.renderDashboard();
       }
@@ -601,6 +618,14 @@
       this.renderDashboard();
       this.loadEvents();
       this.loadAnnouncements();
+
+      const viewParams = new URLSearchParams(window.location.search);
+      if (viewParams.get('view') === 'profile') {
+        viewParams.delete('view');
+        const qs = viewParams.toString();
+        history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
+        this.openProfileView();
+      }
     }
 
     /* ---------- Attendance: member check-in ---------- */
@@ -1057,33 +1082,37 @@
       const isLeader = this.profile.role === 'leader' || this.profile.role === 'section_leader' || this.profile.role === 'admin';
       const isAdmin = this.profile.role === 'admin';
 
-      $('mpGreet').textContent = 'Habari, ' + this.profile.full_name;
-      $('mpSub').textContent =
-        (this.profile.title ? this.profile.title + ' \u00b7 ' : '') +
-        'Signed in as ' + MemberPortal.roleLabel(this.profile.role);
-
-            const avatarBtnInitials = $('mpAvatarInitials');
-      const avatarBtnImg = $('mpAvatarImg');
-      if (this.profile.avatar_url) {
-        if (avatarBtnImg) {
-          avatarBtnImg.src = this.profile.avatar_url;
-          avatarBtnImg.style.display = 'block';
-        }
-        if (avatarBtnInitials) avatarBtnInitials.style.display = 'none';
-      } else {
-        if (avatarBtnImg) avatarBtnImg.style.display = 'none';
-        if (avatarBtnInitials) {
-          avatarBtnInitials.style.display = 'flex';
-          avatarBtnInitials.textContent = (this.profile.full_name || '?')
-            .split(/\s+/).filter(Boolean).slice(0, 2)
-            .map(w => w[0].toUpperCase()).join('') || '?';
-        }
+      if ($('mpGreet')) $('mpGreet').textContent = 'Habari, ' + this.profile.full_name;
+      if ($('mpSub')) {
+        $('mpSub').textContent =
+          (this.profile.title ? this.profile.title + ' \u00b7 ' : '') +
+          'Signed in as ' + MemberPortal.roleLabel(this.profile.role);
       }
-      
-      const globMenu = $('globalUserMenu');
-      if (globMenu) globMenu.style.display = 'inline-block';
 
-      
+      if (window.MaranathaUserMenu) {
+        window.MaranathaUserMenu.render(this.profile);
+      } else {
+        const avatarBtnInitials = $('mpAvatarInitials');
+        const avatarBtnImg = $('mpAvatarImg');
+        if (this.profile.avatar_url) {
+          if (avatarBtnImg) {
+            avatarBtnImg.src = this.profile.avatar_url;
+            avatarBtnImg.style.display = 'block';
+          }
+          if (avatarBtnInitials) avatarBtnInitials.style.display = 'none';
+        } else {
+          if (avatarBtnImg) avatarBtnImg.style.display = 'none';
+          if (avatarBtnInitials) {
+            avatarBtnInitials.style.display = 'flex';
+            avatarBtnInitials.textContent = (this.profile.full_name || '?')
+              .split(/\s+/).filter(Boolean).slice(0, 2)
+              .map(w => w[0].toUpperCase()).join('') || '?';
+          }
+        }
+        const globMenu = $('globalUserMenu');
+        if (globMenu) globMenu.style.display = 'inline-block';
+      }
+
       $('mpLeaderCard').hidden = !isLeader;
       $('mpLeaderWork').hidden = !isLeader;
       $('mpAdminCard').hidden = !isAdmin;
@@ -1242,19 +1271,19 @@
 
       const nextBox = $('mpNextEvent');
       const listBox = $('mpEvents');
-      if (!nextBox || !listBox) return;
-      nextBox.innerHTML = '';
+      if (!listBox) return;
+      if (nextBox) nextBox.innerHTML = '';
       listBox.innerHTML = '';
       const list = evs || [];
       if (!list.length) {
         const e = document.createElement('p');
         e.className = 'mp-empty';
         e.textContent = I18n.t('portal.noevents');
-        nextBox.appendChild(e);
-        listBox.appendChild(e.cloneNode(true));
+        if (nextBox) nextBox.appendChild(e.cloneNode(true));
+        listBox.appendChild(e);
         return;
       }
-      nextBox.appendChild(this.makeEventCard(list[0], mine[list[0].id]));
+      if (nextBox) nextBox.appendChild(this.makeEventCard(list[0], mine[list[0].id]));
       list.forEach(ev => listBox.appendChild(this.makeEventCard(ev, mine[ev.id])));
     }
 
@@ -2739,7 +2768,7 @@
 
     showAdminPopup(msg) {
       const p = document.createElement('div');
-      p.style.cssText = 'position:fixed;top:20px;right:20px;background:#ff9800;color:#fff;padding:15px 20px;border-radius:4px;box-shadow:0 4px 6px rgba(0,0,0,0.1);z-index:9999;font-weight:bold;cursor:pointer;opacity:0;transition:opacity 0.3s;';
+      p.style.cssText = 'position:fixed;top:20px;right:20px;background:#000000;color:#ffffff;padding:14px 18px;border:1px solid rgba(255,255,255,0.22);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:9999;font-weight:600;cursor:pointer;opacity:0;transition:opacity 0.3s;';
       p.textContent = msg;
       p.onclick = () => p.remove();
       document.body.appendChild(p);
@@ -2916,7 +2945,7 @@
           const linkHtml = `<br><a href="${pubUrlData.publicUrl}" target="_blank" class="mp-link" style="display:inline-block; margin-top:8px;">Pakua / Download Document</a>`;
           body += linkHtml;
           if (isPdf) {
-             body += `<details style="margin-top:12px; background:rgba(0,0,0,0.03); padding:8px; border-radius:8px; border:1px solid rgba(0,0,0,0.05);"><summary style="cursor:pointer; font-weight:bold; color:var(--al); outline:none;">Preview Document / Hakiki</summary><iframe src="${pubUrlData.publicUrl}" style="width:100%;height:500px;border:none;margin-top:12px;border-radius:4px;background:#fff;"></iframe></details>`;
+             body += `<details style="margin-top:12px; background:#F8F8F8; padding:10px; border-radius:8px; border:1px solid var(--line);"><summary style="cursor:pointer; font-weight:600; color:var(--ink); outline:none;">Preview Document / Hakiki</summary><iframe src="${pubUrlData.publicUrl}" style="width:100%;height:500px;border:none;margin-top:12px;border-radius:4px;background:#fff;"></iframe></details>`;
           }
         }
       }
@@ -2947,7 +2976,7 @@
 
     switchTab(view) {
       document.querySelectorAll('.mp-tab').forEach(x => x.classList.toggle('on', x.dataset.view === view));
-      document.querySelectorAll('.mp-form').forEach(f => f.classList.toggle('on', f.id === (view === 'signin' ? 'signinForm' : 'signupForm')));
+      document.querySelectorAll('#authView .mp-form').forEach(f => f.classList.toggle('on', f.id === (view === 'signin' ? 'signinForm' : 'signupForm')));
     }
 
     /* ---------- Wire up + boot ---------- */
@@ -2973,30 +3002,33 @@
       if (gBtn) gBtn.addEventListener('click', e => this.onGoogleSignIn(e));
       $('resetForm').addEventListener('submit', e => this.onResetPassword(e));
       $('pvOut').addEventListener('click', () => this.signOut());
-      
-      const menuBtn = $('mpUserMenuBtn');
-      const menuDrop = $('mpUserDropdown');
-      if (menuBtn && menuDrop) {
-        menuBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          menuDrop.style.display = menuDrop.style.display === 'none' || !menuDrop.style.display ? 'flex' : 'none';
+
+      if (!window.MaranathaUserMenu) {
+        const menuBtn = $('mpUserMenuBtn');
+        const menuDrop = $('mpUserDropdown');
+        if (menuBtn && menuDrop) {
+          menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menuDrop.style.display = menuDrop.style.display === 'none' || !menuDrop.style.display ? 'flex' : 'none';
+          });
+          document.addEventListener('click', (e) => {
+            if (!menuDrop.contains(e.target) && !menuBtn.contains(e.target)) {
+              menuDrop.style.display = 'none';
+            }
+          });
+        }
+        const menuProf = $('mpMenuProfile');
+        if (menuProf) menuProf.addEventListener('click', () => {
+          if (menuDrop) menuDrop.style.display = 'none';
+          this.openProfileView();
         });
-        document.addEventListener('click', (e) => {
-          if (!menuDrop.contains(e.target) && !menuBtn.contains(e.target)) {
-            menuDrop.style.display = 'none';
-          }
+        const menuLogout = $('mpMenuLogout');
+        if (menuLogout) menuLogout.addEventListener('click', () => {
+          if (menuDrop) menuDrop.style.display = 'none';
+          this.signOut();
         });
       }
-      const menuProf = $('mpMenuProfile');
-      if (menuProf) menuProf.addEventListener('click', () => {
-        if (menuDrop) menuDrop.style.display = 'none';
-        this.openProfileForm(false);
-      });
-      const menuLogout = $('mpMenuLogout');
-      if (menuLogout) menuLogout.addEventListener('click', () => {
-        if (menuDrop) menuDrop.style.display = 'none';
-        this.signOut();
-      });
+
       $('adminResourceForm').addEventListener('submit', e => this.addResource(e));
       $('adminInviteForm').addEventListener('submit', e => this.onInvite(e));
       const lrForm = $('lrForm');
@@ -3020,12 +3052,17 @@
       const repBtn = $('repBtn');
       if (repBtn) repBtn.addEventListener('click', () => this.loadReport());
       $('mpInviteCopy').addEventListener('click', () => this.copyInvite());
-            $('pfCancel').addEventListener('click', () => {
+      $('pfCancel').addEventListener('click', () => {
         this.closeProfileEdit();
-        this.showDash();
-        this.loadDashboard();
+        if (this.profileComplete(this.profile)) {
+          this.openProfileView();
+        } else {
+          this.showDash();
+          this.loadDashboard();
+        }
       });
-              if ($('pfOut')) $('pfOut').addEventListener('click', () => this.signOut());
+      if ($('pfBackToDash')) $('pfBackToDash').addEventListener('click', () => this.showDash());
+      if ($('pfOut')) $('pfOut').addEventListener('click', () => this.signOut());
       if ($('mpOut')) $('mpOut').addEventListener('click', () => this.signOut());
       if ($('mpEditProfile')) $('mpEditProfile').addEventListener('click', () => this.openProfileForm(false));
         
@@ -3116,7 +3153,7 @@
         return;
       }
 
-      this.supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+      this.supabase = window.__maranathaSb || (window.__maranathaSb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey));
 
       this.supabase.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_IN' || (event === 'INITIAL_SESSION' && session)) {
