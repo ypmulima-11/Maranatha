@@ -391,10 +391,10 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
 }
 .hbtns { display: flex; gap: 1rem; flex-wrap: wrap; }
 /* on dark grounds (hero + closing band) the pills invert */
-.hero .hbtns .bg, .ctaw .hbtns .bg { background: #fff; color: var(--ink); }
-.hero .hbtns .bg:hover, .ctaw .hbtns .bg:hover { background: #fff; color: #6B6B6B; }
-.hero .hbtns .bo, .ctaw .hbtns .bo { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .7); }
-.hero .hbtns .bo:hover, .ctaw .hbtns .bo:hover { background: #fff; color: var(--ink); border-color: #fff; }
+.hero .hbtns .bg { background: #fff; color: var(--ink); }
+.hero .hbtns .bg:hover { background: #fff; color: #6B6B6B; }
+.hero .hbtns .bo { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .7); }
+.hero .hbtns .bo:hover { background: #fff; color: var(--ink); border-color: #fff; }
 
 /* hero dot navigation */
 
@@ -607,7 +607,7 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
 /* =====================================================================
    FAMILIES & LEADERSHIP (Swahili)
    ===================================================================== */
-.famw { background: #fff; }
+.famw { background: #fff; border-top: 1px solid var(--line-2); }
 .famg { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
 .famc .card-b { padding: 2rem 1.75rem; }
 .famc h3 {
@@ -1009,16 +1009,17 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
 /* =====================================================================
    CTA BANNER — black, centred
    ===================================================================== */
-.ctaw { background: #000; }
+.ctaw { background: #fff; border-top: 1px solid var(--line-2); }
 .ctai { max-width: var(--container); margin: 0 auto; }
-.ctaw .stit { color: #fff; max-width: 22ch; }
-.ctaw .eyebrow, .ctaw .eyebrow .num { color: rgba(255, 255, 255, .72); }
-.ctaw .eyebrow::after { background: rgba(255, 255, 255, .2); }
-.ctaw .ssub { color: rgba(255, 255, 255, .78); margin-bottom: 2.25rem; max-width: 52ch; }
-.ctaw .bo { color: #fff; border-color: rgba(255, 255, 255, .7); }
-.ctaw .bo:hover { background: #fff; color: var(--ink); border-color: #fff; }
-.ctaw .bg { background: #fff; color: var(--ink); }
-.ctaw .bg { background: #fff; color: var(--ink); }
+.ctaw .stit { color: var(--ink); max-width: 22ch; }
+.ctaw .eyebrow { color: var(--ink-mute); }
+.ctaw .eyebrow .num { color: var(--ink); }
+.ctaw .eyebrow::after { background: var(--line-2); }
+.ctaw .ssub { color: var(--ink-mute); margin-bottom: 2.25rem; max-width: 52ch; }
+.ctaw .bo { color: var(--ink); border-color: var(--ink); }
+.ctaw .bo:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+.ctaw .bg { background: var(--ink); color: #fff; }
+.ctaw .bg { background: var(--ink); color: #fff; }
 .ctaw .bg:hover { background: #6B6B6B; color: #fff; }
 
 /* =====================================================================
@@ -1041,6 +1042,8 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
   transition: background var(--t), color var(--t), border-color var(--t);
 }
 .cosb:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+.cosb img, .sosic img { filter: none !important; opacity: .85 !important; transition: filter var(--t), opacity var(--t); }
+.cosb:hover img { filter: invert(1) !important; opacity: 1 !important; }
 
 .sos { margin-top: 2rem; }
 .sosl { font-size: .8125rem; color: var(--ink-mute); margin-bottom: .75rem; }
@@ -1078,29 +1081,29 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
    FOOTER — black block, white text, reference layout:
    mission statement -> 3 contact columns -> link row -> bottom bar
    ===================================================================== */
-footer { background: #000; color: #fff; }
+footer { background: var(--bg-alt); color: var(--ink); border-top: 1px solid var(--line); }
 .fwrap {
   max-width: var(--container); margin: 0 auto;
-  padding: 4.5rem var(--gut) 1.125rem;
+  padding: 4.25rem var(--gut) 2rem;
 }
 .ftr-mission {
-  font-size: 1.8rem; font-weight: 700; line-height: 1;
-  letter-spacing: -.02em; color: #fff;
+  font-size: clamp(1.65rem, 3vw, 2.35rem); font-weight: 700; line-height: 1.12;
+  letter-spacing: -.025em; color: var(--ink);
   max-width: 42ch;
 }
 .ftr-tag {
-  font-size: 1.25rem; font-weight: 700; line-height: 1;
-  color: #fff; margin-top: .875rem; max-width: 46ch;
+  font-size: 1rem; font-weight: 400; line-height: 1.5;
+  color: var(--ink-mute); margin-top: .65rem; max-width: 48ch;
 }
 .ftr-contact {
   display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem; margin-top: 3rem;
+  gap: 2rem; margin-top: 2.5rem; padding-top: 2.25rem; border-top: 1px solid var(--line-2);
 }
-.ftr-c { display: flex; flex-direction: column; gap: 24px; }
-.ftr-c h3 { font-size: 1.25rem; font-weight: 700; line-height: 1; color: #fff; }
+.ftr-c { display: flex; flex-direction: column; gap: .5rem; }
+.ftr-c h3 { font-size: .75rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; line-height: 1.2; color: var(--ink-mute); }
 .ftr-c a, .ftr-c address {
-  font-size: 1.125rem; font-weight: 300; line-height: 1.5;
-  color: #fff; font-style: normal;
+  font-size: 1rem; font-weight: 500; line-height: 1.55;
+  color: var(--ink); font-style: normal;
   width: fit-content; transition: opacity var(--t);
 }
 .ftr-c a:hover { opacity: .6; }
@@ -1108,47 +1111,49 @@ footer { background: #000; color: #fff; }
 .ftr-nav {
   display: flex; flex-wrap: wrap; gap: .5rem 1.75rem;
   margin-top: 3.5rem; padding-top: 1.75rem;
-  border-top: 1px solid rgba(255, 255, 255, .16);
+  margin-top: 2.75rem; padding-top: 1.75rem;
+  border-top: 1px solid var(--line-2);
 }
 .ftr-nav a {
-  font-size: .9375rem; color: rgba(255, 255, 255, .62);
+  font-size: .9375rem; color: var(--ink-mute);
   transition: color var(--t);
 }
-.ftr-nav a:hover { color: #fff; }
+.ftr-nav a:hover { color: var(--ink); }
 
-.fnews { border-top: 1px solid rgba(255, 255, 255, .16); }
+.fnews { border-top: 1px solid var(--line-2); }
 .fnews-in {
   max-width: var(--container); margin: 0 auto;
   padding: 2rem var(--gut);
   display: flex; align-items: center; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap;
 }
-.fnews h4 { font-size: 1.375rem; font-weight: 700; color: #fff; }
-.fnews p { font-size: .9375rem; color: rgba(255, 255, 255, .62); margin-top: .25rem; }
+.fnews h4 { font-size: 1.375rem; font-weight: 700; color: var(--ink); }
+.fnews p { font-size: .9375rem; color: var(--ink-mute); margin-top: .25rem; }
 .fnews-form { display: flex; gap: .75rem; align-items: flex-start; flex-wrap: wrap; flex: 1; justify-content: flex-end; }
 .fnews-form .fld { flex: 1; min-width: 240px; max-width: 340px; }
 .fnews-form input {
-  width: 100%; background: transparent;
-  border: 1px solid rgba(255, 255, 255, .3); border-radius: var(--pill);
-  padding: 14px 22px; color: #fff; font-size: 1rem; font-family: inherit; outline: none;
+  width: 100%; background: #fff;
+  border: 1px solid var(--line); border-radius: var(--pill);
+  padding: 14px 22px; color: var(--ink); font-size: 1rem; font-family: inherit; outline: none;
   transition: border-color var(--t);
 }
-.fnews-form input::placeholder { color: rgba(255, 255, 255, .5); }
-.fnews-form input:focus { border-color: #fff; }
-.fnews-form button { background: #fff; color: var(--ink); }
+.fnews-form input::placeholder { color: var(--ink-mute); }
+.fnews-form input:focus { border-color: var(--ink); }
+.fnews-form button { background: var(--ink); color: #fff; }
 .fnews-form button:hover { background: #6B6B6B; color: #fff; }
 .fnews-form .form-ok { flex-basis: 100%; }
 
 .fbot {
   max-width: var(--container); margin: 0 auto;
-  padding: 2rem var(--gut) 4.5rem;
+  padding: 1.75rem var(--gut) 2.75rem;
+  border-top: 1px solid var(--line-2);
   display: flex; align-items: center; justify-content: space-between;
   gap: 1.5rem; flex-wrap: wrap;
 }
 .fbot .coso { margin-top: 0; }
 .fbot span {
-  font-size: .8rem; color: rgba(255, 255, 255, .5);
+  font-size: .8125rem; color: var(--ink-mute);
 }
-.fbot a { color: #fff; }
+.fbot a { color: var(--ink); font-weight: 500; }
 .fbot a:hover { opacity: .7; }
 
 /* =====================================================================

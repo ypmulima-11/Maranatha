@@ -16,11 +16,11 @@
 
 [hidden] { display: none !important; }
 
-.mpw { background: var(--bg); }
+.mpw { background: #fff; border-top: 1px solid var(--line-2, rgba(0, 0, 0, .08)); }
 
 .mp-app {
   font-family: var(--sans);
-  background: var(--bg);
+  background: transparent;
   color: var(--ink);
   font-size: 14px;
   line-height: 1.55;
