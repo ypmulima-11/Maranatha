@@ -155,7 +155,13 @@
         hbg.style.backgroundImage = 'none';
 
         let slidesData = list.slice();
-        const startSrc = hbg.dataset.startSrc;
+        let startSrc = hbg.dataset.startSrc;
+        if (!startSrc) {
+          const phead = hbg.closest('.phead');
+          const styleAttr = phead ? (phead.getAttribute('style') || '') : '';
+          const m = styleAttr.match(/--phead-img\s*:\s*url\(['"]?([^'")]+)['"]?\)/i);
+          if (m && m[1]) startSrc = m[1];
+        }
         if (startSrc) {
           const idx = slidesData.findIndex(item => item.src === startSrc);
           if (idx > 0) {

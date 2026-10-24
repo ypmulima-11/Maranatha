@@ -203,9 +203,9 @@ button { font-family: inherit; }
    HEADER — transparent, over the hero, with a hairline rule
    ===================================================================== */
 .tb {
-  position: absolute; top: 0; left: 0; right: 0; z-index: 60;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 62;
   display: flex; align-items: center; justify-content: space-between;
-  padding: .9rem var(--gut);
+  padding: .75rem var(--gut);
   font-size: .75rem; color: rgba(255, 255, 255, .82);
 }
 .tb-mail { display: inline-flex; align-items: center; gap: .5rem; }
@@ -229,19 +229,16 @@ nav {
   background: transparent;
   display: flex; align-items: center; justify-content: space-between;
   gap: 2rem;
-  padding: 3.6rem var(--gut) 1.1rem;
+  padding: 2.9rem var(--gut) 1rem;
   /* the transparent pad above the nav sits over the top bar — it must not
      swallow clicks on the email link or the EN/SW toggle */
   pointer-events: none;
-  transition: background var(--t) var(--ease), padding var(--t) var(--ease);
+  transition: background var(--t) var(--ease);
 }
 nav.scrolled {
   background: rgba(24, 24, 22, .96);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  pointer-events: auto;
 }
 /* wordmark — uppercase text, no image (reference uses a wide wordmark) */
 .brand {
@@ -264,7 +261,7 @@ nav.scrolled {
 .nl a.active { opacity: .6; }
 .nl a.nc-cta { opacity: 1; color: var(--ink); }
 .nl a.nc-cta:hover { opacity: 1; background: #D9D9D4; color: var(--ink); }
-nav .nb, nav .nl { border-bottom: 0; pointer-events: auto; }
+nav > * { border-bottom: 0; pointer-events: auto; }
 nav::after {
   content: ''; position: absolute; left: var(--gut); right: var(--gut); bottom: 0;
   height: 1px; background: rgba(255, 255, 255, .5);
@@ -1367,13 +1364,7 @@ footer .cosb:hover img { filter: none !important; opacity: 1 !important; }
   overflow: hidden;
   padding: 12rem var(--gut) 4.5rem;
 }
-.phead::before {
-  content: ''; position: absolute; inset: 0; z-index: 0;
-  background-image: var(--phead-img);
-  background-position: center; background-size: cover; background-repeat: no-repeat;
-  animation: kenburns 22s linear forwards;
-}
-.phead:has(.hbg)::before { display: none; }
+.phead::before { display: none; }
 .phead::after {
   content: ''; position: absolute; inset: 0; z-index: 1;
   background: #000; opacity: .5;
@@ -1408,7 +1399,7 @@ footer .cosb:hover img { filter: none !important; opacity: 1 !important; }
   .nl { display: none; }
   .nm-btn { display: flex; }
   .nb { flex: 1; }
-  nav:not(.scrolled) { padding-top: 4.5rem; }
+  nav { padding-top: 2.8rem; }
   .ag, .cog, .jog { grid-template-columns: 1fr; }
   .avis { aspect-ratio: 16 / 10; }
   .hero { min-height: 88vh; }
