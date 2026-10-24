@@ -344,7 +344,6 @@ nav.scrolled::after { background: rgba(255, 255, 255, .22); }
   opacity: 0;
   transition: opacity 1.6s var(--ease);
 }
-.hbg > div:first-child { opacity: 1; }
 .hbg > div.is-on { opacity: 1; }
 /* slow drift so the stills feel alive, as a video would */
 .hbg > div.is-on { animation: kenburns 9s linear forwards; }
@@ -1371,6 +1370,7 @@ footer .cosb:hover img { filter: none !important; opacity: 1 !important; }
   background-position: center; background-size: cover; background-repeat: no-repeat;
   animation: kenburns 22s linear forwards;
 }
+.phead:has(.hbg)::before { display: none; }
 .phead::after {
   content: ''; position: absolute; inset: 0; z-index: 1;
   background: #000; opacity: .5;

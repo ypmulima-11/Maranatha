@@ -133,7 +133,20 @@
 
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      document.querySelectorAll('.hero .hbg').forEach(hbg => {
+      // Ensure inner-page headers (.phead) also have a .hbg slideshow container
+      document.querySelectorAll('.phead').forEach(phead => {
+        if (!phead.querySelector('.hbg')) {
+          const hbg = document.createElement('div');
+          hbg.className = 'hbg';
+          hbg.setAttribute('aria-hidden', 'true');
+          const styleAttr = phead.getAttribute('style') || '';
+          const m = styleAttr.match(/--phead-img\s*:\s*url\(['"]?([^'")]+)['"]?\)/i);
+          if (m && m[1]) hbg.dataset.startSrc = m[1];
+          phead.insertBefore(hbg, phead.firstChild);
+        }
+      });
+
+      document.querySelectorAll('.hero .hbg, .phead .hbg').forEach(hbg => {
         if (hbg.dataset.rendered === 'true') {
           hbg.replaceChildren();
           if (hbg.slideshowInterval) { clearInterval(hbg.slideshowInterval); hbg.slideshowInterval = null; }
@@ -141,7 +154,18 @@
         hbg.dataset.rendered = 'true';
         hbg.style.backgroundImage = 'none';
 
-        const slides = list.map(item => {
+        let slidesData = list.slice();
+        const startSrc = hbg.dataset.startSrc;
+        if (startSrc) {
+          const idx = slidesData.findIndex(item => item.src === startSrc);
+          if (idx > 0) {
+            slidesData = slidesData.slice(idx).concat(slidesData.slice(0, idx));
+          } else if (idx === -1) {
+            slidesData.unshift({ src: startSrc, cap: 'Maranatha Choir' });
+          }
+        }
+
+        const slides = slidesData.map(item => {
           const slide = document.createElement('div');
           slide.style.backgroundImage = `url('${item.src}')`;
           slide.setAttribute('role', 'img');
