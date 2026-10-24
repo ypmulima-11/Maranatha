@@ -225,7 +225,7 @@ button { font-family: inherit; }
 .tblang span { color: rgba(255, 255, 255, .3); }
 
 nav {
-  position: absolute; top: 0; left: 0; right: 0; z-index: 61;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 61;
   background: transparent;
   display: flex; align-items: center; justify-content: space-between;
   gap: 2rem;
@@ -236,9 +236,12 @@ nav {
   transition: background var(--t) var(--ease), padding var(--t) var(--ease);
 }
 nav.scrolled {
-  background: #000;
+  background: rgba(24, 24, 22, .96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding-top: 1rem;
   padding-bottom: 1rem;
+  pointer-events: auto;
 }
 /* wordmark — uppercase text, no image (reference uses a wide wordmark) */
 .brand {
@@ -260,7 +263,7 @@ nav.scrolled {
 .nl a:hover { opacity: .68; }
 .nl a.active { opacity: .6; }
 .nl a.nc-cta { opacity: 1; color: var(--ink); }
-.nl a.nc-cta:hover { opacity: 1; background: var(--ink); color: #fff; }
+.nl a.nc-cta:hover { opacity: 1; background: #D9D9D4; color: var(--ink); }
 nav .nb, nav .nl { border-bottom: 0; pointer-events: auto; }
 nav::after {
   content: ''; position: absolute; left: var(--gut); right: var(--gut); bottom: 0;
@@ -1405,7 +1408,7 @@ footer .cosb:hover img { filter: none !important; opacity: 1 !important; }
   .nl { display: none; }
   .nm-btn { display: flex; }
   .nb { flex: 1; }
-  nav { padding-top: 4.5rem; }
+  nav:not(.scrolled) { padding-top: 4.5rem; }
   .ag, .cog, .jog { grid-template-columns: 1fr; }
   .avis { aspect-ratio: 16 / 10; }
   .hero { min-height: 88vh; }
