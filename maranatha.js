@@ -518,7 +518,55 @@ if (item.video) {
       this.nmBtn.setAttribute('aria-expanded', 'false');
       this.nmBtn.setAttribute('aria-label', 'Open menu');
       document.documentElement.classList.remove('nav-open');
-      document.body.style.overflow = '';
+    }
+
+    syncActiveLinks() {
+      const currentPath = window.location.pathname.replace(/\/+$/, '');
+      const currentFile = currentPath.split('/').pop() || 'index.html';
+      const currentHash = window.location.hash;
+
+      const updateLinks = (container) => {
+        if (!container) return;
+        const links = [...container.querySelectorAll('a')];
+        let hasActive = false;
+
+        // Pass 1: If current URL has a hash, prefer matching href with that hash
+        if (currentHash) {
+          links.forEach(a => {
+            const href = a.getAttribute('href') || '';
+            if (href.includes('#')) {
+              const [hrefPath, hrefHash] = href.split('#');
+              const hrefFile = hrefPath ? hrefPath.split('/').pop() : '';
+              const pathMatches = !hrefFile || hrefFile === currentFile || (currentFile === '' && hrefFile === 'index.html');
+              if ('#' + hrefHash === currentHash && pathMatches) {
+                a.classList.add('active');
+                hasActive = true;
+              } else {
+                a.classList.remove('active');
+              }
+            }
+          });
+        }
+
+        // Pass 2: If no hash matched, match by page file
+        if (!hasActive) {
+          links.forEach(a => {
+            const href = a.getAttribute('href') || '';
+            const hrefFile = href.split('#')[0].split('/').pop();
+            const isMatch = (hrefFile === currentFile) ||
+              ((currentFile === '' || currentFile === 'index.html') && (hrefFile === 'index.html' || href === '/' || href === 'index.html'));
+            if (isMatch && !hasActive && !href.includes('#')) {
+              a.classList.add('active');
+              hasActive = true;
+            } else if (!href.includes('#')) {
+              a.classList.remove('active');
+            }
+          });
+        }
+      };
+
+      updateLinks(this.nmMenu);
+      updateLinks(document.querySelector('.nl'));
     }
 
     bindMenu() {
@@ -527,10 +575,12 @@ if (item.video) {
         e.stopPropagation();
         const open = this.nmMenu.classList.toggle('open');
         this.nmBtn.classList.toggle('open', open);
-        this.nmBtn.setAttribute('aria-expanded', open);
+        this.nmBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
         this.nmBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
         document.documentElement.classList.toggle('nav-open', open);
-        document.body.style.overflow = open ? 'hidden' : '';
+        if (open) {
+          this.syncActiveLinks();
+        }
       });
       this.nmMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => this.closeMenu()));
       const nmClose = El.get('nmClose');
@@ -540,6 +590,15 @@ if (item.video) {
           this.closeMenu();
         }
       });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.nmMenu.classList.contains('open')) {
+          this.closeMenu();
+        }
+      });
+
+      this.syncActiveLinks();
+      window.addEventListener('hashchange', () => this.syncActiveLinks());
+      window.addEventListener('popstate', () => this.syncActiveLinks());
     }
 
     bindLanguage() {
