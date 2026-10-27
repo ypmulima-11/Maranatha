@@ -57,6 +57,11 @@
 
   --t: .18s;
   --ease: cubic-bezier(.33, 0, .19, 1);
+
+  /* ---- header ---- */
+  --tb-h: 38px;
+  --header-bg: rgba(18, 18, 16, 0.75);
+  --header-backdrop: blur(14px) saturate(140%);
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -200,19 +205,24 @@ button { font-family: inherit; }
 .tlink .ic { width: 18px; height: 18px; }
 
 /* =====================================================================
-   HEADER — transparent, over the hero, with a hairline rule
+   HEADER — Unified semi-transparent bar with shared background color
    ===================================================================== */
 .tb {
   position: fixed; top: 0; left: 0; right: 0; z-index: 62;
+  height: var(--tb-h);
+  box-sizing: border-box;
   display: flex; align-items: center; justify-content: space-between;
-  padding: .75rem var(--gut);
+  padding: 0 var(--gut);
   font-size: .75rem; color: rgba(255, 255, 255, .82);
+  background: var(--header-bg);
+  backdrop-filter: var(--header-backdrop);
+  -webkit-backdrop-filter: var(--header-backdrop);
   transition: background var(--t) var(--ease), backdrop-filter var(--t) var(--ease);
 }
 .tb.scrolled {
-  background: rgba(18, 18, 16, 0.75);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: var(--header-bg);
+  backdrop-filter: var(--header-backdrop);
+  -webkit-backdrop-filter: var(--header-backdrop);
 }
 .tb-mail { display: inline-flex; align-items: center; gap: .5rem; }
 .tb a { transition: color var(--t); }
@@ -231,20 +241,20 @@ button { font-family: inherit; }
 .tblang span { color: rgba(255, 255, 255, .3); }
 
 nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 61;
-  background: transparent;
+  position: fixed; top: var(--tb-h); left: 0; right: 0; z-index: 61;
+  box-sizing: border-box;
+  background: var(--header-bg);
+  backdrop-filter: var(--header-backdrop);
+  -webkit-backdrop-filter: var(--header-backdrop);
   display: flex; align-items: center; justify-content: space-between;
   gap: 2rem;
-  padding: 2.9rem var(--gut) 1rem;
-  /* the transparent pad above the nav sits over the top bar — it must not
-     swallow clicks on the email link or the EN/SW toggle */
-  pointer-events: none;
+  padding: 0.75rem var(--gut) 0.95rem;
   transition: background var(--t) var(--ease), backdrop-filter var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
 nav.scrolled {
-  background: rgba(18, 18, 16, 0.75);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background: var(--header-bg);
+  backdrop-filter: var(--header-backdrop);
+  -webkit-backdrop-filter: var(--header-backdrop);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 /* wordmark — uppercase text, no image (reference uses a wide wordmark) */
@@ -276,14 +286,14 @@ nav::after {
 }
 nav.scrolled::after, body.member-mode nav::after { background: rgba(255, 255, 255, .22); }
 body.member-mode nav {
-  background: rgba(18, 18, 16, 0.85);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background: var(--header-bg);
+  backdrop-filter: var(--header-backdrop);
+  -webkit-backdrop-filter: var(--header-backdrop);
 }
 body.member-mode .tb {
-  background: rgba(18, 18, 16, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: var(--header-bg);
+  backdrop-filter: var(--header-backdrop);
+  -webkit-backdrop-filter: var(--header-backdrop);
 }
 
 /* ---------- Header User Profile Menu ---------- */
@@ -1514,7 +1524,7 @@ footer .cosb:hover img { filter: none !important; opacity: 1 !important; }
   nav:not(.has-user) .nav-end { display: none; }
   .nm-btn { display: flex; }
   .nb { flex: 1; }
-  nav { padding-top: 2.8rem; gap: .75rem; }
+  nav { padding: 0.65rem var(--gut) 0.75rem; gap: .75rem; }
   .ag, .cog, .jog { grid-template-columns: 1fr; }
   .avis { aspect-ratio: 16 / 10; }
   .hero { min-height: 88vh; }
@@ -1529,7 +1539,7 @@ footer .cosb:hover img { filter: none !important; opacity: 1 !important; }
 }
 
 @media (max-width: 640px) {
-  :root { --gut: 1.25rem; }
+  :root { --gut: 1.25rem; --tb-h: 32px; }
   .tb { font-size: .6875rem; }
   .tb-mail { display: none; }
   .tb { justify-content: flex-end; }

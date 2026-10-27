@@ -102,9 +102,11 @@
 
     syncHeaderHeight() {
       const nav = document.querySelector('nav');
-      if (nav && nav.offsetHeight > 0) {
-        document.documentElement.style.setProperty('--mp-header-h', nav.offsetHeight + 'px');
-      }
+      const tb = document.querySelector('.tb');
+      const navH = (nav && nav.offsetHeight) || 0;
+      const tbH = (tb && tb.offsetHeight) || 0;
+      const total = (navH + tbH) || 88;
+      document.documentElement.style.setProperty('--mp-header-h', total + 'px');
     }
 
     toggleMobileSidebar(forceOpen) {
