@@ -1098,7 +1098,11 @@ if (item.video) {
 
   class GlobalUserMenu {
     static CACHE_KEY = 'maranatha_user_cache';
+    static IDLE_MS = 15 * 60 * 1000;
     static _bound = false;
+    static _idleTimer = null;
+    static isLoggedIn = false;
+    static lastActive = Date.now();
 
     static computeInitials(name, email) {
       const src = (name || '').trim();
@@ -1113,29 +1117,47 @@ if (item.video) {
       return em ? em.substring(0, 2).toUpperCase() : 'MC';
     }
 
-    static render(userData) {
+    static getCachedUser() {
+      try {
+        const cached = localStorage.getItem(this.CACHE_KEY);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && typeof parsed === 'object') return parsed;
+        }
+      } catch (e) { /* ignore */ }
+      return null;
+    }
+
+    static updateActionLabel(isLoggedIn) {
+      this.isLoggedIn = !!isLoggedIn;
+      const outBtn = El.get('mpMenuLogout');
+      if (outBtn) {
+        outBtn.textContent = this.isLoggedIn ? 'Log out' : 'Log in';
+        outBtn.dataset.authState = this.isLoggedIn ? 'logged-in' : 'logged-out';
+      }
+    }
+
+    static render(userData, isLoggedIn = true) {
       const menu = El.get('globalUserMenu');
       const nav = document.querySelector('nav');
       if (!menu) return;
-      if (!userData) {
-        this.hide();
-        return;
-      }
 
-      menu.style.display = 'inline-block';
+      const effectiveUser = userData || this.getCachedUser() || { full_name: '', avatar_url: '', email: '' };
+
+      menu.style.display = 'inline-flex';
       if (nav) nav.classList.add('has-user');
 
       const initialsEl = El.get('mpAvatarInitials');
       const imgEl = El.get('mpAvatarImg');
-      const initials = this.computeInitials(userData.full_name, userData.email);
+      const initials = this.computeInitials(effectiveUser.full_name, effectiveUser.email);
       if (initialsEl) initialsEl.textContent = initials;
 
-      if (userData.avatar_url && imgEl) {
+      if (effectiveUser.avatar_url && imgEl) {
         imgEl.onerror = () => {
           imgEl.style.display = 'none';
           if (initialsEl) initialsEl.style.display = 'flex';
         };
-        imgEl.src = userData.avatar_url;
+        imgEl.src = effectiveUser.avatar_url;
         imgEl.style.display = 'block';
         if (initialsEl) initialsEl.style.display = 'none';
       } else {
@@ -1146,25 +1168,26 @@ if (item.video) {
         if (initialsEl) initialsEl.style.display = 'flex';
       }
 
-      try {
-        localStorage.setItem(this.CACHE_KEY, JSON.stringify({
-          full_name: userData.full_name || '',
-          avatar_url: userData.avatar_url || '',
-          email: userData.email || ''
-        }));
-      } catch (e) { /* ignore storage errors */ }
+      this.updateActionLabel(isLoggedIn);
+
+      if (userData && (userData.full_name || userData.email || userData.avatar_url)) {
+        try {
+          localStorage.setItem(this.CACHE_KEY, JSON.stringify({
+            full_name: userData.full_name || '',
+            avatar_url: userData.avatar_url || '',
+            email: userData.email || ''
+          }));
+        } catch (e) { /* ignore storage errors */ }
+      }
+    }
+
+    static setLoggedOut() {
+      this.closeDropdown();
+      this.render(this.getCachedUser(), false);
     }
 
     static hide() {
-      const menu = El.get('globalUserMenu');
-      const dd = El.get('mpUserDropdown');
-      const btn = El.get('mpUserMenuBtn');
-      const nav = document.querySelector('nav');
-      if (menu) menu.style.display = 'none';
-      if (dd) dd.style.display = 'none';
-      if (btn) btn.setAttribute('aria-expanded', 'false');
-      if (nav) nav.classList.remove('has-user');
-      try { localStorage.removeItem(this.CACHE_KEY); } catch (e) { /* ignore */ }
+      this.setLoggedOut();
     }
 
     static closeDropdown() {
@@ -1172,6 +1195,29 @@ if (item.video) {
       const btn = El.get('mpUserMenuBtn');
       if (dd) dd.style.display = 'none';
       if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+
+    static initIdleTimeout() {
+      if (this._idleTimer) return;
+      const bump = () => { this.lastActive = Date.now(); };
+      ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'].forEach(ev =>
+        window.addEventListener(ev, bump, { passive: true })
+      );
+      this.lastActive = Date.now();
+      this._idleTimer = setInterval(async () => {
+        if (!this.isLoggedIn) return;
+        if (Date.now() - this.lastActive > this.IDLE_MS) {
+          this.setLoggedOut();
+          if (window.portal && typeof window.portal.onIdleTimeout === 'function') {
+            window.portal.onIdleTimeout();
+            return;
+          }
+          const sb = getSbClient();
+          if (sb) {
+            try { await sb.auth.signOut(); } catch (e) { /* ignore */ }
+          }
+        }
+      }, 15000);
     }
 
     static bind() {
@@ -1201,6 +1247,14 @@ if (item.video) {
       if (profBtn) {
         profBtn.addEventListener('click', () => {
           this.closeDropdown();
+          if (!this.isLoggedIn) {
+            if (window.portal && typeof window.portal.openSignInView === 'function') {
+              window.portal.openSignInView('Please sign in to view your profile.');
+            } else {
+              window.location.href = 'members.html?view=signin#portal';
+            }
+            return;
+          }
           if (window.portal && typeof window.portal.openProfileView === 'function') {
             window.portal.openProfileView();
           } else {
@@ -1213,6 +1267,15 @@ if (item.video) {
       if (outBtn) {
         outBtn.addEventListener('click', async () => {
           this.closeDropdown();
+          if (!this.isLoggedIn) {
+            if (window.portal && typeof window.portal.openSignInView === 'function') {
+              window.portal.openSignInView();
+            } else {
+              window.location.href = 'members.html?view=signin#portal';
+            }
+            return;
+          }
+          this.setLoggedOut();
           if (window.portal && typeof window.portal.signOut === 'function') {
             await window.portal.signOut();
             return;
@@ -1221,21 +1284,24 @@ if (item.video) {
           if (sb) {
             try { await sb.auth.signOut(); } catch (e) { /* ignore */ }
           }
-          this.hide();
         });
       }
     }
 
     static async syncSession() {
       const sb = getSbClient();
-      if (!sb) return;
+      if (!sb) {
+        this.setLoggedOut();
+        return;
+      }
       try {
         const { data } = await sb.auth.getSession();
         const session = data && data.session;
         if (!session || !session.user) {
-          this.hide();
+          this.setLoggedOut();
           return;
         }
+        this.lastActive = Date.now();
         const user = session.user;
         const meta = user.user_metadata || {};
         let fullName = meta.full_name || meta.name || '';
@@ -1256,7 +1322,7 @@ if (item.video) {
           full_name: fullName,
           avatar_url: avatarUrl,
           email: user.email || ''
-        });
+        }, true);
       } catch (err) {
         console.warn('GlobalUserMenu sync:', err);
       }
@@ -1264,15 +1330,9 @@ if (item.video) {
 
     static init() {
       this.bind();
-      try {
-        const cached = localStorage.getItem(this.CACHE_KEY);
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed && (parsed.full_name || parsed.email || parsed.avatar_url)) {
-            this.render(parsed);
-          }
-        }
-      } catch (e) { /* ignore */ }
+      this.initIdleTimeout();
+      const cached = this.getCachedUser();
+      this.render(cached, false);
 
       this.syncSession();
 
@@ -1280,8 +1340,9 @@ if (item.video) {
       if (sb) {
         sb.auth.onAuthStateChange((event, session) => {
           if (event === 'SIGNED_OUT' || !session) {
-            this.hide();
+            this.setLoggedOut();
           } else if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+            this.lastActive = Date.now();
             this.syncSession();
           }
         });

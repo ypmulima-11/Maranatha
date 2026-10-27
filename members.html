@@ -25,16 +25,16 @@
 <meta name="twitter:image" content="https://ypmulima-11.github.io/Maranatha/images/og-cover.jpg">
 <link rel="icon" type="image/jpeg" href="images/choir-logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="maranatha.css?v=77">
+<link rel="stylesheet" href="maranatha.css?v=78">
 <link rel="stylesheet" href="ui.css?v=1">
-<link rel="stylesheet" href="members.css?v=34">
+<link rel="stylesheet" href="members.css?v=35">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <script src="supabase-config.js" defer></script>
   <script src="i18n.js?v=18" defer></script>
   <script src="qrcode.min.js" defer></script>
   <script src="ui.js?v=2" defer></script>
-<script src="maranatha.js?v=70" defer></script>
-<script src="members.js?v=30" defer></script>
+<script src="maranatha.js?v=71" defer></script>
+<script src="members.js?v=31" defer></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
@@ -70,16 +70,16 @@
       <a href="members.html" class="active" data-i18n="nav.members">Members</a>
       <a href="join.html" class="nc-cta" data-i18n="nav.join">Join Us</a>
     </div>
-    <div class="mp-user-menu-container" id="globalUserMenu" style="display:none;">
+    <div class="mp-user-menu-container" id="globalUserMenu">
       <button type="button" class="mp-user-avatar-btn" id="mpUserMenuBtn" aria-label="Member account menu" aria-expanded="false">
-        <span class="mp-avatar-initials" id="mpAvatarInitials"></span>
+        <span class="mp-avatar-initials" id="mpAvatarInitials">MC</span>
         <img src="" alt="" class="mp-avatar-img" id="mpAvatarImg" style="display:none;">
         <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
       <div class="mp-user-dropdown" id="mpUserDropdown" style="display:none;">
         <button type="button" id="mpMenuProfile">Profile</button>
         <hr>
-        <button type="button" id="mpMenuLogout">Log out</button>
+        <button type="button" id="mpMenuLogout">Log in</button>
       </div>
     </div>
   </div>
@@ -240,6 +240,12 @@
             <h1 id="pfTitle">Complete your profile</h1>
             <p class="mp-hint" id="pfSub">Please fill in these details — they help the leaders organise groups and celebrations.</p>
             <form class="mp-res-form" id="mpProfileForm" novalidate>
+              <div class="pf-progress" role="list" aria-label="Profile sections">
+                <div class="pf-step active" id="pfStep1" role="listitem">1. Personal details</div>
+                <div class="pf-step" id="pfStep2" role="listitem">2. Choir &amp; academic</div>
+                <div class="pf-step" id="pfStep3" role="listitem">3. Residence</div>
+              </div>
+
               <div class="pf-cat" id="pfCat1">
                 <h3 class="pf-cat-title">Personal details</h3>
                 <label class="mp-field"><span>Profile picture (optional)</span>
@@ -265,9 +271,15 @@
                     <input type="email" id="pfEmail" disabled>
                   </label>
                 </div>
+                <div class="pf-nav">
+                  <button type="button" class="mp-btn ghost" id="pfCancel">Cancel</button>
+                  <div class="pf-nav-end">
+                    <button type="button" class="mp-btn" id="pfNext1">Next</button>
+                  </div>
+                </div>
               </div>
 
-              <div class="pf-cat" id="pfCat2">
+              <div class="pf-cat" id="pfCat2" hidden>
                 <h3 class="pf-cat-title">Choir &amp; academic details</h3>
                 <div class="mp-two">
                   <label class="mp-field"><span>Voice part</span>
@@ -310,9 +322,15 @@
                     <input type="number" id="pfGradYear" min="1960" max="2026" placeholder="e.g. 2023">
                   </label>
                 </div>
+                <div class="pf-nav">
+                  <button type="button" class="mp-btn ghost" id="pfBack2">Back</button>
+                  <div class="pf-nav-end">
+                    <button type="button" class="mp-btn" id="pfNext2">Next</button>
+                  </div>
+                </div>
               </div>
 
-              <div class="pf-cat" id="pfCat3">
+              <div class="pf-cat" id="pfCat3" hidden>
                 <h3 class="pf-cat-title">Residence</h3>
                 <label class="mp-field"><span>Place of residence</span>
                   <select id="pfResType">
@@ -343,13 +361,15 @@
                     <input type="text" id="pfPlace" placeholder="e.g. Kigamboni, Mbezi Beach, Sinza...">
                   </label>
                 </div>
-                <div class="mp-msg" id="pfMsg" role="status"></div>
                 <div class="pf-nav">
-                  <button type="button" class="mp-btn ghost" id="pfCancel">Cancel</button>
-                  <button type="submit" class="mp-btn">Save profile</button>
-                  <button type="button" class="mp-btn ghost danger" id="pfOut" data-i18n="portal.signout">Sign out</button>
+                  <button type="button" class="mp-btn ghost" id="pfBack3">Back</button>
+                  <div class="pf-nav-end">
+                    <button type="submit" class="mp-btn">Save profile</button>
+                  </div>
                 </div>
               </div>
+
+              <div class="mp-msg" id="pfMsg" role="status"></div>
             </form>
           </div>
         </div>

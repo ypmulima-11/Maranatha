@@ -33,11 +33,32 @@
       $('profileView').hidden = true;
       $('authView').hidden = false;
       if (window.MaranathaUserMenu) {
-        window.MaranathaUserMenu.hide();
+        window.MaranathaUserMenu.setLoggedOut();
       } else {
         const globMenu = $('globalUserMenu');
-        if (globMenu) globMenu.style.display = 'none';
+        if (globMenu) globMenu.style.display = 'inline-flex';
+        const outBtn = $('mpMenuLogout');
+        if (outBtn) outBtn.textContent = 'Log in';
       }
+    }
+
+    openSignInView(promptMsg) {
+      this.setMemberMode(false);
+      this.showAuth();
+      this.switchTab('signin');
+      const msg = $('siMsg');
+      if (msg && promptMsg) {
+        msg.className = 'mp-msg';
+        msg.textContent = promptMsg;
+      }
+      const portalEl = $('portal') || $('authView');
+      if (portalEl) {
+        portalEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      setTimeout(() => {
+        const emailEl = $('siEmail');
+        if (emailEl) emailEl.focus({ preventScroll: true });
+      }, 250);
     }
 
     showDash() {
@@ -260,7 +281,12 @@
 
     async signOut() {
       this.profile = null;
-      await this.supabase.auth.signOut();
+      this.hasSession = false;
+      if (window.MaranathaUserMenu) window.MaranathaUserMenu.setLoggedOut();
+      if (this.supabase) {
+        try { await this.supabase.auth.signOut(); } catch (e) { /* ignore */ }
+      }
+      this.setMemberMode(false);
       this.showAuth();
     }
 
@@ -328,7 +354,11 @@
     }
 
     openProfileView() {
-      if (this.profile && !this.profileComplete(this.profile)) {
+      if (!this.hasSession || !this.profile) {
+        this.openSignInView('Please sign in to view your profile.');
+        return;
+      }
+      if (!this.profileComplete(this.profile)) {
         this.openProfileForm(true);
         return;
       }
@@ -340,6 +370,81 @@
       if ($('pfSummaryView')) $('pfSummaryView').hidden = false;
       if ($('pfEditWrap')) $('pfEditWrap').hidden = true;
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    setProfileStep(step) {
+      this.profileStep = step;
+      [1, 2, 3].forEach(n => {
+        const cat = $('pfCat' + n);
+        if (cat) cat.hidden = (n !== step);
+        const st = $('pfStep' + n);
+        if (st) {
+          st.classList.toggle('active', n === step);
+          st.classList.toggle('done', n < step);
+        }
+      });
+      const msg = $('pfMsg');
+      if (msg) {
+        msg.className = 'mp-msg';
+        msg.textContent = '';
+      }
+    }
+
+    validateProfileStep(step) {
+      const msg = $('pfMsg');
+      const fail = text => {
+        if (msg) {
+          msg.className = 'mp-msg err';
+          msg.textContent = text;
+        }
+        return false;
+      };
+      if (step === 1) {
+        const name = $('pfName').value.trim();
+        if (!name) {
+          $('pfName').focus();
+          return fail('Enter your full name.');
+        }
+        if (this._mandatoryProfile) {
+          if (!$('pfDob').value) {
+            $('pfDob').focus();
+            return fail('Enter your date of birth.');
+          }
+          if (!$('pfPhone').value.trim()) {
+            $('pfPhone').focus();
+            return fail('Enter your phone number.');
+          }
+        }
+        return true;
+      }
+      if (step === 2) {
+        const study = $('pfStudy').value;
+        if (this._mandatoryProfile && !study) {
+          $('pfStudy').focus();
+          return fail('Choose your study status.');
+        }
+        if (study === 'studying') {
+          if (!$('pfCourse').value.trim()) {
+            $('pfCourse').focus();
+            return fail('Enter the course you are studying.');
+          }
+          if (!$('pfUni').value) {
+            $('pfUni').focus();
+            return fail('Choose your university.');
+          }
+          if (!(parseInt($('pfExpGrad').value, 10) || null)) {
+            $('pfExpGrad').focus();
+            return fail('Enter your expected year of graduation.');
+          }
+        } else if (study === 'alumni') {
+          if (!(parseInt($('pfGradYear').value, 10) || null)) {
+            $('pfGradYear').focus();
+            return fail('Enter your year of graduation.');
+          }
+        }
+        return true;
+      }
+      return true;
     }
 
     openProfileForm(mandatory) {
@@ -375,8 +480,7 @@
       $('pfHall').value = (p.residence_type === 'campus') ? (p.residence || '') : '';
       $('pfPlace').value = (p.residence_type === 'off_campus') ? (p.residence || '') : '';
       this.syncProfileForm();
-      $('pfMsg').className = 'mp-msg';
-      $('pfMsg').textContent = '';
+      this.setProfileStep(1);
       
       this.avatarBlob = null;
       this.avatarDelete = false;
@@ -412,44 +516,44 @@
 
     async onSaveProfile(e) {
       e.preventDefault();
+      if (this.profileStep === 1) {
+        if (this.validateProfileStep(1)) this.setProfileStep(2);
+        return;
+      }
+      if (this.profileStep === 2) {
+        if (this.validateProfileStep(2)) this.setProfileStep(3);
+        return;
+      }
+      if (!this.validateProfileStep(1)) {
+        this.setProfileStep(1);
+        this.validateProfileStep(1);
+        return;
+      }
+      if (!this.validateProfileStep(2)) {
+        this.setProfileStep(2);
+        this.validateProfileStep(2);
+        return;
+      }
+
       const msg = $('pfMsg');
       const name = $('pfName').value.trim();
       const study = $('pfStudy').value;
       const resType = $('pfResType').value;
-
-      if (!name) {
-        msg.className = 'mp-msg err';
-        msg.textContent = 'Enter your full name.';
-        return;
-      }
 
       let course = '', university = '', expectedGrad = null, gradYear = null;
       if (study === 'studying') {
         course = $('pfCourse').value.trim();
         university = $('pfUni').value;
         expectedGrad = parseInt($('pfExpGrad').value, 10) || null;
-        if (!course) {
-          msg.className = 'mp-msg err';
-          msg.textContent = 'Enter the course you are studying.';
-          return;
-        }
-        if (!university) {
-          msg.className = 'mp-msg err';
-          msg.textContent = 'Choose your university.';
-          return;
-        }
-        if (!expectedGrad) {
-          msg.className = 'mp-msg err';
-          msg.textContent = 'Enter your expected year of graduation.';
-          return;
-        }
       } else if (study === 'alumni') {
         gradYear = parseInt($('pfGradYear').value, 10) || null;
-        if (!gradYear) {
-          msg.className = 'mp-msg err';
-          msg.textContent = 'Enter your year of graduation.';
-          return;
-        }
+      }
+
+      if (this._mandatoryProfile && !resType) {
+        msg.className = 'mp-msg err';
+        msg.textContent = 'Choose your place of residence.';
+        $('pfResType').focus();
+        return;
       }
 
       let residence = '';
@@ -3025,7 +3129,8 @@
         const menuLogout = $('mpMenuLogout');
         if (menuLogout) menuLogout.addEventListener('click', () => {
           if (menuDrop) menuDrop.style.display = 'none';
-          this.signOut();
+          if (this.hasSession) this.signOut();
+          else this.openSignInView();
         });
       }
 
@@ -3061,6 +3166,22 @@
           this.loadDashboard();
         }
       });
+      if ($('pfNext1')) {
+        $('pfNext1').addEventListener('click', () => {
+          if (this.validateProfileStep(1)) this.setProfileStep(2);
+        });
+      }
+      if ($('pfBack2')) {
+        $('pfBack2').addEventListener('click', () => this.setProfileStep(1));
+      }
+      if ($('pfNext2')) {
+        $('pfNext2').addEventListener('click', () => {
+          if (this.validateProfileStep(2)) this.setProfileStep(3);
+        });
+      }
+      if ($('pfBack3')) {
+        $('pfBack3').addEventListener('click', () => this.setProfileStep(2));
+      }
       if ($('pfBackToDash')) $('pfBackToDash').addEventListener('click', () => this.showDash());
       if ($('pfOut')) $('pfOut').addEventListener('click', () => this.signOut());
       if ($('mpOut')) $('mpOut').addEventListener('click', () => this.signOut());
@@ -3158,6 +3279,7 @@
       this.supabase.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_IN' || (event === 'INITIAL_SESSION' && session)) {
           this.hasSession = true;
+          this.lastActive = Date.now();
           this.setMemberMode(true);
           this.showDash();
           this.loadDashboard();
@@ -3165,6 +3287,14 @@
           this.hasSession = false;
           this.setMemberMode(false);
           this.showAuth();
+          const viewParams = new URLSearchParams(window.location.search);
+          const view = viewParams.get('view');
+          if (view === 'signin' || view === 'profile') {
+            viewParams.delete('view');
+            const qs = viewParams.toString();
+            history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
+            this.openSignInView(view === 'profile' ? 'Please sign in to view your profile.' : '');
+          }
         } else if (event === 'PASSWORD_RECOVERY') {
           this.hasSession = true;
           this.setMemberMode(true);
@@ -3175,12 +3305,30 @@
       this.initIdleTimeout();
     }
 
-    /* ---------- Auto sign-out after 10 min of inactivity ---------- */
+    /* ---------- Auto sign-out after 15 min of inactivity ---------- */
+
+    onIdleTimeout() {
+      if (!this.supabase || !this.hasSession) return;
+      this.hasSession = false;
+      this.profile = null;
+      const msg = $('siMsg');
+      if (msg) {
+        msg.className = 'mp-msg';
+        msg.textContent = this.pickLang(
+          'Signed out automatically after 15 minutes of inactivity.',
+          'Kutoka kiotomatiki baada ya dakika 15 bila shughuli.'
+        );
+      }
+      if (window.MaranathaUserMenu) window.MaranathaUserMenu.setLoggedOut();
+      this.supabase.auth.signOut();
+      this.setMemberMode(false);
+      this.showAuth();
+    }
 
     initIdleTimeout() {
-      const IDLE_MS = 10 * 60 * 1000;
+      const IDLE_MS = 15 * 60 * 1000;
       const bump = () => { this.lastActive = Date.now(); };
-      ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(ev =>
+      ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'].forEach(ev =>
         window.addEventListener(ev, bump, { passive: true })
       );
       this.lastActive = Date.now();
@@ -3188,18 +3336,9 @@
       setInterval(() => {
         if (!this.supabase || !this.hasSession) return;
         if (Date.now() - this.lastActive > IDLE_MS) {
-          this.hasSession = false;
-          const msg = $('siMsg');
-          if (msg) {
-            msg.className = 'mp-msg';
-            msg.textContent = this.pickLang(
-              'Signed out automatically after 10 minutes of inactivity.',
-              'Kutoka kiotomatiki baada ya dakika 10 bila shughuli.'
-            );
-          }
-          this.supabase.auth.signOut();
+          this.onIdleTimeout();
         }
-      }, 30000);
+      }, 15000);
     }
   }
 
