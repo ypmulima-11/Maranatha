@@ -313,6 +313,13 @@ body.member-mode .tb {
   text-transform: uppercase;
   line-height: 1;
   flex-shrink: 0;
+  overflow: hidden;
+}
+.mp-avatar-person-icon {
+  width: 30px;
+  height: 30px;
+  display: block;
+  flex-shrink: 0;
 }
 .mp-avatar-img {
   width: 34px;

@@ -1099,6 +1099,7 @@ if (item.video) {
   class GlobalUserMenu {
     static CACHE_KEY = 'maranatha_user_cache';
     static IDLE_MS = 15 * 60 * 1000;
+    static PERSON_ICON_SVG = '<svg class="mp-avatar-person-icon" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="9" r="3.6" fill="currentColor"/><path d="M5.2 19.33C6.5 16.1 9 14.4 12 14.4s5.5 1.7 6.8 4.93A10 10 0 0 1 5.2 19.33z" fill="currentColor"/></svg>';
     static _bound = false;
     static _idleTimer = null;
     static isLoggedIn = false;
@@ -1114,7 +1115,7 @@ if (item.video) {
         return src.substring(0, 2).toUpperCase();
       }
       const em = (email || '').trim();
-      return em ? em.substring(0, 2).toUpperCase() : 'MC';
+      return em ? em.substring(0, 2).toUpperCase() : '';
     }
 
     static getCachedUser() {
@@ -1142,22 +1143,41 @@ if (item.video) {
       const nav = document.querySelector('nav');
       if (!menu) return;
 
-      const effectiveUser = userData || this.getCachedUser() || { full_name: '', avatar_url: '', email: '' };
-
       menu.style.display = 'inline-flex';
       if (nav) nav.classList.add('has-user');
 
       const initialsEl = El.get('mpAvatarInitials');
       const imgEl = El.get('mpAvatarImg');
-      const initials = this.computeInitials(effectiveUser.full_name, effectiveUser.email);
-      if (initialsEl) initialsEl.textContent = initials;
 
-      if (effectiveUser.avatar_url && imgEl) {
+      this.updateActionLabel(isLoggedIn);
+
+      if (!isLoggedIn || !userData) {
+        if (imgEl) {
+          imgEl.removeAttribute('src');
+          imgEl.style.display = 'none';
+        }
+        if (initialsEl) {
+          initialsEl.innerHTML = this.PERSON_ICON_SVG;
+          initialsEl.style.display = 'flex';
+        }
+        return;
+      }
+
+      const initials = this.computeInitials(userData.full_name, userData.email);
+      if (initialsEl) {
+        if (initials) {
+          initialsEl.textContent = initials;
+        } else {
+          initialsEl.innerHTML = this.PERSON_ICON_SVG;
+        }
+      }
+
+      if (userData.avatar_url && imgEl) {
         imgEl.onerror = () => {
           imgEl.style.display = 'none';
           if (initialsEl) initialsEl.style.display = 'flex';
         };
-        imgEl.src = effectiveUser.avatar_url;
+        imgEl.src = userData.avatar_url;
         imgEl.style.display = 'block';
         if (initialsEl) initialsEl.style.display = 'none';
       } else {
@@ -1168,9 +1188,7 @@ if (item.video) {
         if (initialsEl) initialsEl.style.display = 'flex';
       }
 
-      this.updateActionLabel(isLoggedIn);
-
-      if (userData && (userData.full_name || userData.email || userData.avatar_url)) {
+      if (userData.full_name || userData.email || userData.avatar_url) {
         try {
           localStorage.setItem(this.CACHE_KEY, JSON.stringify({
             full_name: userData.full_name || '',
@@ -1183,7 +1201,8 @@ if (item.video) {
 
     static setLoggedOut() {
       this.closeDropdown();
-      this.render(this.getCachedUser(), false);
+      try { localStorage.removeItem(this.CACHE_KEY); } catch (e) { /* ignore */ }
+      this.render(null, false);
     }
 
     static hide() {
@@ -1332,7 +1351,23 @@ if (item.video) {
       this.bind();
       this.initIdleTimeout();
       const cached = this.getCachedUser();
-      this.render(cached, false);
+      if (cached && (cached.full_name || cached.email || cached.avatar_url)) {
+        this.render(cached, true);
+      } else {
+        this.render(null, false);
+      }
+
+      window.addEventListener('storage', e => {
+        if (e.key === this.CACHE_KEY) {
+          if (!e.newValue) {
+            this.render(null, false);
+          } else {
+            try {
+              this.render(JSON.parse(e.newValue), true);
+            } catch (err) { /* ignore */ }
+          }
+        }
+      });
 
       this.syncSession();
 

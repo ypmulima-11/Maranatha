@@ -16,6 +16,7 @@
       this.supabase = null;
       this.profile = null;
       this.resources = [];
+      this.activeSection = 'announcements';
     }
 
     /* ---------- View switching ---------- */
@@ -27,6 +28,7 @@
     }
 
     showAuth() {
+      this.closeMobileSidebar();
       $('dashView').hidden = true;
       $('resetView').hidden = true;
       $('pendingView').hidden = true;
@@ -37,6 +39,16 @@
       } else {
         const globMenu = $('globalUserMenu');
         if (globMenu) globMenu.style.display = 'inline-flex';
+        const initialsEl = $('mpAvatarInitials');
+        const imgEl = $('mpAvatarImg');
+        if (imgEl) {
+          imgEl.removeAttribute('src');
+          imgEl.style.display = 'none';
+        }
+        if (initialsEl) {
+          initialsEl.innerHTML = '<svg class="mp-avatar-person-icon" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="9" r="3.6" fill="currentColor"/><path d="M5.2 19.33C6.5 16.1 9 14.4 12 14.4s5.5 1.7 6.8 4.93A10 10 0 0 1 5.2 19.33z" fill="currentColor"/></svg>';
+          initialsEl.style.display = 'flex';
+        }
         const outBtn = $('mpMenuLogout');
         if (outBtn) outBtn.textContent = 'Log in';
       }
@@ -67,6 +79,7 @@
       $('pendingView').hidden = true;
       $('profileView').hidden = true;
       $('dashView').hidden = false;
+      this.syncHeaderHeight();
     }
 
     showReset() {
@@ -85,6 +98,71 @@
       $('pendingView').hidden = false;
     }
 
+    /* ---------- Sidebar navigation & layout helpers ---------- */
+
+    syncHeaderHeight() {
+      const nav = document.querySelector('nav');
+      if (nav && nav.offsetHeight > 0) {
+        document.documentElement.style.setProperty('--mp-header-h', nav.offsetHeight + 'px');
+      }
+    }
+
+    toggleMobileSidebar(forceOpen) {
+      const sidebar = $('mpSidebar');
+      const backdrop = $('mpSidebarBackdrop');
+      const toggleBtn = $('mpSidebarToggle');
+      if (!sidebar) return;
+      const open = typeof forceOpen === 'boolean' ? forceOpen : !sidebar.classList.contains('open');
+      sidebar.classList.toggle('open', open);
+      if (backdrop) backdrop.hidden = !open;
+      if (toggleBtn) toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    closeMobileSidebar() {
+      this.toggleMobileSidebar(false);
+    }
+
+    switchDashboardSection(sectionId) {
+      const role = this.profile ? this.profile.role : 'member';
+      const isLeader = role === 'leader' || role === 'section_leader' || role === 'admin';
+      const isAdmin = role === 'admin';
+
+      let target = sectionId || 'announcements';
+      if (target === 'leader-resources' && !isLeader) target = 'announcements';
+      if (target === 'admin-resources' && !isAdmin) target = 'announcements';
+      this.activeSection = target;
+
+      let activeLabel = '';
+      document.querySelectorAll('#mpSidebarNav .mp-side-link').forEach(btn => {
+        const isMatch = btn.dataset.section === target;
+        btn.classList.toggle('active', isMatch);
+        if (isMatch) {
+          btn.setAttribute('aria-current', 'page');
+          const span = btn.querySelector('span');
+          activeLabel = span ? span.textContent.trim() : btn.textContent.trim();
+        } else {
+          btn.removeAttribute('aria-current');
+        }
+      });
+
+      document.querySelectorAll('#mpMainContent .mp-dash-panel').forEach(panel => {
+        const isMatch = panel.dataset.panel === target;
+        panel.hidden = !isMatch;
+        panel.classList.toggle('active', isMatch);
+      });
+
+      const mobLabel = $('mpMobileActiveLabel');
+      if (mobLabel && activeLabel) {
+        mobLabel.textContent = activeLabel;
+      }
+
+      this.closeMobileSidebar();
+
+      if (window.scrollY > 120) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
     /* ---------- Hide public page content once signed in ---------- */
 
     setMemberMode(on) {
@@ -92,6 +170,7 @@
       document.querySelectorAll('.phead, .hero.ph, .msw, footer, #mpIntro').forEach(el => {
         el.style.display = on ? 'none' : '';
       });
+      this.syncHeaderHeight();
       if (on) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -282,12 +361,13 @@
     async signOut() {
       this.profile = null;
       this.hasSession = false;
+      this.activeSection = 'announcements';
       if (window.MaranathaUserMenu) window.MaranathaUserMenu.setLoggedOut();
+      this.setMemberMode(false);
+      this.showAuth();
       if (this.supabase) {
         try { await this.supabase.auth.signOut(); } catch (e) { /* ignore */ }
       }
-      this.setMemberMode(false);
-      this.showAuth();
     }
 
     /* ---------- Dashboard data ---------- */
@@ -741,6 +821,7 @@
       params.delete('code');
       const qs = params.toString();
       history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+      this.activeSection = 'attendance';
       const res = await this.supabase.rpc('check_in_with_code', { p_code: code });
       this.applyCheckInResult(res);
     }
@@ -1192,9 +1273,19 @@
           (this.profile.title ? this.profile.title + ' \u00b7 ' : '') +
           'Signed in as ' + MemberPortal.roleLabel(this.profile.role);
       }
+      if ($('mpSidebarUser')) {
+        $('mpSidebarUser').textContent = this.profile.full_name || 'Member';
+      }
+      if ($('mpSidebarRole')) {
+        $('mpSidebarRole').textContent =
+          (this.profile.title ? this.profile.title + ' \u00b7 ' : '') +
+          MemberPortal.roleLabel(this.profile.role);
+      }
+      if ($('mpSideLeader')) $('mpSideLeader').hidden = !isLeader;
+      if ($('mpSideAdmin')) $('mpSideAdmin').hidden = !isAdmin;
 
       if (window.MaranathaUserMenu) {
-        window.MaranathaUserMenu.render(this.profile);
+        window.MaranathaUserMenu.render(this.profile, true);
       } else {
         const avatarBtnInitials = $('mpAvatarInitials');
         const avatarBtnImg = $('mpAvatarImg');
@@ -1221,6 +1312,10 @@
       $('mpLeaderWork').hidden = !isLeader;
       $('mpAdminCard').hidden = !isAdmin;
       $('mpNavAdmin').hidden = !isAdmin;
+      $('mpSessCard').hidden = !isLeader;
+      $('mpPostCard').hidden = !isLeader;
+
+      this.switchDashboardSection(this.activeSection || 'announcements');
 
       if ($('mpProfile')) {
         $('mpProfile').innerHTML = '';
@@ -3186,6 +3281,22 @@
       if ($('pfOut')) $('pfOut').addEventListener('click', () => this.signOut());
       if ($('mpOut')) $('mpOut').addEventListener('click', () => this.signOut());
       if ($('mpEditProfile')) $('mpEditProfile').addEventListener('click', () => this.openProfileForm(false));
+
+      document.querySelectorAll('#mpSidebarNav .mp-side-link').forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.switchDashboardSection(btn.dataset.section);
+        });
+      });
+
+      if ($('mpSidebarToggle')) {
+        $('mpSidebarToggle').addEventListener('click', () => this.toggleMobileSidebar());
+      }
+      if ($('mpSidebarBackdrop')) {
+        $('mpSidebarBackdrop').addEventListener('click', () => this.closeMobileSidebar());
+      }
+
+      window.addEventListener('resize', () => this.syncHeaderHeight());
+      this.syncHeaderHeight();
         
         const avInput = $('pfAvatar');
         const cropModal = $('cropModal');
@@ -3345,6 +3456,7 @@
   const portal = new MemberPortal();
   window.MemberPortal = MemberPortal;
   window.portal = portal;
+  window.switchDashboardSection = sectionId => portal.switchDashboardSection(sectionId);
   portal.init();
 })();
 
