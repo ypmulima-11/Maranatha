@@ -1233,10 +1233,8 @@
       if (this.profile && this.profile.role === 'admin') {
         const del = document.createElement('button');
         del.type = 'button';
-        del.className = 'mp-btn small';
+        del.className = 'mp-btn small danger';
         del.style.marginTop = '12px';
-        del.style.backgroundColor = 'var(--err)';
-        del.style.color = '#fff';
         del.textContent = 'Delete';
         del.addEventListener('click', async () => {
           if (!window.confirm(`Delete resource: ${it.title}?`)) return;

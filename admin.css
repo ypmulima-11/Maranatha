@@ -330,10 +330,23 @@ input, select, textarea { font: inherit; }
 }
 .adm-row-title { font-weight: 700; font-size: 12.5px; color: var(--mut); text-transform: uppercase; letter-spacing: .05em; }
 .adm-del {
-  background: transparent; border: 1px solid rgba(217, 138, 138, 0.5); color: #b03a3a;
-  border-radius: 6px; padding: 3px 10px; font-size: 12px; cursor: pointer;
+  background: #C62828;
+  background-image: none;
+  border: 1px solid #C62828;
+  color: #FFFFFF;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background 0.18s ease;
 }
-.adm-del:hover { background: #fbefee; }
+.adm-del:hover {
+  background: #A61F1F;
+  background-image: none;
+  border-color: #A61F1F;
+  color: #FFFFFF;
+}
 
 .adm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 .adm-grid .full { grid-column: 1 / -1; }

@@ -551,8 +551,11 @@ if (item.video) {
 
     bindScroll() {
       const nav = document.querySelector('nav');
+      const tb = document.querySelector('.tb');
       const onScroll = () => {
-        if (nav) nav.classList.toggle('scrolled', window.scrollY > 10);
+        const isScrolled = window.scrollY > 10;
+        if (nav) nav.classList.toggle('scrolled', isScrolled);
+        if (tb) tb.classList.toggle('scrolled', isScrolled);
         const totop = El.get('totop');
         if (totop) totop.classList.toggle('show', window.scrollY > 500);
       };

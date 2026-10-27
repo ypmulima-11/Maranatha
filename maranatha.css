@@ -207,6 +207,12 @@ button { font-family: inherit; }
   display: flex; align-items: center; justify-content: space-between;
   padding: .75rem var(--gut);
   font-size: .75rem; color: rgba(255, 255, 255, .82);
+  transition: background var(--t) var(--ease), backdrop-filter var(--t) var(--ease);
+}
+.tb.scrolled {
+  background: rgba(18, 18, 16, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 .tb-mail { display: inline-flex; align-items: center; gap: .5rem; }
 .tb a { transition: color var(--t); }
@@ -233,12 +239,13 @@ nav {
   /* the transparent pad above the nav sits over the top bar — it must not
      swallow clicks on the email link or the EN/SW toggle */
   pointer-events: none;
-  transition: background var(--t) var(--ease);
+  transition: background var(--t) var(--ease), backdrop-filter var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
 nav.scrolled {
-  background: rgba(24, 24, 22, .96);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(18, 18, 16, 0.75);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 /* wordmark — uppercase text, no image (reference uses a wide wordmark) */
 .brand {
@@ -269,10 +276,14 @@ nav::after {
 }
 nav.scrolled::after, body.member-mode nav::after { background: rgba(255, 255, 255, .22); }
 body.member-mode nav {
-  background: #181816;
+  background: rgba(18, 18, 16, 0.85);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 body.member-mode .tb {
-  background: #181816;
+  background: rgba(18, 18, 16, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 /* ---------- Header User Profile Menu ---------- */
