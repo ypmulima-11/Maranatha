@@ -1401,38 +1401,70 @@
       const card = document.createElement('div');
       card.className = 'mp-item';
       const h = document.createElement('h3');
-      h.textContent = this.pickLang(ev.title_en, ev.title_sw) || 'Untitled';
+      h.textContent = ev._isScheduleEvent
+        ? (ev.title || 'Choir Event')
+        : (this.pickLang(ev.title_en, ev.title_sw) || ev.title || 'Untitled');
       card.appendChild(h);
       const d = document.createElement('div');
       d.className = 'mp-date';
-      d.textContent = this.fmtWhen(ev.start_time) + (ev.location ? ' \u00b7 ' + ev.location : '');
+      if (ev._isScheduleEvent) {
+        const dtLabel = ev.date
+          ? new Date(ev.date + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+          : '';
+        d.textContent = [dtLabel, ev.time, ev.place || ev.location].filter(Boolean).join(' \u00b7 ');
+      } else {
+        d.textContent = this.fmtWhen(ev.start_time) + (ev.location ? ' \u00b7 ' + ev.location : '');
+      }
       card.appendChild(d);
       if (ev.is_mandatory) {
         const m = document.createElement('div');
         m.className = 'mp-badge leader';
         m.textContent = I18n.t('portal.rsvp.mandatory');
         card.appendChild(m);
+      } else if (ev.tag || ev.event_type) {
+        const m = document.createElement('div');
+        m.className = 'mp-badge member';
+        m.textContent = ev.tag || MemberPortal.optLabel(ev.event_type);
+        card.appendChild(m);
       }
-      const desc = this.pickLang(ev.description_en, ev.description_sw);
+      const desc = ev._isScheduleEvent
+        ? (ev.notes || '')
+        : this.pickLang(ev.description_en, ev.description_sw);
       if (desc) {
         const p = document.createElement('p');
         p.textContent = desc;
         card.appendChild(p);
       }
-      const rw = document.createElement('div');
-      rw.className = 'mp-rsvp';
-      const lbl = document.createElement('span');
-      lbl.textContent = I18n.t('portal.rsvp') + ':';
-      rw.appendChild(lbl);
-      ['attending', 'not_attending', 'maybe'].forEach(s => {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'mp-btn small' + (mine === s ? ' on' : '');
-        b.textContent = I18n.t('portal.rsvp.' + s);
-        b.addEventListener('click', () => this.setRsvp(ev, s));
-        rw.appendChild(b);
-      });
-      card.appendChild(rw);
+      if (!ev._isScheduleEvent && ev.id) {
+        const rw = document.createElement('div');
+        rw.className = 'mp-rsvp';
+        const lbl = document.createElement('span');
+        lbl.textContent = I18n.t('portal.rsvp') + ':';
+        rw.appendChild(lbl);
+        ['attending', 'not_attending', 'maybe'].forEach(s => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'mp-btn small' + (mine === s ? ' on' : '');
+          b.textContent = I18n.t('portal.rsvp.' + s);
+          b.addEventListener('click', () => this.setRsvp(ev, s));
+          rw.appendChild(b);
+        });
+        card.appendChild(rw);
+      } else if (window.MaranathaEvents && typeof window.MaranathaEvents.buildCal === 'function') {
+        const calUrl = window.MaranathaEvents.buildCal(ev);
+        if (calUrl) {
+          const rw = document.createElement('div');
+          rw.className = 'mp-rsvp';
+          const calLink = document.createElement('a');
+          calLink.className = 'mp-btn small';
+          calLink.href = calUrl;
+          calLink.target = '_blank';
+          calLink.rel = 'noopener';
+          calLink.textContent = 'Add to Calendar';
+          rw.appendChild(calLink);
+          card.appendChild(rw);
+        }
+      }
       return card;
     }
 
@@ -1460,7 +1492,7 @@
         .select('*')
         .gte('start_time', new Date().toISOString())
         .order('start_time', { ascending: true })
-        .limit(20);
+        .limit(50);
       if (error) console.warn('events:', error);
 
       const { data: rsvps } = await this.supabase
@@ -1468,22 +1500,79 @@
       const mine = {};
       (rsvps || []).forEach(r => { mine[r.event_id] = r.status; });
 
+      // Consolidate database events + public schedule events so Upcoming Events & Member Directory show all upcoming events
+      const dbEvents = (evs || []).map(ev => ({
+        ...ev,
+        _sortDate: ev.start_time ? new Date(ev.start_time).toISOString().slice(0, 10) : '9999-12-31',
+        _isScheduleEvent: false
+      }));
+      const seenKeys = new Set(
+        dbEvents.map(ev => `${ev._sortDate}::${(ev.title_en || ev.title_sw || '').trim().toLowerCase()}`)
+      );
+
+      let scheduleEvents = [];
+      if (window.MaranathaEvents && typeof window.MaranathaEvents.getUpcoming === 'function') {
+        scheduleEvents = window.MaranathaEvents.getUpcoming();
+      }
+      if (!scheduleEvents.length) {
+        try {
+          const resp = await fetch('content.json', { cache: 'no-cache' });
+          if (resp.ok) {
+            const json = await resp.json();
+            if (json && Array.isArray(json.events)) {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              scheduleEvents = json.events.filter(ev => {
+                if (!ev || !ev.date) return false;
+                const d = new Date(ev.date + 'T00:00:00');
+                return !isNaN(d) && d >= today;
+              });
+            }
+          }
+        } catch (e) { /* ignore */ }
+      }
+
+      const merged = dbEvents.slice();
+      scheduleEvents.forEach(sev => {
+        if (!sev || !sev.date) return;
+        const key = `${String(sev.date).slice(0, 10)}::${(sev.title || '').trim().toLowerCase()}`;
+        if (seenKeys.has(key)) return;
+        seenKeys.add(key);
+        merged.push({
+          ...sev,
+          _sortDate: String(sev.date).slice(0, 10),
+          _isScheduleEvent: true
+        });
+      });
+
+      merged.sort((a, b) => (a._sortDate || '').localeCompare(b._sortDate || ''));
+
       const nextBox = $('mpNextEvent');
       const listBox = $('mpEvents');
-      if (!listBox) return;
+      const dirEvBox = $('dirEventsList');
       if (nextBox) nextBox.innerHTML = '';
-      listBox.innerHTML = '';
-      const list = evs || [];
-      if (!list.length) {
+      if (listBox) listBox.innerHTML = '';
+      if (dirEvBox) dirEvBox.innerHTML = '';
+
+      if (!merged.length) {
         const e = document.createElement('p');
         e.className = 'mp-empty';
         e.textContent = I18n.t('portal.noevents');
         if (nextBox) nextBox.appendChild(e.cloneNode(true));
-        listBox.appendChild(e);
+        if (listBox) listBox.appendChild(e.cloneNode(true));
+        if (dirEvBox) dirEvBox.appendChild(e);
         return;
       }
-      if (nextBox) nextBox.appendChild(this.makeEventCard(list[0], mine[list[0].id]));
-      list.forEach(ev => listBox.appendChild(this.makeEventCard(ev, mine[ev.id])));
+
+      if (nextBox) nextBox.appendChild(this.makeEventCard(merged[0], mine[merged[0].id]));
+      if (listBox) {
+        merged.forEach(ev => listBox.appendChild(this.makeEventCard(ev, mine[ev.id])));
+        this.applyViewMore(listBox, 'All Upcoming Events', 8);
+      }
+      if (dirEvBox) {
+        merged.forEach(ev => dirEvBox.appendChild(this.makeEventCard(ev, mine[ev.id])));
+        this.applyViewMore(dirEvBox, 'All Upcoming Events', 6);
+      }
     }
 
     /* ---------- Announcements ---------- */
@@ -2104,6 +2193,7 @@
       }
       msg.className = 'mp-msg';
       msg.textContent = 'Publishing\u2026';
+      const locVal = $('evLoc').value.trim();
       const { error } = await this.supabase.from('events').insert({
         title_en: titleEn,
         title_sw: $('evTitleSw').value.trim(),
@@ -2111,7 +2201,7 @@
         description_sw: $('evDescSw').value.trim(),
         event_type: $('evType').value,
         start_time: new Date(start).toISOString(),
-        location: $('evLoc').value.trim(),
+        location: locVal,
         is_mandatory: $('evMand').checked,
         created_by: this.profile.id
       });
@@ -2119,6 +2209,17 @@
         msg.className = 'mp-msg err';
         msg.textContent = error.message;
         return;
+      }
+      if (window.MaranathaNotifier && typeof window.MaranathaNotifier.broadcast === 'function') {
+        const whenStr = new Date(start).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        window.MaranathaNotifier.broadcast({
+          id: `portal-event:${titleEn}:${start}`,
+          type: 'event',
+          title: titleEn,
+          meta: `${whenStr} \u00b7 ${locVal || 'Kigali, Rwanda'}`,
+          href: 'members.html#msEventsWrap',
+          actionLabel: 'View Event'
+        });
       }
       ['evTitleEn', 'evTitleSw', 'evDescEn', 'evDescSw', 'evStart', 'evLoc'].forEach(id => { $(id).value = ''; });
       $('evMand').checked = false;
@@ -2140,10 +2241,11 @@
       }
       msg.className = 'mp-msg';
       msg.textContent = 'Publishing\u2026';
+      const bodyEn = $('anBodyEn').value.trim();
       const { error } = await this.supabase.from('announcements').insert({
         title_en: titleEn,
         title_sw: $('anTitleSw').value.trim(),
-        content_en: $('anBodyEn').value.trim(),
+        content_en: bodyEn,
         content_sw: $('anBodySw').value.trim(),
         is_pinned: $('anPin').checked,
         author_id: this.profile.id
@@ -2152,6 +2254,16 @@
         msg.className = 'mp-msg err';
         msg.textContent = error.message;
         return;
+      }
+      if (window.MaranathaNotifier && typeof window.MaranathaNotifier.broadcast === 'function') {
+        window.MaranathaNotifier.broadcast({
+          id: `portal-anno:${titleEn}:${Date.now()}`,
+          type: 'announcement',
+          title: titleEn,
+          meta: bodyEn ? bodyEn.slice(0, 95) + (bodyEn.length > 95 ? '\u2026' : '') : 'New announcement posted in the Member Portal.',
+          href: 'members.html#portal',
+          actionLabel: 'Read Notice'
+        });
       }
       ['anTitleEn', 'anTitleSw', 'anBodyEn', 'anBodySw'].forEach(id => { $(id).value = ''; });
       $('anPin').checked = false;

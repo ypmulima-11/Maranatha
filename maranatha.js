@@ -172,6 +172,10 @@
         }
 
         const slides = slidesData.map(item => {
+          if (item && item.src) {
+            const preload = new Image();
+            preload.src = item.src;
+          }
           const slide = document.createElement('div');
           slide.style.backgroundImage = `url('${item.src}')`;
           slide.setAttribute('role', 'img');
@@ -183,11 +187,23 @@
         let curr = 0;
         function go(next) {
           if (next === curr) return;
-          slides[curr].classList.remove('is-on');
+          const outgoing = slides[curr];
+          outgoing.classList.remove('is-on');
+          outgoing.classList.add('is-fading');
+          if (outgoing._fadeTimer) clearTimeout(outgoing._fadeTimer);
+          outgoing._fadeTimer = setTimeout(() => {
+            outgoing.classList.remove('is-fading');
+            outgoing._fadeTimer = null;
+          }, 1900);
+
           curr = (next + slides.length) % slides.length;
-          // restart the Ken Burns drift on the incoming slide
+          // restart the Ken Burns drift on the incoming slide while cross-fading smoothly
           const incoming = slides[curr];
-          incoming.classList.remove('is-on');
+          if (incoming._fadeTimer) {
+            clearTimeout(incoming._fadeTimer);
+            incoming._fadeTimer = null;
+          }
+          incoming.classList.remove('is-fading', 'is-on');
           void incoming.offsetWidth;
           incoming.classList.add('is-on');
         }
@@ -235,55 +251,130 @@
       }));
     }
 
-    renderEvents(list) {
-      const g = El.get('evList');
-      if (!g) return;
-      
+    static normalizeAndMergeEvents(baseList, dbRows) {
       const now = new Date();
       now.setHours(0, 0, 0, 0);
-      const twoMonthsFromNow = new Date(now);
-      twoMonthsFromNow.setMonth(now.getMonth() + 2);
+      const map = new Map();
 
-      const filteredList = list.filter(ev => {
-        if (!ev.date) return true;
-        const parts = ev.date.split('-');
-        if (parts.length !== 3) return true;
-        const d = new Date(parts[0], parts[1] - 1, parts[2]);
-        if (isNaN(d)) return true;
-        return d >= now && d <= twoMonthsFromNow;
+      (baseList || []).forEach(ev => {
+        if (!ev || !ev.date) return;
+        const dateStr = String(ev.date).slice(0, 10);
+        const key = `${dateStr}::${(ev.title || '').trim().toLowerCase()}`;
+        map.set(key, {
+          id: ev.id || key,
+          date: dateStr,
+          title: ev.title || 'Choir Event',
+          place: ev.place || ev.location || 'Kigali, Rwanda',
+          time: ev.time || '',
+          tag: ev.tag || ev.event_type || 'Event',
+          notes: ev.notes || '',
+          source: ev.source || 'schedule'
+        });
       });
 
-      if (filteredList.length === 0) {
-        g.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--mut);font-style:italic;">No upcoming events in the next two months.</p>';
-        return;
-      }
+      (dbRows || []).forEach(r => {
+        const rawTime = r && (r.start_time || r.starts_at);
+        if (!rawTime) return;
+        const dt = new Date(rawTime);
+        if (isNaN(dt)) return;
+        const pad = n => String(n).padStart(2, '0');
+        const dateStr = `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
+        const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        const titleVal = r.title || r.title_en || r.title_sw || 'Choir Event';
+        const key = `${dateStr}::${titleVal.trim().toLowerCase()}`;
+        const tagLabel = r.event_type
+          ? r.event_type.charAt(0).toUpperCase() + r.event_type.slice(1)
+          : 'Event';
+        map.set(key, {
+          id: r.id || key,
+          dbId: r.id || null,
+          starts_at: rawTime,
+          date: dateStr,
+          title: titleVal,
+          place: r.location || 'Kigali, Rwanda',
+          time: timeStr,
+          tag: tagLabel,
+          event_type: r.event_type || 'rehearsal',
+          notes: r.notes || r.description_en || '',
+          source: 'portal'
+        });
+      });
 
-      g.replaceChildren(...filteredList.map(ev => {
-        const d = El.parseDate(ev.date);
-        const card = El.make('div', 'evc');
-        const h = El.make('div', 'evh');
-        h.appendChild(El.make('span', 'evd', d.day));
-        const mi = El.make('div', 'evmi');
-        mi.appendChild(El.make('span', 'evm', d.month));
-        mi.appendChild(El.make('span', 'evy', d.year));
-        h.appendChild(mi);
-        card.appendChild(h);
-        const b = El.make('div', 'evb');
-        b.appendChild(El.make('div', 'evt', ev.title));
-        const mt = (ev.place || '') + (ev.time ? ' \u00b7 ' + ev.time : '');
-        b.appendChild(El.make('div', 'evmt', mt));
-        if (ev.tag) b.appendChild(El.make('span', 'evtg', ev.tag));
-        const cal = SectionRenderer.buildCal(ev);
-        if (cal) {
-          const a = El.make('a', 'evcal', 'Add to calendar');
-          a.href = cal;
-          a.target = '_blank';
-          a.rel = 'noopener';
-          b.appendChild(a);
+      return [...map.values()]
+        .filter(ev => {
+          const parts = (ev.date || '').split('-');
+          if (parts.length !== 3) return true;
+          const d = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+          return isNaN(d) || d >= now;
+        })
+        .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    }
+
+    buildEventCard(ev) {
+      const d = El.parseDate(ev.date);
+      const card = El.make('div', 'evc');
+      const h = El.make('div', 'evh');
+      h.appendChild(El.make('span', 'evd', d.day));
+      const mi = El.make('div', 'evmi');
+      mi.appendChild(El.make('span', 'evm', d.month));
+      mi.appendChild(El.make('span', 'evy', d.year));
+      h.appendChild(mi);
+      card.appendChild(h);
+      const b = El.make('div', 'evb');
+      b.appendChild(El.make('div', 'evt', ev.title));
+      const mt = (ev.place || '') + (ev.time ? ' \u00b7 ' + ev.time : '');
+      b.appendChild(El.make('div', 'evmt', mt));
+      if (ev.tag) b.appendChild(El.make('span', 'evtg', ev.tag));
+      const cal = SectionRenderer.buildCal(ev);
+      if (cal) {
+        const a = El.make('a', 'evcal', 'Add to calendar');
+        a.href = cal;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        b.appendChild(a);
+      }
+      card.appendChild(b);
+      return card;
+    }
+
+    renderEvents(list, dbRows = []) {
+      const merged = SectionRenderer.normalizeAndMergeEvents(list, dbRows);
+      this._lastEvents = merged;
+      window.MaranathaEvents = {
+        getBaseEvents: () => (list || []).slice(),
+        getUpcoming: () => (this._lastEvents || []).slice(),
+        normalizeAndMerge: (base, rows) => SectionRenderer.normalizeAndMergeEvents(base, rows),
+        buildCal: (ev) => SectionRenderer.buildCal(ev)
+      };
+
+      const targets = [El.get('evList'), El.get('msEventsList')].filter(Boolean);
+      if (!targets.length) return;
+
+      targets.forEach(container => {
+        if (merged.length === 0) {
+          container.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--ink-mute);font-style:italic;">No upcoming events scheduled at this time.</p>';
+          return;
         }
-        card.appendChild(b);
-        return card;
-      }));
+        container.replaceChildren(...merged.map(ev => this.buildEventCard(ev)));
+      });
+    }
+
+    async renderEventsLive(baseList) {
+      const sb = getSbClient();
+      if (!sb) return;
+      try {
+        const { data, error } = await sb
+          .from('events')
+          .select('*')
+          .gte('start_time', new Date(Date.now() - 86400000).toISOString())
+          .order('start_time', { ascending: true })
+          .limit(50);
+        if (!error && data && data.length) {
+          this.renderEvents(baseList, data);
+        }
+      } catch (e) {
+        /* ignore if events table requires auth or is empty */
+      }
     }
 
     static buildCal(ev) {
@@ -954,8 +1045,21 @@ if (item.video) {
       if (this.lbImg) {
         this.lbImg.style.display = video ? 'none' : '';
         if (!video && img) {
-          this.lbImg.src = img.src;
-          this.lbImg.alt = img.alt;
+          const nextSrc = img.src;
+          const nextAlt = img.alt;
+          if (this.lb && this.lb.classList.contains('open') && this.lbImg.src && this.lbImg.src !== nextSrc) {
+            this.lbImg.classList.add('is-switching');
+            setTimeout(() => {
+              this.lbImg.onload = () => this.lbImg.classList.remove('is-switching');
+              this.lbImg.src = nextSrc;
+              this.lbImg.alt = nextAlt;
+              if (this.lbImg.complete) this.lbImg.classList.remove('is-switching');
+            }, 180);
+          } else {
+            this.lbImg.classList.remove('is-switching');
+            this.lbImg.src = nextSrc;
+            this.lbImg.alt = nextAlt;
+          }
         }
       }
       if (this.lbCap) this.lbCap.textContent = (this.index + 1) + ' / ' + this.items.length;
@@ -1449,6 +1553,324 @@ if (item.video) {
 
   window.MaranathaUserMenu = GlobalUserMenu;
 
+  /* ---------- Smooth Image Fade Manager ---------- */
+
+  class ImageTransitionManager {
+    static enhanceImage(img) {
+      if (!img || img.dataset.fadeBound === 'true') return;
+      if (img.id === 'mpAvatarImg' || img.id === 'lbImg') return;
+      img.dataset.fadeBound = 'true';
+      img.classList.add('img-fade-ready');
+      const reveal = () => {
+        requestAnimationFrame(() => img.classList.add('img-fade-in'));
+      };
+      if (img.complete && img.naturalWidth > 0) {
+        reveal();
+      } else {
+        img.addEventListener('load', reveal, { once: true });
+        img.addEventListener('error', () => img.classList.add('img-fade-in'), { once: true });
+      }
+    }
+
+    static init() {
+      document.querySelectorAll('img').forEach(img => this.enhanceImage(img));
+      if ('MutationObserver' in window) {
+        const mo = new MutationObserver(mutations => {
+          mutations.forEach(m => {
+            m.addedNodes.forEach(node => {
+              if (node.nodeType !== 1) return;
+              if (node.tagName === 'IMG') {
+                this.enhanceImage(node);
+              } else if (node.querySelectorAll) {
+                node.querySelectorAll('img').forEach(img => this.enhanceImage(img));
+              }
+            });
+          });
+        });
+        mo.observe(document.body, { childList: true, subtree: true });
+      }
+    }
+  }
+
+  /* ---------- Pop-up Notification Feature (Announcements & Upcoming Events) ---------- */
+
+  class MaranathaNotifier {
+    static SEEN_KEY = 'maranatha_seen_notifications_v2';
+    static BROADCAST_KEY = 'maranatha_latest_broadcast_v1';
+    static SESSION_SHOWN_KEY = 'maranatha_session_notified_v2';
+    static wrap = null;
+
+    static ensureWrap() {
+      if (this.wrap && document.body.contains(this.wrap)) return this.wrap;
+      let w = document.getElementById('mnNotifyWrap');
+      if (!w) {
+        w = document.createElement('div');
+        w.id = 'mnNotifyWrap';
+        w.className = 'mn-notify-wrap';
+        w.setAttribute('aria-live', 'polite');
+        w.setAttribute('aria-atomic', 'false');
+        document.body.appendChild(w);
+      }
+      this.wrap = w;
+      return w;
+    }
+
+    static getSeen() {
+      try {
+        const raw = localStorage.getItem(this.SEEN_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return new Set(parsed);
+        }
+      } catch (e) { /* ignore */ }
+      return null;
+    }
+
+    static saveSeen(set) {
+      try {
+        const arr = [...set].slice(-250);
+        localStorage.setItem(this.SEEN_KEY, JSON.stringify(arr));
+      } catch (e) { /* ignore */ }
+    }
+
+    static markSeen(id) {
+      if (!id) return;
+      const seen = this.getSeen() || new Set();
+      seen.add(id);
+      this.saveSeen(seen);
+    }
+
+    static show(item) {
+      if (!item || !item.title) return;
+      const wrap = this.ensureWrap();
+      const id = item.id || `${item.type || 'notice'}:${item.title}`;
+
+      // Avoid duplicate cards with the same ID on screen
+      if (wrap.querySelector(`[data-notify-id="${CSS.escape(id)}"]`)) return;
+
+      const card = document.createElement('aside');
+      card.className = 'mn-notify-card';
+      card.dataset.notifyId = id;
+      card.setAttribute('role', 'status');
+
+      const isEvent = item.type === 'event';
+      const iconId = isEvent ? 'i-calendar' : 'i-bell';
+      const badgeText = isEvent ? 'New Upcoming Event' : 'New Announcement';
+
+      const head = document.createElement('div');
+      head.className = 'mn-notify-head';
+
+      const badge = document.createElement('span');
+      badge.className = 'mn-notify-badge';
+      badge.innerHTML = `<svg aria-hidden="true"><use href="assets/icons.svg#${iconId}"/></svg><span>${badgeText}</span>`;
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'mn-notify-close';
+      closeBtn.setAttribute('aria-label', 'Dismiss notification');
+      closeBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+      head.appendChild(badge);
+      head.appendChild(closeBtn);
+
+      const title = document.createElement('div');
+      title.className = 'mn-notify-title';
+      title.textContent = item.title;
+
+      const meta = document.createElement('div');
+      meta.className = 'mn-notify-meta';
+      meta.textContent = item.meta || '';
+
+      const actions = document.createElement('div');
+      actions.className = 'mn-notify-actions';
+
+      const link = document.createElement('a');
+      link.className = 'mn-notify-link';
+      link.href = item.href || (isEvent ? 'events.html' : 'index.html#news');
+      link.textContent = item.actionLabel || (isEvent ? 'View Event' : 'Read Update');
+
+      const dismissBtn = document.createElement('button');
+      dismissBtn.type = 'button';
+      dismissBtn.className = 'mn-notify-dismiss';
+      dismissBtn.textContent = 'Dismiss';
+
+      actions.appendChild(link);
+      actions.appendChild(dismissBtn);
+
+      card.appendChild(head);
+      card.appendChild(title);
+      if (item.meta) card.appendChild(meta);
+      card.appendChild(actions);
+
+      const dismiss = () => {
+        this.markSeen(id);
+        card.classList.remove('is-visible');
+        setTimeout(() => { if (card.parentNode) card.remove(); }, 380);
+      };
+
+      closeBtn.addEventListener('click', dismiss);
+      dismissBtn.addEventListener('click', dismiss);
+      link.addEventListener('click', () => this.markSeen(id));
+
+      wrap.appendChild(card);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => card.classList.add('is-visible'));
+      });
+
+      setTimeout(() => {
+        if (document.body.contains(card)) {
+          card.classList.remove('is-visible');
+          setTimeout(() => { if (card.parentNode) card.remove(); }, 380);
+        }
+      }, 12000);
+    }
+
+    static broadcast(item) {
+      if (!item || !item.title) return;
+      const payload = {
+        ...item,
+        id: item.id || `${item.type || 'notice'}:${item.title}:${Date.now()}`,
+        ts: Date.now()
+      };
+      this.show(payload);
+      try {
+        localStorage.setItem(this.BROADCAST_KEY, JSON.stringify(payload));
+      } catch (e) { /* ignore */ }
+    }
+
+    static checkContentUpdates(contentData, upcomingEvents) {
+      if (!contentData) return;
+      const newsList = Array.isArray(contentData.news) ? contentData.news : [];
+      const evList = Array.isArray(upcomingEvents) && upcomingEvents.length
+        ? upcomingEvents
+        : SectionRenderer.normalizeAndMergeEvents(contentData.events || [], []);
+
+      const allIds = [];
+      newsList.forEach(n => {
+        if (n && n.title) allIds.push(`anno:${n.date || ''}:${n.title}`);
+      });
+      evList.forEach(ev => {
+        if (ev && ev.title) allIds.push(`event:${ev.date || ''}:${ev.title}`);
+      });
+
+      const existingSeen = this.getSeen();
+      if (!existingSeen) {
+        // First visit: record baseline and surface the single most relevant upcoming event or announcement once per session
+        const baseline = new Set(allIds);
+        this.saveSeen(baseline);
+        if (!sessionStorage.getItem(this.SESSION_SHOWN_KEY)) {
+          sessionStorage.setItem(this.SESSION_SHOWN_KEY, '1');
+          const nextEv = evList[0];
+          const latestNews = newsList[0];
+          if (nextEv) {
+            const d = El.parseDate(nextEv.date);
+            this.show({
+              id: `event:${nextEv.date || ''}:${nextEv.title}`,
+              type: 'event',
+              title: nextEv.title,
+              meta: `${d.day} ${d.month} ${d.year} \u00b7 ${nextEv.place || 'Kigali'}${nextEv.time ? ' (' + nextEv.time + ')' : ''}`,
+              href: 'events.html',
+              actionLabel: 'View Schedule'
+            });
+          } else if (latestNews) {
+            this.show({
+              id: `anno:${latestNews.date || ''}:${latestNews.title}`,
+              type: 'announcement',
+              title: latestNews.title,
+              meta: latestNews.body ? String(latestNews.body).slice(0, 95) + '\u2026' : '',
+              href: 'index.html#news',
+              actionLabel: 'Read Announcement'
+            });
+          }
+        }
+        return;
+      }
+
+      // Subsequent visits: check if any new announcement or upcoming event was added
+      const newAnnos = newsList.filter(n => n && n.title && !existingSeen.has(`anno:${n.date || ''}:${n.title}`));
+      const newEvents = evList.filter(ev => ev && ev.title && !existingSeen.has(`event:${ev.date || ''}:${ev.title}`));
+
+      allIds.forEach(id => existingSeen.add(id));
+      this.saveSeen(existingSeen);
+
+      if (newAnnos.length > 0) {
+        const n = newAnnos[0];
+        this.show({
+          id: `anno:${n.date || ''}:${n.title}`,
+          type: 'announcement',
+          title: n.title,
+          meta: n.body ? String(n.body).slice(0, 95) + (n.body.length > 95 ? '\u2026' : '') : 'New choir announcement posted.',
+          href: 'index.html#news',
+          actionLabel: 'Read Announcement'
+        });
+      }
+      if (newEvents.length > 0) {
+        const ev = newEvents[0];
+        const d = El.parseDate(ev.date);
+        this.show({
+          id: `event:${ev.date || ''}:${ev.title}`,
+          type: 'event',
+          title: ev.title,
+          meta: `${d.day} ${d.month} ${d.year} \u00b7 ${ev.place || 'Kigali'}${ev.time ? ' (' + ev.time + ')' : ''}`,
+          href: 'events.html',
+          actionLabel: 'View Upcoming Event'
+        });
+      }
+    }
+
+    static initRealtime() {
+      window.addEventListener('storage', e => {
+        if (e.key === this.BROADCAST_KEY && e.newValue) {
+          try {
+            const payload = JSON.parse(e.newValue);
+            if (payload && payload.title) this.show(payload);
+          } catch (err) { /* ignore */ }
+        }
+      });
+
+      const sb = getSbClient();
+      if (!sb || typeof sb.channel !== 'function') return;
+      try {
+        sb.channel('maranatha-public-alerts')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'announcements' }, payload => {
+            const row = payload && payload.new;
+            const titleVal = row && (row.title || row.title_en || row.title_sw);
+            if (!titleVal) return;
+            const bodyVal = row.body || row.content_en || row.content_sw || '';
+            this.show({
+              id: `sb-anno:${row.id || titleVal}`,
+              type: 'announcement',
+              title: titleVal,
+              meta: bodyVal ? String(bodyVal).slice(0, 95) + (bodyVal.length > 95 ? '\u2026' : '') : 'New announcement posted in the Member Portal.',
+              href: 'members.html#portal',
+              actionLabel: 'Open Portal'
+            });
+          })
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'events' }, payload => {
+            const row = payload && payload.new;
+            const titleVal = row && (row.title || row.title_en || row.title_sw);
+            if (!titleVal) return;
+            const rawStart = row.start_time || row.starts_at;
+            const dt = rawStart ? new Date(rawStart) : null;
+            const when = dt && !isNaN(dt)
+              ? dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+              : 'Upcoming';
+            this.show({
+              id: `sb-event:${row.id || titleVal}`,
+              type: 'event',
+              title: titleVal,
+              meta: `${when} \u00b7 ${row.location || 'Kigali, Rwanda'}`,
+              href: 'members.html#msEventsWrap',
+              actionLabel: 'View Event'
+            });
+          })
+          .subscribe();
+      } catch (e) { /* ignore realtime errors */ }
+    }
+  }
+
+  window.MaranathaNotifier = MaranathaNotifier;
+
   /* ---------- App bootstrap ---------- */
 
   class SiteApp {
@@ -1461,16 +1883,21 @@ if (item.video) {
       I18n.init();
       this.nav.bindAll();
       GlobalUserMenu.init();
+      ImageTransitionManager.init();
       FormValidator.bindAll();
       this.renderer.renderAll(SiteContent.DEFAULT);
       const live = await SiteContent.fetchLive();
+      const activeData = live || SiteContent.DEFAULT;
       if (live) this.renderer.renderAll(live);
+      await this.renderer.renderEventsLive(activeData.events || []);
       this.renderer.renderTeamLive();
       new EventCountdown().start();
       const player = new DemoPlayer();
       player.bind();
       new GalleryLightbox().bind();
       new GalleryCarousel().bind();
+      MaranathaNotifier.initRealtime();
+      MaranathaNotifier.checkContentUpdates(activeData, this.renderer._lastEvents);
     }
   }
 
