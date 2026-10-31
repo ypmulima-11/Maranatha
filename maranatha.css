@@ -277,25 +277,33 @@ nav.scrolled {
 .nl {
   display: flex;
   align-items: center;
-  gap: clamp(0.2rem, 0.55vw, 0.5rem);
+  gap: clamp(0.25rem, 0.65vw, 0.55rem);
   flex-wrap: nowrap;
 }
 .nl a {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 7px 11px;
+  justify-content: center;
+  padding: 8px 13px;
   border: 1px solid transparent;
   border-radius: 9px;
   background: transparent;
-  font-size: 0.84375rem;
+  font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.2;
   color: rgba(255, 255, 255, 0.84);
   white-space: nowrap;
-  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  transition:
+    background-color 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.nl a .mp-side-ic,
+/* Desktop header navigation uses text labels only */
+.nl a .mp-side-ic {
+  display: none;
+}
 .nm-menu a .mp-side-ic {
   width: 17px;
   height: 17px;
@@ -303,7 +311,7 @@ nav.scrolled {
   stroke: currentColor;
   fill: none;
   opacity: 0.82;
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1), transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .nl a:hover {
   opacity: 1;
@@ -314,12 +322,9 @@ nav.scrolled {
 .nl a.active {
   opacity: 1;
   color: #FFFFFF;
-  font-weight: 600;
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.24);
 }
-.nl a:hover .mp-side-ic,
-.nl a.active .mp-side-ic,
 .nm-menu a:hover .mp-side-ic,
 .nm-menu a.active .mp-side-ic {
   opacity: 1;
@@ -449,21 +454,55 @@ body.member-mode .tb {
   margin: 0;
 }
 
-/* hamburger — hidden on desktop, active on mobile */
+/* hamburger — hidden on desktop, active on mobile; smooth natural transition */
 .nm-btn {
-  display: none; width: 34px; height: 34px;
-  background: transparent; border: 0; padding: 0;
-  flex-direction: column; align-items: center; justify-content: center;
-  gap: 7px; cursor: pointer; z-index: 10001;
+  display: none;
+  position: relative;
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10001;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nm-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.nm-btn.open {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.22);
 }
 .nm-btn span {
-  width: 26px; height: 2px; background: #fff;
-  transition: transform .35s var(--ease), opacity .2s, width .35s var(--ease), background .2s;
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 1.75px;
+  border-radius: 2px;
+  background: #F2F2EE;
+  transform-origin: center;
+  will-change: transform, opacity;
+  transition:
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.28s ease;
 }
+.nm-btn span:nth-child(1) { transform: translateY(-6px); }
+.nm-btn span:nth-child(2) { transform: translateY(0) scaleX(1); }
+.nm-btn span:nth-child(3) { transform: translateY(6px); }
 .nm-btn.open span { background: #FFFFFF; }
-.nm-btn.open span:nth-child(1) { transform: translateY(4.5px) rotate(45deg); }
-.nm-btn.open span:nth-child(2) { opacity: 0; width: 0; }
-.nm-btn.open span:nth-child(3) { transform: translateY(-4.5px) rotate(-45deg); }
+.nm-btn.open span:nth-child(1) { transform: translateY(0) rotate(45deg); }
+.nm-btn.open span:nth-child(2) { opacity: 0; transform: translateY(0) scaleX(0.35); }
+.nm-btn.open span:nth-child(3) { transform: translateY(0) rotate(-45deg); }
 
 .nm-menu {
   display: none;
@@ -1599,12 +1638,11 @@ footer .cosb:hover {
 }
 
 @media (max-width: 1180px) {
-  .nl a { padding: 6px 9px; font-size: 0.8125rem; gap: 5px; }
-  .nl a .mp-side-ic { width: 15px; height: 15px; }
+  .nl a { padding: 7px 10px; font-size: 0.8125rem; }
 }
 
 /* switch to hamburger on tablet / compact screens */
-@media (max-width: 1024px) {
+@media (max-width: 960px) {
   .nl { display: none; }
   nav:not(.has-user) .nav-end { display: none; }
   .nm-btn { display: flex; margin-left: auto; }
@@ -1626,8 +1664,8 @@ footer .cosb:hover {
   .ftr-nav { grid-column: 2; grid-row: auto; }
 }
 
-@media (max-width: 1024px) {
-  /* mobile navigation dropdown — matches Member Portal sidebar navigation */
+@media (max-width: 960px) {
+  /* mobile navigation dropdown — matches Member Portal sidebar navigation with smooth natural motion */
   .nm-menu {
     position: fixed;
     top: calc(var(--tb-h, 38px) + 50px);
@@ -1649,13 +1687,17 @@ footer .cosb:hover {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transform: translateY(-8px);
-    transition: opacity .25s var(--ease), transform .25s var(--ease), visibility .25s;
+    transform-origin: top left;
+    transform: translateY(-10px) scale(0.985);
+    transition:
+      opacity 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0.38s;
   }
   .nm-menu.open {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
     pointer-events: auto;
   }
   .nm-close { display: none; }
@@ -1671,7 +1713,11 @@ footer .cosb:hover {
     justify-content: flex-start;
     gap: 12px;
     line-height: 1.3;
-    transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    transition:
+      color 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .nm-menu a + a {
     margin-top: 4px;
@@ -1680,10 +1726,10 @@ footer .cosb:hover {
     color: #FFFFFF;
     background: rgba(255, 255, 255, 0.07);
     border-color: rgba(255, 255, 255, 0.10);
+    transform: translateX(2px);
   }
   .nm-menu a.active {
     color: #FFFFFF;
-    font-weight: 600;
     background: rgba(255, 255, 255, 0.14);
     border-color: rgba(255, 255, 255, 0.24);
     box-shadow: none;
@@ -1704,11 +1750,11 @@ footer .cosb:hover {
     background: #FFFFFF;
     color: #000000;
     border-color: #FFFFFF;
+    transform: translateX(2px);
   }
   .nm-menu a.nc-cta.active {
     background: #FFFFFF;
     color: #000000;
-    font-weight: 700;
     border-color: #FFFFFF;
     box-shadow: none;
   }

@@ -401,20 +401,27 @@ button.danger:hover,
   font-weight: 500;
   text-align: left;
   cursor: pointer;
-  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .mp-side-link:hover {
   background: rgba(0, 0, 0, 0.05);
   color: #111110;
+  transform: translateX(2px);
 }
 
 .mp-side-link.active {
   background: #FFFFFF;
   color: #000000;
-  font-weight: 600;
   border-color: rgba(0, 0, 0, 0.12);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transform: translateX(0);
 }
 
 .mp-side-ic {
@@ -423,7 +430,7 @@ button.danger:hover,
   flex-shrink: 0;
   stroke: currentColor;
   opacity: 0.85;
-  transition: opacity 0.18s ease;
+  transition: opacity 0.34s cubic-bezier(0.22, 1, 0.36, 1), transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .mp-side-link:hover .mp-side-ic,
@@ -447,6 +454,21 @@ button.danger:hover,
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.mp-dash-panel.active {
+  animation: mpPanelSmoothIn 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes mpPanelSmoothIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .mp-greet { font-size: 16px; font-weight: 600; color: var(--ink); margin-top: 4px; }
@@ -672,8 +694,20 @@ button.danger:hover,
     padding: 8px 14px;
     color: var(--ink);
     font-size: 13.5px;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background-color 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .mp-mob-nav-btn:hover,
+  .mp-mob-nav-btn[aria-expanded="true"] {
+    background: #FFFFFF;
+    border-color: rgba(0, 0, 0, 0.22);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   }
   .mp-sidebar-backdrop {
     position: fixed;
@@ -683,6 +717,7 @@ button.danger:hover,
     bottom: 0;
     background: rgba(0, 0, 0, 0.45);
     z-index: 54;
+    animation: mpPanelSmoothIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .mp-sidebar {
     position: fixed;
@@ -696,7 +731,7 @@ button.danger:hover,
     border-right: 1px solid var(--line);
     z-index: 55;
     transform: translateX(-100%);
-    transition: transform 0.25s ease;
+    transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
   }
   .mp-sidebar.open {
