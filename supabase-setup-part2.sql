@@ -371,3 +371,25 @@ where not exists (select 1 from public.announcements a where a.title_en = v.titl
 -- Explicit grants for the new tables
 grant select on public.events, public.event_rsvps, public.announcements, public.invites to authenticated;
 grant insert, update, delete on public.events, public.event_rsvps, public.announcements, public.invites to authenticated;
+
+
+-- Enable real-time push notifications for announcements and events
+alter table if exists public.announcements replica identity full;
+alter table if exists public.events replica identity full;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'announcements'
+  ) then
+    alter publication supabase_realtime add table public.announcements;
+  end if;
+
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'events'
+  ) then
+    alter publication supabase_realtime add table public.events;
+  end if;
+end $$;

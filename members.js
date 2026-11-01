@@ -365,6 +365,9 @@
       this.hasSession = false;
       this.activeSection = 'announcements';
       if (window.MaranathaUserMenu) window.MaranathaUserMenu.setLoggedOut();
+      if (window.MaranathaNotifier && typeof window.MaranathaNotifier.onMemberSignedOut === 'function') {
+        window.MaranathaNotifier.onMemberSignedOut();
+      }
       this.setMemberMode(false);
       this.showAuth();
       if (this.supabase) {
@@ -805,7 +808,18 @@
       this.loadEvents();
       this.loadAnnouncements();
 
+      if (window.MaranathaNotifier && typeof window.MaranathaNotifier.onMemberAuthenticated === 'function') {
+        window.MaranathaNotifier.onMemberAuthenticated(this.profile);
+      }
+
       const viewParams = new URLSearchParams(window.location.search);
+      const targetSection = viewParams.get('section');
+      if (targetSection) {
+        viewParams.delete('section');
+        const qs = viewParams.toString();
+        history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
+        this.switchDashboardSection(targetSection);
+      }
       if (viewParams.get('view') === 'profile') {
         viewParams.delete('view');
         const qs = viewParams.toString();
@@ -2241,27 +2255,45 @@
       }
       msg.className = 'mp-msg';
       msg.textContent = 'Publishing\u2026';
+      const titleSw = $('anTitleSw').value.trim();
       const bodyEn = $('anBodyEn').value.trim();
-      const { error } = await this.supabase.from('announcements').insert({
-        title_en: titleEn,
-        title_sw: $('anTitleSw').value.trim(),
-        content_en: bodyEn,
-        content_sw: $('anBodySw').value.trim(),
-        is_pinned: $('anPin').checked,
-        author_id: this.profile.id
-      });
+      const bodySw = $('anBodySw').value.trim();
+      const isPinned = $('anPin').checked;
+      const { data: inserted, error } = await this.supabase
+        .from('announcements')
+        .insert({
+          title_en: titleEn,
+          title_sw: titleSw,
+          content_en: bodyEn,
+          content_sw: bodySw,
+          is_pinned: isPinned,
+          author_id: this.profile.id
+        })
+        .select('*');
       if (error) {
         msg.className = 'mp-msg err';
         msg.textContent = error.message;
         return;
       }
-      if (window.MaranathaNotifier && typeof window.MaranathaNotifier.broadcast === 'function') {
+      const annoRow = (inserted && inserted[0]) || {
+        id: Date.now(),
+        title_en: titleEn,
+        title_sw: titleSw,
+        content_en: bodyEn,
+        content_sw: bodySw,
+        is_pinned: isPinned,
+        author_id: this.profile.id,
+        created_at: new Date().toISOString()
+      };
+      if (window.MaranathaNotifier && typeof window.MaranathaNotifier.publishAnnouncement === 'function') {
+        window.MaranathaNotifier.publishAnnouncement(annoRow);
+      } else if (window.MaranathaNotifier && typeof window.MaranathaNotifier.broadcast === 'function') {
         window.MaranathaNotifier.broadcast({
-          id: `portal-anno:${titleEn}:${Date.now()}`,
+          id: `anno-db:${annoRow.id}`,
           type: 'announcement',
           title: titleEn,
-          meta: bodyEn ? bodyEn.slice(0, 95) + (bodyEn.length > 95 ? '\u2026' : '') : 'New announcement posted in the Member Portal.',
-          href: 'members.html#portal',
+          meta: bodyEn ? bodyEn.slice(0, 115) + (bodyEn.length > 115 ? '\u2026' : '') : 'New announcement posted in the Member Portal.',
+          href: 'members.html?section=announcements#portal',
           actionLabel: 'Read Notice'
         });
       }
@@ -3078,6 +3110,21 @@
     }
 
     showAdminPopup(msg) {
+      if (window.MaranathaNotifier && typeof window.MaranathaNotifier.show === 'function') {
+        window.MaranathaNotifier.show({
+          id: 'admin-alert:' + msg,
+          type: 'admin',
+          badgeLabel: 'Admin Notice',
+          title: 'Admin Notification',
+          meta: msg,
+          href: 'members.html?section=admin-resources#portal',
+          actionLabel: 'Open Admin Tools',
+          onAction: () => {
+            this.switchDashboardSection('admin-resources');
+          }
+        }, { allowAnon: true });
+        return;
+      }
       const p = document.createElement('div');
       p.style.cssText = 'position:fixed;top:20px;right:20px;background:#000000;color:#ffffff;padding:14px 18px;border:1px solid rgba(255,255,255,0.22);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.2);z-index:9999;font-weight:600;cursor:pointer;opacity:0;transition:opacity 0.3s;';
       p.textContent = msg;
@@ -3543,6 +3590,9 @@
         );
       }
       if (window.MaranathaUserMenu) window.MaranathaUserMenu.setLoggedOut();
+      if (window.MaranathaNotifier && typeof window.MaranathaNotifier.onMemberSignedOut === 'function') {
+        window.MaranathaNotifier.onMemberSignedOut();
+      }
       this.supabase.auth.signOut();
       this.setMemberMode(false);
       this.showAuth();

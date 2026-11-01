@@ -1592,13 +1592,29 @@ if (item.video) {
     }
   }
 
-  /* ---------- Pop-up Notification Feature (Announcements & Upcoming Events) ---------- */
+  /* ---------- Real-Time Push Notification System (Member Portal Announcements & Events) ---------- */
 
   class MaranathaNotifier {
-    static SEEN_KEY = 'maranatha_seen_notifications_v2';
-    static BROADCAST_KEY = 'maranatha_latest_broadcast_v1';
-    static SESSION_SHOWN_KEY = 'maranatha_session_notified_v2';
+    static SEEN_PREFIX = 'maranatha_member_seen_v3_';
+    static DISMISSED_PREFIX = 'maranatha_member_dismissed_v3_';
+    static ENTRY_SHOWN_PREFIX = 'maranatha_member_entry_v3_';
+    static ACTIVE_MEMBER_CACHE = 'maranatha_active_member_v3';
+    static BROADCAST_KEY = 'maranatha_latest_broadcast_v3';
     static wrap = null;
+    static currentUser = null;
+    static memberProfile = null;
+    static isActiveMember = false;
+    static pushChannel = null;
+    static pushChannelReady = false;
+    static pendingBroadcasts = [];
+    static pollTimer = null;
+    static bc = null;
+    static recentFingerprints = new Map();
+    static firestoreDb = null;
+    static firestoreUnsub = null;
+    static pendingContentData = null;
+    static pendingUpcomingEvents = null;
+    static _initialized = false;
 
     static ensureWrap() {
       if (this.wrap && document.body.contains(this.wrap)) return this.wrap;
@@ -1607,6 +1623,8 @@ if (item.video) {
         w = document.createElement('div');
         w.id = 'mnNotifyWrap';
         w.className = 'mn-notify-wrap';
+        w.setAttribute('role', 'region');
+        w.setAttribute('aria-label', 'Member notifications');
         w.setAttribute('aria-live', 'polite');
         w.setAttribute('aria-atomic', 'false');
         document.body.appendChild(w);
@@ -1615,9 +1633,18 @@ if (item.video) {
       return w;
     }
 
-    static getSeen() {
+    static clearAll() {
+      if (!this.wrap) return;
+      this.wrap.replaceChildren();
+    }
+
+    static userKeySuffix() {
+      return (this.currentUser && this.currentUser.id) ? this.currentUser.id : 'member';
+    }
+
+    static getSet(prefix) {
       try {
-        const raw = localStorage.getItem(this.SEEN_KEY);
+        const raw = localStorage.getItem(prefix + this.userKeySuffix());
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed)) return new Set(parsed);
@@ -1626,11 +1653,19 @@ if (item.video) {
       return null;
     }
 
-    static saveSeen(set) {
+    static saveSet(prefix, set) {
       try {
-        const arr = [...set].slice(-250);
-        localStorage.setItem(this.SEEN_KEY, JSON.stringify(arr));
+        const arr = [...set].slice(-300);
+        localStorage.setItem(prefix + this.userKeySuffix(), JSON.stringify(arr));
       } catch (e) { /* ignore */ }
+    }
+
+    static getSeen() {
+      return this.getSet(this.SEEN_PREFIX);
+    }
+
+    static saveSeen(set) {
+      this.saveSet(this.SEEN_PREFIX, set);
     }
 
     static markSeen(id) {
@@ -1640,13 +1675,109 @@ if (item.video) {
       this.saveSeen(seen);
     }
 
-    static show(item) {
+    static getDismissed() {
+      return this.getSet(this.DISMISSED_PREFIX) || new Set();
+    }
+
+    static markDismissed(id) {
+      if (!id) return;
+      this.markSeen(id);
+      const dismissed = this.getDismissed();
+      dismissed.add(id);
+      this.saveSet(this.DISMISSED_PREFIX, dismissed);
+    }
+
+    static pickLang(en, sw) {
+      const lang = (window.I18n && window.I18n.lang) || document.documentElement.lang || 'en';
+      return (lang === 'sw' && sw) ? sw : (en || sw || '');
+    }
+
+    static canonicalAnnoId(row) {
+      if (!row) return '';
+      if (row.id != null && String(row.id) !== '') {
+        const s = String(row.id);
+        return s.startsWith('anno-db:') || s.startsWith('portal-anno:') || s.startsWith('sb-anno:')
+          ? `anno-db:${s.replace(/^(anno-db:|portal-anno:|sb-anno:)/, '')}`
+          : `anno-db:${s}`;
+      }
+      const t = (row.title_en || row.title || row.title_sw || '').trim().toLowerCase();
+      return t ? `anno-title:${t}` : '';
+    }
+
+    static isRecentlyShownFingerprint(title, type = 'announcement') {
+      const key = `${type}::${String(title || '').trim().toLowerCase()}`;
+      if (!key || key.endsWith('::')) return false;
+      const now = Date.now();
+      const prev = this.recentFingerprints.get(key);
+      if (prev && (now - prev) < 45000) return true;
+      this.recentFingerprints.set(key, now);
+      return false;
+    }
+
+    static formatRelativeTime(isoOrTs) {
+      if (!isoOrTs) return this.pickLang('Just now', 'Sasa hivi');
+      const d = new Date(isoOrTs);
+      if (isNaN(d.getTime())) return this.pickLang('Just now', 'Sasa hivi');
+      const diffSec = Math.floor((Date.now() - d.getTime()) / 1000);
+      if (diffSec < 90) return this.pickLang('Just now', 'Sasa hivi');
+      if (diffSec < 3600) {
+        const mins = Math.max(1, Math.floor(diffSec / 60));
+        return this.pickLang(`${mins}m ago`, `dk ${mins} zilizopita`);
+      }
+      if (diffSec < 86400) {
+        const hrs = Math.max(1, Math.floor(diffSec / 3600));
+        return this.pickLang(`${hrs}h ago`, `saa ${hrs} zilizopita`);
+      }
+      return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    }
+
+    static normalizeAnnouncementItem(row) {
+      if (!row) return null;
+      const titleEn = row.title_en || row.title || '';
+      const titleSw = row.title_sw || '';
+      const title = this.pickLang(titleEn, titleSw);
+      if (!title) return null;
+
+      const bodyEn = row.content_en != null ? row.content_en : (row.body != null ? row.body : (row.meta || ''));
+      const bodySw = row.content_sw || '';
+      const rawBody = String(this.pickLang(bodyEn, bodySw) || '').trim();
+      const meta = rawBody
+        ? (rawBody.length > 115 ? rawBody.slice(0, 115) + '\u2026' : rawBody)
+        : this.pickLang('New announcement posted in the Member Portal.', 'Tangazo jipya limewekwa kwenye Portal ya Wanachama.');
+
+      const id = this.canonicalAnnoId(row) || `anno-title:${title.toLowerCase()}`;
+      const isPinned = Boolean(row.is_pinned);
+      const badgeLabel = isPinned
+        ? this.pickLang('Pinned Announcement', 'Tangazo Muhimu')
+        : this.pickLang('New Announcement', 'Tangazo Jipya');
+
+      return {
+        id: id,
+        type: 'announcement',
+        badgeLabel: badgeLabel,
+        title: title,
+        title_en: titleEn,
+        title_sw: titleSw,
+        meta: meta,
+        content_en: bodyEn,
+        content_sw: bodySw,
+        is_pinned: isPinned,
+        created_at: row.created_at || new Date().toISOString(),
+        href: 'members.html?section=announcements#portal',
+        actionLabel: this.pickLang('Read Notice', 'Soma Tangazo')
+      };
+    }
+
+    static show(item, opts = {}) {
       if (!item || !item.title) return;
+      if (!this.isActiveMember && !opts.allowAnon) return;
+
       const wrap = this.ensureWrap();
       const id = item.id || `${item.type || 'notice'}:${item.title}`;
 
       // Avoid duplicate cards with the same ID on screen
       if (wrap.querySelector(`[data-notify-id="${CSS.escape(id)}"]`)) return;
+      if (!opts.skipFingerprint && this.isRecentlyShownFingerprint(item.title, item.type || 'announcement')) return;
 
       const card = document.createElement('aside');
       card.className = 'mn-notify-card';
@@ -1655,14 +1786,26 @@ if (item.video) {
 
       const isEvent = item.type === 'event';
       const iconId = isEvent ? 'i-calendar' : 'i-bell';
-      const badgeText = isEvent ? 'New Upcoming Event' : 'New Announcement';
+      const defaultBadge = isEvent
+        ? this.pickLang('New Upcoming Event', 'Tukio Jipya')
+        : this.pickLang('New Announcement', 'Tangazo Jipya');
+      const badgeText = item.badgeLabel || defaultBadge;
 
       const head = document.createElement('div');
       head.className = 'mn-notify-head';
 
       const badge = document.createElement('span');
       badge.className = 'mn-notify-badge';
-      badge.innerHTML = `<svg aria-hidden="true"><use href="assets/icons.svg#${iconId}"/></svg><span>${badgeText}</span>`;
+      badge.innerHTML = `<span class="mn-notify-dot" aria-hidden="true"></span><svg aria-hidden="true"><use href="assets/icons.svg#${iconId}"/></svg><span></span>`;
+      const badgeSpan = badge.querySelector('span:last-child');
+      if (badgeSpan) badgeSpan.textContent = badgeText;
+
+      const headEnd = document.createElement('div');
+      headEnd.className = 'mn-notify-head-end';
+
+      const timeEl = document.createElement('span');
+      timeEl.className = 'mn-notify-time';
+      timeEl.textContent = this.formatRelativeTime(item.created_at || item.ts);
 
       const closeBtn = document.createElement('button');
       closeBtn.type = 'button';
@@ -1670,8 +1813,10 @@ if (item.video) {
       closeBtn.setAttribute('aria-label', 'Dismiss notification');
       closeBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 
+      headEnd.appendChild(timeEl);
+      headEnd.appendChild(closeBtn);
       head.appendChild(badge);
-      head.appendChild(closeBtn);
+      head.appendChild(headEnd);
 
       const title = document.createElement('div');
       title.className = 'mn-notify-title';
@@ -1686,13 +1831,15 @@ if (item.video) {
 
       const link = document.createElement('a');
       link.className = 'mn-notify-link';
-      link.href = item.href || (isEvent ? 'events.html' : 'index.html#news');
-      link.textContent = item.actionLabel || (isEvent ? 'View Event' : 'Read Update');
+      link.href = item.href || (isEvent ? 'members.html#msEventsWrap' : 'members.html?section=announcements#portal');
+      link.textContent = item.actionLabel || (isEvent
+        ? this.pickLang('View Event', 'Angalia Tukio')
+        : this.pickLang('Read Notice', 'Soma Tangazo'));
 
       const dismissBtn = document.createElement('button');
       dismissBtn.type = 'button';
       dismissBtn.className = 'mn-notify-dismiss';
-      dismissBtn.textContent = 'Dismiss';
+      dismissBtn.textContent = this.pickLang('Dismiss', 'Funga');
 
       actions.appendChild(link);
       actions.appendChild(dismissBtn);
@@ -1702,153 +1849,294 @@ if (item.video) {
       if (item.meta) card.appendChild(meta);
       card.appendChild(actions);
 
-      const dismiss = () => {
-        this.markSeen(id);
+      const removeCard = (markAsDismissed) => {
+        if (markAsDismissed) this.markDismissed(id);
+        else this.markSeen(id);
         card.classList.remove('is-visible');
         setTimeout(() => { if (card.parentNode) card.remove(); }, 380);
       };
 
-      closeBtn.addEventListener('click', dismiss);
-      dismissBtn.addEventListener('click', dismiss);
-      link.addEventListener('click', () => this.markSeen(id));
+      closeBtn.addEventListener('click', () => removeCard(true));
+      dismissBtn.addEventListener('click', () => removeCard(true));
+      link.addEventListener('click', e => {
+        this.markDismissed(id);
+        if (typeof item.onAction === 'function') {
+          e.preventDefault();
+          item.onAction();
+          removeCard(true);
+          return;
+        }
+        // If already on members.html with the portal open, switch straight to the announcements panel
+        if (item.type === 'announcement' && window.portal && typeof window.portal.switchDashboardSection === 'function') {
+          const dash = document.getElementById('dashView');
+          if (dash && !dash.hidden) {
+            e.preventDefault();
+            window.portal.switchDashboardSection('announcements');
+            if (typeof window.portal.loadAnnouncements === 'function') {
+              window.portal.loadAnnouncements();
+            }
+            const annoBox = document.getElementById('mpAnnounce');
+            if (annoBox) annoBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            removeCard(true);
+          }
+        }
+      });
+
+      // Keep at most 3 cards stacked in the top-right corner
+      while (wrap.children.length >= 3) {
+        wrap.firstElementChild.remove();
+      }
 
       wrap.appendChild(card);
+      this.markSeen(id);
+
       requestAnimationFrame(() => {
         requestAnimationFrame(() => card.classList.add('is-visible'));
       });
 
-      setTimeout(() => {
-        if (document.body.contains(card)) {
-          card.classList.remove('is-visible');
-          setTimeout(() => { if (card.parentNode) card.remove(); }, 380);
+      // Auto-dismiss after 12 seconds, pausing while hovered or focused
+      let hideTimer = null;
+      const startTimer = () => {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => {
+          if (document.body.contains(card)) removeCard(false);
+        }, 12000);
+      };
+      const pauseTimer = () => clearTimeout(hideTimer);
+
+      card.addEventListener('mouseenter', pauseTimer);
+      card.addEventListener('mouseleave', startTimer);
+      card.addEventListener('focusin', pauseTimer);
+      card.addEventListener('focusout', startTimer);
+      startTimer();
+
+      // If the tab is in the background and OS Notifications are already granted, surface a system notification
+      if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+        try {
+          const sysNotif = new Notification(item.title, {
+            body: item.meta || badgeText,
+            icon: 'images/choir-logo.png',
+            tag: id
+          });
+          sysNotif.onclick = () => {
+            window.focus();
+            sysNotif.close();
+          };
+        } catch (e) { /* ignore */ }
+      }
+    }
+
+    static receiveAnnouncement(row, opts = {}) {
+      if (!this.isActiveMember) return;
+      const item = this.normalizeAnnouncementItem(row);
+      if (!item) return;
+
+      const dismissed = this.getDismissed();
+      if (!opts.forceShow && dismissed.has(item.id)) return;
+
+      this.show(item);
+
+      // If the member is currently viewing the portal on members.html, refresh the announcements list live
+      if (window.portal && typeof window.portal.loadAnnouncements === 'function') {
+        const dash = document.getElementById('dashView');
+        if (dash && !dash.hidden) {
+          window.portal.loadAnnouncements();
         }
-      }, 12000);
+      }
+    }
+
+    static publishAnnouncement(row) {
+      if (!row) return;
+      const item = this.normalizeAnnouncementItem(row);
+      if (!item) return;
+
+      // 1. Show immediately on the publisher's screen
+      this.show(item);
+
+      // 2. Push over Supabase Realtime Broadcast to all connected devices immediately
+      const payload = {
+        id: row.id || Date.now(),
+        title_en: row.title_en || row.title || '',
+        title_sw: row.title_sw || '',
+        content_en: row.content_en != null ? row.content_en : (row.body || row.meta || ''),
+        content_sw: row.content_sw || '',
+        is_pinned: Boolean(row.is_pinned),
+        created_at: row.created_at || new Date().toISOString(),
+        ts: Date.now()
+      };
+      this.sendRealtimeBroadcast('announcement_published', payload);
+
+      // 3. Push over optional Firebase Firestore if configured
+      this.pushToFirestore('announcements', payload);
+
+      // 4. Broadcast across local browser tabs via BroadcastChannel + localStorage
+      try {
+        if (this.bc) this.bc.postMessage({ event: 'announcement_published', payload: payload });
+      } catch (e) { /* ignore */ }
+      try {
+        localStorage.setItem(this.BROADCAST_KEY, JSON.stringify({ event: 'announcement_published', payload: payload, ts: Date.now() }));
+      } catch (e) { /* ignore */ }
     }
 
     static broadcast(item) {
       if (!item || !item.title) return;
+      if (item.type === 'announcement') {
+        this.publishAnnouncement(item);
+        return;
+      }
       const payload = {
         ...item,
         id: item.id || `${item.type || 'notice'}:${item.title}:${Date.now()}`,
         ts: Date.now()
       };
       this.show(payload);
+      this.sendRealtimeBroadcast('event_published', payload);
       try {
-        localStorage.setItem(this.BROADCAST_KEY, JSON.stringify(payload));
+        if (this.bc) this.bc.postMessage({ event: 'event_published', payload: payload });
+      } catch (e) { /* ignore */ }
+      try {
+        localStorage.setItem(this.BROADCAST_KEY, JSON.stringify({ event: 'event_published', payload: payload, ts: Date.now() }));
       } catch (e) { /* ignore */ }
     }
 
-    static checkContentUpdates(contentData, upcomingEvents) {
-      if (!contentData) return;
-      const newsList = Array.isArray(contentData.news) ? contentData.news : [];
-      const evList = Array.isArray(upcomingEvents) && upcomingEvents.length
-        ? upcomingEvents
-        : SectionRenderer.normalizeAndMergeEvents(contentData.events || [], []);
-
-      const allIds = [];
-      newsList.forEach(n => {
-        if (n && n.title) allIds.push(`anno:${n.date || ''}:${n.title}`);
-      });
-      evList.forEach(ev => {
-        if (ev && ev.title) allIds.push(`event:${ev.date || ''}:${ev.title}`);
-      });
-
-      const existingSeen = this.getSeen();
-      if (!existingSeen) {
-        // First visit: record baseline and surface the single most relevant upcoming event or announcement once per session
-        const baseline = new Set(allIds);
-        this.saveSeen(baseline);
-        if (!sessionStorage.getItem(this.SESSION_SHOWN_KEY)) {
-          sessionStorage.setItem(this.SESSION_SHOWN_KEY, '1');
-          const nextEv = evList[0];
-          const latestNews = newsList[0];
-          if (nextEv) {
-            const d = El.parseDate(nextEv.date);
-            this.show({
-              id: `event:${nextEv.date || ''}:${nextEv.title}`,
-              type: 'event',
-              title: nextEv.title,
-              meta: `${d.day} ${d.month} ${d.year} \u00b7 ${nextEv.place || 'Kigali'}${nextEv.time ? ' (' + nextEv.time + ')' : ''}`,
-              href: 'events.html',
-              actionLabel: 'View Schedule'
-            });
-          } else if (latestNews) {
-            this.show({
-              id: `anno:${latestNews.date || ''}:${latestNews.title}`,
-              type: 'announcement',
-              title: latestNews.title,
-              meta: latestNews.body ? String(latestNews.body).slice(0, 95) + '\u2026' : '',
-              href: 'index.html#news',
-              actionLabel: 'Read Announcement'
-            });
-          }
-        }
+    static sendRealtimeBroadcast(eventName, payload) {
+      if (!this.pushChannel) {
+        this.pendingBroadcasts.push({ event: eventName, payload: payload });
+        this.subscribeRealtimeChannels();
         return;
       }
+      if (!this.pushChannelReady) {
+        this.pendingBroadcasts.push({ event: eventName, payload: payload });
+        return;
+      }
+      try {
+        this.pushChannel.send({
+          type: 'broadcast',
+          event: eventName,
+          payload: payload
+        });
+      } catch (e) { /* ignore */ }
+    }
 
-      // Subsequent visits: check if any new announcement or upcoming event was added
-      const newAnnos = newsList.filter(n => n && n.title && !existingSeen.has(`anno:${n.date || ''}:${n.title}`));
-      const newEvents = evList.filter(ev => ev && ev.title && !existingSeen.has(`event:${ev.date || ''}:${ev.title}`));
+    static async checkMemberAnnouncements(opts = {}) {
+      if (!this.isActiveMember) return;
+      const sb = getSbClient();
+      if (!sb) return;
 
-      allIds.forEach(id => existingSeen.add(id));
-      this.saveSeen(existingSeen);
+      try {
+        const { data: rows, error } = await sb
+          .from('announcements')
+          .select('id, title_en, title_sw, content_en, content_sw, is_pinned, created_at')
+          .order('created_at', { ascending: false })
+          .limit(10);
 
-      if (newAnnos.length > 0) {
-        const n = newAnnos[0];
+        if (error || !Array.isArray(rows) || !rows.length) return;
+
+        const existingSeen = this.getSeen();
+        const dismissed = this.getDismissed();
+        const entryKey = this.ENTRY_SHOWN_PREFIX + this.userKeySuffix();
+        const allIds = rows.map(r => this.canonicalAnnoId(r)).filter(Boolean);
+
+        if (!existingSeen) {
+          // First time this member's device checks announcements: save baseline and surface the latest announcement on entry
+          this.saveSeen(new Set(allIds));
+          sessionStorage.setItem(entryKey, '1');
+          const latest = rows[0];
+          const latestId = this.canonicalAnnoId(latest);
+          if (latest && !dismissed.has(latestId)) {
+            this.receiveAnnouncement(latest);
+          }
+          return;
+        }
+
+        // Check for any announcements published since this member last checked
+        const unseenRows = rows.filter(r => {
+          const cid = this.canonicalAnnoId(r);
+          return cid && !existingSeen.has(cid) && !dismissed.has(cid);
+        });
+
+        allIds.forEach(id => existingSeen.add(id));
+        this.saveSeen(existingSeen);
+
+        if (unseenRows.length > 0) {
+          sessionStorage.setItem(entryKey, '1');
+          // Show newest unseen announcement (and if 2 were just published, show up to 2 in chronological order)
+          unseenRows.slice(0, 2).reverse().forEach(r => this.receiveAnnouncement(r));
+          return;
+        }
+
+        // If the member is entering the site or signing in for this session, show the latest undismissed announcement
+        if (opts.isEntryOrLogin && !sessionStorage.getItem(entryKey)) {
+          sessionStorage.setItem(entryKey, '1');
+          const latest = rows[0];
+          const latestId = this.canonicalAnnoId(latest);
+          if (latest && !dismissed.has(latestId)) {
+            this.receiveAnnouncement(latest);
+          }
+        }
+      } catch (e) { /* ignore network errors */ }
+    }
+
+    static checkContentUpdates(contentData, upcomingEvents) {
+      this.pendingContentData = contentData;
+      this.pendingUpcomingEvents = upcomingEvents;
+      if (!this.isActiveMember || !contentData) return;
+
+      const newsList = Array.isArray(contentData.news) ? contentData.news : [];
+      const seen = this.getSeen();
+      if (!seen) return;
+
+      const dismissed = this.getDismissed();
+      const newPublicAnnos = newsList.filter(n => {
+        if (!n || !n.title) return false;
+        const id = `public-anno:${n.date || ''}:${n.title}`;
+        return !seen.has(id) && !dismissed.has(id);
+      });
+
+      newsList.forEach(n => {
+        if (n && n.title) seen.add(`public-anno:${n.date || ''}:${n.title}`);
+      });
+      this.saveSeen(seen);
+
+      if (newPublicAnnos.length > 0) {
+        const n = newPublicAnnos[0];
         this.show({
-          id: `anno:${n.date || ''}:${n.title}`,
+          id: `public-anno:${n.date || ''}:${n.title}`,
           type: 'announcement',
           title: n.title,
-          meta: n.body ? String(n.body).slice(0, 95) + (n.body.length > 95 ? '\u2026' : '') : 'New choir announcement posted.',
-          href: 'index.html#news',
-          actionLabel: 'Read Announcement'
-        });
-      }
-      if (newEvents.length > 0) {
-        const ev = newEvents[0];
-        const d = El.parseDate(ev.date);
-        this.show({
-          id: `event:${ev.date || ''}:${ev.title}`,
-          type: 'event',
-          title: ev.title,
-          meta: `${d.day} ${d.month} ${d.year} \u00b7 ${ev.place || 'Kigali'}${ev.time ? ' (' + ev.time + ')' : ''}`,
-          href: 'events.html',
-          actionLabel: 'View Upcoming Event'
+          meta: n.body ? String(n.body).slice(0, 115) + (n.body.length > 115 ? '\u2026' : '') : 'New choir announcement posted.',
+          href: n.linkHref || 'index.html#news',
+          actionLabel: this.pickLang('Read Announcement', 'Soma Tangazo')
         });
       }
     }
 
-    static initRealtime() {
-      window.addEventListener('storage', e => {
-        if (e.key === this.BROADCAST_KEY && e.newValue) {
-          try {
-            const payload = JSON.parse(e.newValue);
-            if (payload && payload.title) this.show(payload);
-          } catch (err) { /* ignore */ }
-        }
-      });
-
+    static subscribeRealtimeChannels() {
       const sb = getSbClient();
       if (!sb || typeof sb.channel !== 'function') return;
+      if (this.pushChannel) return;
+
       try {
-        sb.channel('maranatha-public-alerts')
+        this.pushChannel = sb.channel('maranatha-portal-push', {
+          config: { broadcast: { self: false } }
+        })
+          .on('broadcast', { event: 'announcement_published' }, ({ payload }) => {
+            if (!payload || !this.isActiveMember) return;
+            this.receiveAnnouncement(payload, { isLivePush: true });
+          })
+          .on('broadcast', { event: 'event_published' }, ({ payload }) => {
+            if (!payload || !payload.title || !this.isActiveMember) return;
+            this.show(payload);
+          })
           .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'announcements' }, payload => {
             const row = payload && payload.new;
-            const titleVal = row && (row.title || row.title_en || row.title_sw);
-            if (!titleVal) return;
-            const bodyVal = row.body || row.content_en || row.content_sw || '';
-            this.show({
-              id: `sb-anno:${row.id || titleVal}`,
-              type: 'announcement',
-              title: titleVal,
-              meta: bodyVal ? String(bodyVal).slice(0, 95) + (bodyVal.length > 95 ? '\u2026' : '') : 'New announcement posted in the Member Portal.',
-              href: 'members.html#portal',
-              actionLabel: 'Open Portal'
-            });
+            if (!row || !this.isActiveMember) return;
+            this.receiveAnnouncement(row, { isLivePush: true });
           })
           .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'events' }, payload => {
             const row = payload && payload.new;
-            const titleVal = row && (row.title || row.title_en || row.title_sw);
+            if (!row || !this.isActiveMember) return;
+            const titleVal = row.title || row.title_en || row.title_sw;
             if (!titleVal) return;
             const rawStart = row.start_time || row.starts_at;
             const dt = rawStart ? new Date(rawStart) : null;
@@ -1858,14 +2146,253 @@ if (item.video) {
             this.show({
               id: `sb-event:${row.id || titleVal}`,
               type: 'event',
-              title: titleVal,
-              meta: `${when} \u00b7 ${row.location || 'Kigali, Rwanda'}`,
+              title: this.pickLang(row.title_en || row.title, row.title_sw),
+              meta: `${when} \u00b7 ${row.location || 'Dar es Salaam'}`,
+              created_at: row.created_at || new Date().toISOString(),
               href: 'members.html#msEventsWrap',
-              actionLabel: 'View Event'
+              actionLabel: this.pickLang('View Event', 'Angalia Tukio')
             });
           })
-          .subscribe();
-      } catch (e) { /* ignore realtime errors */ }
+          .subscribe(status => {
+            if (status === 'SUBSCRIBED') {
+              this.pushChannelReady = true;
+              while (this.pendingBroadcasts.length > 0) {
+                const msg = this.pendingBroadcasts.shift();
+                try {
+                  this.pushChannel.send({
+                    type: 'broadcast',
+                    event: msg.event,
+                    payload: msg.payload
+                  });
+                } catch (e) { /* ignore */ }
+              }
+            }
+          });
+      } catch (e) { /* ignore realtime setup errors */ }
+    }
+
+    static async initFirebase() {
+      if (!window.FIREBASE_READY || !window.FIREBASE_CONFIG || this.firestoreDb) return;
+      try {
+        const [{ initializeApp, getApps }, { getFirestore, collection, query, orderBy, limit, onSnapshot, addDoc }] = await Promise.all([
+          import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js'),
+          import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js')
+        ]);
+
+        const app = getApps().length ? getApps()[0] : initializeApp(window.FIREBASE_CONFIG);
+        const dbId = window.FIREBASE_CONFIG.databaseId || '(default)';
+        const db = getFirestore(app, dbId);
+        this.firestoreDb = { db, collection, addDoc };
+
+        let initialSnap = true;
+        const q = query(collection(db, 'announcements'), orderBy('created_at', 'desc'), limit(5));
+        this.firestoreUnsub = onSnapshot(q, snapshot => {
+          if (!this.isActiveMember) return;
+          if (initialSnap) {
+            initialSnap = false;
+            return;
+          }
+          snapshot.docChanges().forEach(change => {
+            if (change.type === 'added') {
+              const data = change.doc.data();
+              if (data) {
+                this.receiveAnnouncement({ id: data.id || change.doc.id, ...data }, { isLivePush: true });
+              }
+            }
+          });
+        }, () => { /* ignore firestore permission/offline errors */ });
+
+        if (window.FIREBASE_CONFIG.vapidKey) {
+          const { getMessaging, onMessage, isSupported } = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging.js');
+          if (await isSupported()) {
+            const messaging = getMessaging(app);
+            onMessage(messaging, payload => {
+              if (!this.isActiveMember || !payload) return;
+              const notif = payload.notification || payload.data || {};
+              if (notif.title) {
+                this.receiveAnnouncement({
+                  id: notif.id || Date.now(),
+                  title_en: notif.title,
+                  content_en: notif.body || '',
+                  created_at: new Date().toISOString()
+                }, { isLivePush: true });
+              }
+            });
+          }
+        }
+      } catch (e) { /* ignore optional Firebase load errors */ }
+    }
+
+    static async pushToFirestore(colName, payload) {
+      if (!window.FIREBASE_READY) return;
+      try {
+        if (!this.firestoreDb) await this.initFirebase();
+        if (this.firestoreDb && this.firestoreDb.db) {
+          const { db, collection, addDoc } = this.firestoreDb;
+          await addDoc(collection(db, colName), payload);
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    static startPolling() {
+      if (this.pollTimer) return;
+      this.pollTimer = setInterval(() => {
+        if (!document.hidden && this.isActiveMember) {
+          this.checkMemberAnnouncements({ isEntryOrLogin: false });
+        }
+      }, 12000);
+    }
+
+    static stopPolling() {
+      if (this.pollTimer) {
+        clearInterval(this.pollTimer);
+        this.pollTimer = null;
+      }
+    }
+
+    static onMemberAuthenticated(profile) {
+      if (!profile || profile.status !== 'active') return;
+      this.memberProfile = profile;
+      this.currentUser = { id: profile.id, email: profile.email };
+      this.isActiveMember = true;
+      try {
+        sessionStorage.setItem(this.ACTIVE_MEMBER_CACHE, JSON.stringify({
+          id: profile.id,
+          email: profile.email || '',
+          status: profile.status,
+          full_name: profile.full_name || ''
+        }));
+      } catch (e) { /* ignore */ }
+
+      this.subscribeRealtimeChannels();
+      this.initFirebase();
+      this.startPolling();
+      this.checkMemberAnnouncements({ isEntryOrLogin: true });
+      if (this.pendingContentData) {
+        this.checkContentUpdates(this.pendingContentData, this.pendingUpcomingEvents);
+      }
+    }
+
+    static onMemberSignedOut() {
+      this.isActiveMember = false;
+      this.currentUser = null;
+      this.memberProfile = null;
+      this.stopPolling();
+      try { sessionStorage.removeItem(this.ACTIVE_MEMBER_CACHE); } catch (e) { /* ignore */ }
+      this.clearAll();
+    }
+
+    static async syncAuthAndStart(isFreshSignIn = false) {
+      const sb = getSbClient();
+      if (!sb) return;
+
+      try {
+        const { data } = await sb.auth.getSession();
+        const session = data && data.session;
+        if (!session || !session.user) {
+          this.onMemberSignedOut();
+          return;
+        }
+
+        const user = session.user;
+        this.currentUser = user;
+
+        // Check cached active member status for instant page-entry response
+        try {
+          const cachedRaw = sessionStorage.getItem(this.ACTIVE_MEMBER_CACHE);
+          if (cachedRaw) {
+            const cached = JSON.parse(cachedRaw);
+            if (cached && cached.id === user.id && cached.status === 'active') {
+              this.isActiveMember = true;
+              this.subscribeRealtimeChannels();
+              this.initFirebase();
+              this.startPolling();
+              this.checkMemberAnnouncements({ isEntryOrLogin: true });
+            }
+          }
+        } catch (e) { /* ignore */ }
+
+        // Verify profile status from Supabase
+        const { data: prof } = await sb
+          .from('profiles')
+          .select('id, email, full_name, role, status')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (prof && prof.status === 'active') {
+          if (isFreshSignIn) {
+            try {
+              sessionStorage.removeItem(this.ENTRY_SHOWN_PREFIX + user.id);
+            } catch (e) { /* ignore */ }
+          }
+          this.onMemberAuthenticated(prof);
+        } else if (prof && prof.status !== 'active') {
+          this.onMemberSignedOut();
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    static initRealtime() {
+      if (this._initialized) return;
+      this._initialized = true;
+
+      // Cross-tab BroadcastChannel listener
+      if ('BroadcastChannel' in window) {
+        try {
+          this.bc = new BroadcastChannel('maranatha_portal_push');
+          this.bc.onmessage = ev => {
+            if (!this.isActiveMember || !ev || !ev.data) return;
+            const { event, payload } = ev.data;
+            if (event === 'announcement_published' && payload) {
+              this.receiveAnnouncement(payload, { isLivePush: true });
+            } else if (event === 'event_published' && payload && payload.title) {
+              this.show(payload);
+            }
+          };
+        } catch (e) { /* ignore */ }
+      }
+
+      // Cross-tab localStorage fallback listener
+      window.addEventListener('storage', e => {
+        if (e.key === this.BROADCAST_KEY && e.newValue && this.isActiveMember) {
+          try {
+            const data = JSON.parse(e.newValue);
+            const payload = data && data.payload ? data.payload : data;
+            if (data && data.event === 'announcement_published' && payload) {
+              this.receiveAnnouncement(payload, { isLivePush: true });
+            } else if (payload && payload.title) {
+              this.show(payload);
+            }
+          } catch (err) { /* ignore */ }
+        }
+      });
+
+      // Check for new announcements whenever the member returns to the tab/window
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && this.isActiveMember) {
+          this.checkMemberAnnouncements({ isEntryOrLogin: false });
+        }
+      });
+      window.addEventListener('focus', () => {
+        if (this.isActiveMember) {
+          this.checkMemberAnnouncements({ isEntryOrLogin: false });
+        }
+      });
+
+      this.syncAuthAndStart(false);
+
+      const sb = getSbClient();
+      if (sb && sb.auth && typeof sb.auth.onAuthStateChange === 'function') {
+        sb.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_OUT' || !session) {
+            this.onMemberSignedOut();
+          } else if (event === 'SIGNED_IN') {
+            this.syncAuthAndStart(true);
+          } else if (event === 'INITIAL_SESSION' && session) {
+            this.syncAuthAndStart(false);
+          }
+        });
+      }
     }
   }
 
