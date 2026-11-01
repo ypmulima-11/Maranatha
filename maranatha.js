@@ -347,7 +347,7 @@
         buildCal: (ev) => SectionRenderer.buildCal(ev)
       };
 
-      const targets = [El.get('evList'), El.get('msEventsList')].filter(Boolean);
+      const targets = [El.get('evList')].filter(Boolean);
       if (!targets.length) return;
 
       targets.forEach(container => {
@@ -1831,7 +1831,7 @@ if (item.video) {
 
       const link = document.createElement('a');
       link.className = 'mn-notify-link';
-      link.href = item.href || (isEvent ? 'members.html#msEventsWrap' : 'members.html?section=announcements#portal');
+      link.href = item.href || (isEvent ? 'members.html?section=upcoming-events#portal' : 'members.html?section=announcements#portal');
       link.textContent = item.actionLabel || (isEvent
         ? this.pickLang('View Event', 'Angalia Tukio')
         : this.pickLang('Read Notice', 'Soma Tangazo'));
@@ -1866,18 +1866,27 @@ if (item.video) {
           removeCard(true);
           return;
         }
-        // If already on members.html with the portal open, switch straight to the announcements panel
-        if (item.type === 'announcement' && window.portal && typeof window.portal.switchDashboardSection === 'function') {
+        // If already on members.html with the portal open, switch straight to the target panel
+        if (window.portal && typeof window.portal.switchDashboardSection === 'function') {
           const dash = document.getElementById('dashView');
           if (dash && !dash.hidden) {
-            e.preventDefault();
-            window.portal.switchDashboardSection('announcements');
-            if (typeof window.portal.loadAnnouncements === 'function') {
-              window.portal.loadAnnouncements();
+            if (item.type === 'announcement') {
+              e.preventDefault();
+              window.portal.switchDashboardSection('announcements');
+              if (typeof window.portal.loadAnnouncements === 'function') {
+                window.portal.loadAnnouncements();
+              }
+              const annoBox = document.getElementById('mpAnnounce');
+              if (annoBox) annoBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              removeCard(true);
+            } else if (item.type === 'event') {
+              e.preventDefault();
+              window.portal.switchDashboardSection('upcoming-events');
+              if (typeof window.portal.loadEvents === 'function') {
+                window.portal.loadEvents();
+              }
+              removeCard(true);
             }
-            const annoBox = document.getElementById('mpAnnounce');
-            if (annoBox) annoBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            removeCard(true);
           }
         }
       });
@@ -2149,7 +2158,7 @@ if (item.video) {
               title: this.pickLang(row.title_en || row.title, row.title_sw),
               meta: `${when} \u00b7 ${row.location || 'Dar es Salaam'}`,
               created_at: row.created_at || new Date().toISOString(),
-              href: 'members.html#msEventsWrap',
+              href: 'members.html?section=upcoming-events#portal',
               actionLabel: this.pickLang('View Event', 'Angalia Tukio')
             });
           })

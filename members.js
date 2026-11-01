@@ -2231,7 +2231,7 @@
           type: 'event',
           title: titleEn,
           meta: `${whenStr} \u00b7 ${locVal || 'Kigali, Rwanda'}`,
-          href: 'members.html#msEventsWrap',
+          href: 'members.html?section=upcoming-events#portal',
           actionLabel: 'View Event'
         });
       }

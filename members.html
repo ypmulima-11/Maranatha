@@ -25,7 +25,7 @@
 <meta name="twitter:image" content="https://ypmulima-11.github.io/Maranatha/images/og-cover.jpg">
 <link rel="icon" type="image/jpeg" href="images/choir-logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="maranatha.css?v=85">
+<link rel="stylesheet" href="maranatha.css?v=86">
 <link rel="stylesheet" href="ui.css?v=1">
 <link rel="stylesheet" href="members.css?v=37">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
@@ -34,8 +34,8 @@
   <script src="i18n.js?v=18" defer></script>
   <script src="qrcode.min.js" defer></script>
   <script src="ui.js?v=2" defer></script>
-<script src="maranatha.js?v=76" defer></script>
-<script src="members.js?v=35" defer></script>
+<script src="maranatha.js?v=77" defer></script>
+<script src="members.js?v=36" defer></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
@@ -119,22 +119,6 @@
     <div class="msi">
       <!-- Members are rendered from content.json (editable in admin.html) -->
       <div class="msg rev-stagger" id="msList"></div>
-
-      <!-- Consolidated Upcoming Events inside the Member Directory section -->
-      <div class="ms-events-consolidated" id="msEventsWrap">
-        <div class="ms-events-head">
-          <div>
-            <div class="eyebrow"><span class="num">02</span><span data-i18n="ev.sched">Choir Schedule</span></div>
-            <h2 class="stit" data-i18n="ev.title">Upcoming Events</h2>
-            <p class="ssub" data-i18n="ev.sub">All upcoming rehearsals, liturgies, concerts, and meetings consolidated in one place.</p>
-          </div>
-          <a href="events.html" class="ms-ev-viewall">
-            <svg class="mp-side-ic" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span>Open Full Events Page</span>
-          </a>
-        </div>
-        <div class="evg rev-stagger" id="msEventsList"></div>
-      </div>
     </div>
   </div>
 </div>
