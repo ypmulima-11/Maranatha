@@ -2497,39 +2497,6 @@
       return this._wsType && this.ws.types[this._wsType] ? this._wsType : Object.keys(this.ws.types)[0];
     }
 
-    renderRoleSwitcher() {
-      const switcher = $('mpLeaderRoleSwitcher');
-      if (!switcher || !this.ws) return;
-      const isAdmin = this.profile && this.profile.role === 'admin';
-      if (!isAdmin) {
-        switcher.hidden = true;
-        switcher.innerHTML = '';
-        return;
-      }
-      switcher.hidden = false;
-      switcher.innerHTML = '';
-      const lab = document.createElement('label');
-      lab.className = 'mp-field';
-      const sp = document.createElement('span');
-      sp.textContent = 'Role workspace';
-      lab.appendChild(sp);
-
-      const sel = document.createElement('select');
-      MemberPortal.ROLE_POSITIONS.forEach(pos => {
-        const o = document.createElement('option');
-        o.value = pos.key;
-        o.textContent = pos.title + ' \u00b7 ' + (MemberPortal.WORKSPACES[pos.key] ? MemberPortal.WORKSPACES[pos.key].ibara : '');
-        if (this.ws.roleKey === pos.key) o.selected = true;
-        sel.appendChild(o);
-      });
-      sel.addEventListener('change', () => {
-        this._adminInspectRole = sel.value;
-        this.renderLeaderWorkspace();
-      });
-      lab.appendChild(sel);
-      switcher.appendChild(lab);
-    }
-
     renderLeaderResources() {
       const box = $('mpLeaderInfo');
       if (!box || !this.ws) return;
@@ -2589,20 +2556,10 @@
     }
 
     renderLeaderWorkspace() {
-      const isAdmin = this.profile && this.profile.role === 'admin';
-      const profileWs = MemberPortal.workspaceForProfile(this.profile);
-      if (isAdmin) {
-        const targetKey = this._adminInspectRole || (profileWs && profileWs.roleKey) || 'treasurer';
-        this._adminInspectRole = targetKey;
-        this.ws = MemberPortal.workspaceByKey(targetKey) || MemberPortal.GENERIC_WS;
-      } else {
-        this.ws = profileWs || MemberPortal.GENERIC_WS;
-      }
-
+      this.ws = MemberPortal.workspaceForProfile(this.profile) || MemberPortal.GENERIC_WS;
       this._wsType = Object.keys(this.ws.types)[0];
       this._wsRecords = [];
 
-      this.renderRoleSwitcher();
       this.renderLeaderResources();
 
       const workTitle = $('lrWorkTitle');
