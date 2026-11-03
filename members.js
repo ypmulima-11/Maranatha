@@ -49,6 +49,11 @@
           initialsEl.innerHTML = '<svg class="mp-avatar-person-icon" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="9" r="3.6" fill="currentColor"/><path d="M5.2 19.33C6.5 16.1 9 14.4 12 14.4s5.5 1.7 6.8 4.93A10 10 0 0 1 5.2 19.33z" fill="currentColor"/></svg>';
           initialsEl.style.display = 'flex';
         }
+        const profBtn = $('mpMenuProfile');
+        const dd = $('mpUserDropdown');
+        const hr = dd ? dd.querySelector('hr') : null;
+        if (profBtn) profBtn.style.display = 'none';
+        if (hr) hr.style.display = 'none';
         const outBtn = $('mpMenuLogout');
         if (outBtn) outBtn.textContent = 'Log in';
       }
@@ -1318,6 +1323,13 @@
               .map(w => w[0].toUpperCase()).join('') || '?';
           }
         }
+        const profBtn = $('mpMenuProfile');
+        const dd = $('mpUserDropdown');
+        const hr = dd ? dd.querySelector('hr') : null;
+        if (profBtn) profBtn.style.display = '';
+        if (hr) hr.style.display = '';
+        const outBtn = $('mpMenuLogout');
+        if (outBtn) outBtn.textContent = 'Log out';
         const globMenu = $('globalUserMenu');
         if (globMenu) globMenu.style.display = 'inline-block';
       }

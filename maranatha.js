@@ -1309,6 +1309,11 @@ if (item.video) {
 
     static updateActionLabel(isLoggedIn) {
       this.isLoggedIn = !!isLoggedIn;
+      const profBtn = El.get('mpMenuProfile');
+      const dd = El.get('mpUserDropdown');
+      const hr = dd ? dd.querySelector('hr') : null;
+      if (profBtn) profBtn.style.display = this.isLoggedIn ? '' : 'none';
+      if (hr) hr.style.display = this.isLoggedIn ? '' : 'none';
       const outBtn = El.get('mpMenuLogout');
       if (outBtn) {
         outBtn.textContent = this.isLoggedIn ? 'Log out' : 'Log in';
