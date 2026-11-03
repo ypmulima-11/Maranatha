@@ -1425,9 +1425,11 @@
         const dtLabel = ev.date
           ? new Date(ev.date + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
           : '';
-        d.textContent = [dtLabel, ev.time, ev.place || ev.location].filter(Boolean).join(' \u00b7 ');
+        const venue = (ev.place || ev.location || '').trim();
+        d.textContent = [dtLabel, (ev.time || '').trim(), venue].filter(Boolean).join(' \u00b7 ');
       } else {
-        d.textContent = this.fmtWhen(ev.start_time) + (ev.location ? ' \u00b7 ' + ev.location : '');
+        const venue = (ev.location || ev.place || '').trim();
+        d.textContent = this.fmtWhen(ev.start_time) + (venue ? ' \u00b7 ' + venue : '');
       }
       card.appendChild(d);
       if (ev.is_mandatory) {
@@ -1501,12 +1503,15 @@
 
     async loadEvents() {
       if (!this.profile) return;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
       const { data: evs, error } = await this.supabase
         .from('events')
         .select('*')
-        .gte('start_time', new Date().toISOString())
+        .gte('start_time', today.toISOString())
         .order('start_time', { ascending: true })
-        .limit(50);
+        .limit(15);
       if (error) console.warn('events:', error);
 
       const { data: rsvps } = await this.supabase
@@ -1515,11 +1520,22 @@
       (rsvps || []).forEach(r => { mine[r.event_id] = r.status; });
 
       // Consolidate database events + public schedule events so Upcoming Events & Member Directory show all upcoming events
-      const dbEvents = (evs || []).map(ev => ({
-        ...ev,
-        _sortDate: ev.start_time ? new Date(ev.start_time).toISOString().slice(0, 10) : '9999-12-31',
-        _isScheduleEvent: false
-      }));
+      const dbEvents = (evs || [])
+        .filter(ev => {
+          if (!ev || !ev.start_time) return false;
+          const dt = new Date(ev.start_time);
+          return !isNaN(dt) && dt >= today;
+        })
+        .map(ev => {
+          const dt = new Date(ev.start_time);
+          const pad = n => String(n).padStart(2, '0');
+          return {
+            ...ev,
+            location: (ev.location || ev.place || '').trim(),
+            _sortDate: `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`,
+            _isScheduleEvent: false
+          };
+        });
       const seenKeys = new Set(
         dbEvents.map(ev => `${ev._sortDate}::${(ev.title_en || ev.title_sw || '').trim().toLowerCase()}`)
       );
@@ -1534,8 +1550,6 @@
           if (resp.ok) {
             const json = await resp.json();
             if (json && Array.isArray(json.events)) {
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
               scheduleEvents = json.events.filter(ev => {
                 if (!ev || !ev.date) return false;
                 const d = new Date(ev.date + 'T00:00:00');
@@ -1549,17 +1563,27 @@
       const merged = dbEvents.slice();
       scheduleEvents.forEach(sev => {
         if (!sev || !sev.date) return;
-        const key = `${String(sev.date).slice(0, 10)}::${(sev.title || '').trim().toLowerCase()}`;
+        const dateStr = String(sev.date).slice(0, 10);
+        const parts = dateStr.split('-');
+        if (parts.length !== 3) return;
+        const evDate = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+        if (isNaN(evDate) || evDate < today) return;
+
+        const key = `${dateStr}::${(sev.title || '').trim().toLowerCase()}`;
         if (seenKeys.has(key)) return;
         seenKeys.add(key);
+        const venue = (sev.place || sev.location || '').trim();
         merged.push({
           ...sev,
-          _sortDate: String(sev.date).slice(0, 10),
+          place: venue,
+          location: venue,
+          _sortDate: dateStr,
           _isScheduleEvent: true
         });
       });
 
       merged.sort((a, b) => (a._sortDate || '').localeCompare(b._sortDate || ''));
+      const upcomingList = merged.slice(0, 12);
 
       const nextBox = $('mpNextEvent');
       const listBox = $('mpEvents');
@@ -1568,7 +1592,7 @@
       if (listBox) listBox.innerHTML = '';
       if (dirEvBox) dirEvBox.innerHTML = '';
 
-      if (!merged.length) {
+      if (!upcomingList.length) {
         const e = document.createElement('p');
         e.className = 'mp-empty';
         e.textContent = I18n.t('portal.noevents');
@@ -1578,14 +1602,12 @@
         return;
       }
 
-      if (nextBox) nextBox.appendChild(this.makeEventCard(merged[0], mine[merged[0].id]));
+      if (nextBox) nextBox.appendChild(this.makeEventCard(upcomingList[0], mine[upcomingList[0].id]));
       if (listBox) {
-        merged.forEach(ev => listBox.appendChild(this.makeEventCard(ev, mine[ev.id])));
-        this.applyViewMore(listBox, 'All Upcoming Events', 8);
+        upcomingList.forEach(ev => listBox.appendChild(this.makeEventCard(ev, mine[ev.id])));
       }
       if (dirEvBox) {
-        merged.forEach(ev => dirEvBox.appendChild(this.makeEventCard(ev, mine[ev.id])));
-        this.applyViewMore(dirEvBox, 'All Upcoming Events', 6);
+        upcomingList.forEach(ev => dirEvBox.appendChild(this.makeEventCard(ev, mine[ev.id])));
       }
     }
 
@@ -2230,7 +2252,7 @@
           id: `portal-event:${titleEn}:${start}`,
           type: 'event',
           title: titleEn,
-          meta: `${whenStr} \u00b7 ${locVal || 'Kigali, Rwanda'}`,
+          meta: [whenStr, locVal].filter(Boolean).join(' \u00b7 '),
           href: 'members.html?section=upcoming-events#portal',
           actionLabel: 'View Event'
         });

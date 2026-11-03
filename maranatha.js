@@ -259,13 +259,19 @@
       (baseList || []).forEach(ev => {
         if (!ev || !ev.date) return;
         const dateStr = String(ev.date).slice(0, 10);
+        const parts = dateStr.split('-');
+        if (parts.length !== 3) return;
+        const evDate = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+        if (isNaN(evDate) || evDate < now) return;
+
+        const venue = (ev.place || ev.location || '').trim();
         const key = `${dateStr}::${(ev.title || '').trim().toLowerCase()}`;
         map.set(key, {
           id: ev.id || key,
           date: dateStr,
           title: ev.title || 'Choir Event',
-          place: ev.place || ev.location || 'Kigali, Rwanda',
-          time: ev.time || '',
+          place: venue,
+          time: (ev.time || '').trim(),
           tag: ev.tag || ev.event_type || 'Event',
           notes: ev.notes || '',
           source: ev.source || 'schedule'
@@ -276,11 +282,12 @@
         const rawTime = r && (r.start_time || r.starts_at);
         if (!rawTime) return;
         const dt = new Date(rawTime);
-        if (isNaN(dt)) return;
+        if (isNaN(dt) || dt < now) return;
         const pad = n => String(n).padStart(2, '0');
         const dateStr = `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
         const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
         const titleVal = r.title || r.title_en || r.title_sw || 'Choir Event';
+        const venue = (r.location || r.place || '').trim();
         const key = `${dateStr}::${titleVal.trim().toLowerCase()}`;
         const tagLabel = r.event_type
           ? r.event_type.charAt(0).toUpperCase() + r.event_type.slice(1)
@@ -291,7 +298,7 @@
           starts_at: rawTime,
           date: dateStr,
           title: titleVal,
-          place: r.location || 'Kigali, Rwanda',
+          place: venue,
           time: timeStr,
           tag: tagLabel,
           event_type: r.event_type || 'rehearsal',
@@ -303,9 +310,9 @@
       return [...map.values()]
         .filter(ev => {
           const parts = (ev.date || '').split('-');
-          if (parts.length !== 3) return true;
+          if (parts.length !== 3) return false;
           const d = new Date(+parts[0], +parts[1] - 1, +parts[2]);
-          return isNaN(d) || d >= now;
+          return !isNaN(d) && d >= now;
         })
         .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
     }
@@ -322,8 +329,10 @@
       card.appendChild(h);
       const b = El.make('div', 'evb');
       b.appendChild(El.make('div', 'evt', ev.title));
-      const mt = (ev.place || '') + (ev.time ? ' \u00b7 ' + ev.time : '');
-      b.appendChild(El.make('div', 'evmt', mt));
+      const venue = (ev.place || ev.location || '').trim();
+      const timeVal = (ev.time || '').trim();
+      const mt = [venue, timeVal].filter(Boolean).join(' \u00b7 ');
+      if (mt) b.appendChild(El.make('div', 'evmt', mt));
       if (ev.tag) b.appendChild(El.make('span', 'evtg', ev.tag));
       const cal = SectionRenderer.buildCal(ev);
       if (cal) {
@@ -339,10 +348,11 @@
 
     renderEvents(list, dbRows = []) {
       const merged = SectionRenderer.normalizeAndMergeEvents(list, dbRows);
-      this._lastEvents = merged;
+      const visibleEvents = merged.slice(0, 12);
+      this._lastEvents = visibleEvents;
       window.MaranathaEvents = {
         getBaseEvents: () => (list || []).slice(),
-        getUpcoming: () => (this._lastEvents || []).slice(),
+        getUpcoming: () => visibleEvents.slice(),
         normalizeAndMerge: (base, rows) => SectionRenderer.normalizeAndMergeEvents(base, rows),
         buildCal: (ev) => SectionRenderer.buildCal(ev)
       };
@@ -351,11 +361,11 @@
       if (!targets.length) return;
 
       targets.forEach(container => {
-        if (merged.length === 0) {
+        if (visibleEvents.length === 0) {
           container.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--ink-mute);font-style:italic;">No upcoming events scheduled at this time.</p>';
           return;
         }
-        container.replaceChildren(...merged.map(ev => this.buildEventCard(ev)));
+        container.replaceChildren(...visibleEvents.map(ev => this.buildEventCard(ev)));
       });
     }
 
@@ -363,12 +373,14 @@
       const sb = getSbClient();
       if (!sb) return;
       try {
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
         const { data, error } = await sb
           .from('events')
           .select('*')
-          .gte('start_time', new Date(Date.now() - 86400000).toISOString())
+          .gte('start_time', todayStart.toISOString())
           .order('start_time', { ascending: true })
-          .limit(50);
+          .limit(15);
         if (!error && data && data.length) {
           this.renderEvents(baseList, data);
         }
@@ -2152,11 +2164,12 @@ if (item.video) {
             const when = dt && !isNaN(dt)
               ? dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
               : 'Upcoming';
+            const locStr = (row.location || row.place || '').trim();
             this.show({
               id: `sb-event:${row.id || titleVal}`,
               type: 'event',
               title: this.pickLang(row.title_en || row.title, row.title_sw),
-              meta: `${when} \u00b7 ${row.location || 'Dar es Salaam'}`,
+              meta: [when, locStr].filter(Boolean).join(' \u00b7 '),
               created_at: row.created_at || new Date().toISOString(),
               href: 'members.html?section=upcoming-events#portal',
               actionLabel: this.pickLang('View Event', 'Angalia Tukio')
