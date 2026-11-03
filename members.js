@@ -1322,12 +1322,23 @@
         if (globMenu) globMenu.style.display = 'inline-block';
       }
 
+      if ($('mpRoleMandateCard')) $('mpRoleMandateCard').hidden = !isLeader;
       $('mpLeaderCard').hidden = !isLeader;
       $('mpLeaderWork').hidden = !isLeader;
       $('mpAdminCard').hidden = !isAdmin;
       $('mpNavAdmin').hidden = !isAdmin;
       $('mpSessCard').hidden = !isLeader;
       $('mpPostCard').hidden = !isLeader;
+
+      if ($('mpSideLeader')) {
+        const sp = $('mpSideLeader').querySelector('span');
+        const detected = isLeader ? MemberPortal.workspaceForProfile(this.profile) : null;
+        if (sp) {
+          sp.textContent = detected && detected.shortName
+            ? 'Leader (' + detected.shortName + ')'
+            : 'Leader Resources';
+        }
+      }
 
       this.switchDashboardSection(this.activeSection || 'announcements');
 
@@ -1359,9 +1370,9 @@
       this.renderList($('mpMemberInfo'),
         this.resources.filter(r => r.audience === 'member'),
         'Nothing here yet \u2014 the leaders will add member resources soon.');
-      this.renderList($('mpLeaderInfo'),
-        this.resources.filter(r => r.audience === 'leader'),
-        'Nothing here yet \u2014 leadership materials will be added soon.');
+      if (!isLeader && $('mpLeaderInfo')) {
+        $('mpLeaderInfo').innerHTML = '';
+      }
       this.renderList($('mpAdminInfo'),
         this.resources.filter(r => r.audience === 'admin'),
         'Nothing here yet \u2014 admin tools will be added soon.');
@@ -1378,17 +1389,30 @@
       this.loadDirectory();
 
       if (isLeader) {
-          const form = $('adminResourceForm');
-          if (form) {
-            form.style.display = '';
+        const form = $('adminResourceForm');
+        if (form) {
+          form.style.display = '';
+          const aud = $('arAudience');
+          if (aud) {
             if (!isAdmin) {
-              const aud = $('arAudience');
-              if (aud) {
-                aud.value = 'leader';
-                aud.disabled = true;
-              }
+              const myWs = MemberPortal.workspaceForProfile(this.profile);
+              const myRoleVal = myWs && myWs.roleKey ? 'leader:' + myWs.roleKey : 'leader';
+              Array.from(aud.options).forEach(opt => {
+                const allowed = opt.value === 'leader' || opt.value === myRoleVal;
+                opt.disabled = !allowed;
+                opt.hidden = !allowed;
+              });
+              aud.value = myRoleVal;
+              aud.disabled = false;
+            } else {
+              Array.from(aud.options).forEach(opt => {
+                opt.disabled = false;
+                opt.hidden = false;
+              });
+              aud.disabled = false;
             }
           }
+        }
 
         $('mpSessCard').hidden = false;
         this.initLeaderSessions();
@@ -1652,327 +1676,739 @@
       });
     }
 
-    /* ---------- Role-specific leader workspaces ---------- */
+    /* ---------- Role-specific leader workspaces (Katiba Ibara ya 11 - 16 & 23 - 26) ---------- */
 
     static optLabel(v) {
-      return v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ');
+      if (!v) return '';
+      const s = String(v);
+      return s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ');
     }
+
+    static fmtTzs(n) {
+      const num = Number(n) || 0;
+      return 'TZS ' + num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    }
+
+    static CURRENCY_FIELDS = new Set([
+      'amount', 'contribution_amount', 'expense_amount',
+      'total_income', 'total_expenses', 'balance_brought_forward',
+      'balance_carried_forward', 'asset_value', 'budget_allocated', 'budget_spent'
+    ]);
+
+    static FILE_FIELDS = new Set([
+      'file_url', 'document_file_url', 'report_file_url',
+      'invoice_receipt_url', 'appointment_letter_url', 'media_file_url'
+    ]);
+
+    static KATIBA_DOC_URL = 'assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf';
+
+    static ROLE_POSITIONS = [
+      { key: 'chairperson', title: 'Mwenyekiti wa Kwaya (Chairperson)', label: 'Mwenyekiti wa Kwaya \u2014 Chairperson (Ibara ya 11)' },
+      { key: 'choirmaster', title: 'Mwalimu wa Kwaya (Choir Master)', label: 'Mwalimu wa Kwaya \u2014 Choir Master (Ibara ya 12)' },
+      { key: 'secretary', title: 'Katibu wa Kwaya (Secretary)', label: 'Katibu wa Kwaya \u2014 Secretary (Ibara ya 13)' },
+      { key: 'asst_secretary', title: 'Katibu Msaidizi (Assistant Secretary)', label: 'Katibu Msaidizi \u2014 Asst. Secretary (Ibara ya 14)' },
+      { key: 'treasurer', title: 'Mtunza Hazina (Treasurer)', label: 'Mtunza Hazina \u2014 Treasurer (Ibara ya 15)' },
+      { key: 'nidhamu', title: 'Kamati ya Nidhamu (Disciplinary)', label: 'Kamati ya Nidhamu \u2014 Disciplinary (Ibara ya 16.1)' },
+      { key: 'liturujia', title: 'Kamati ya Liturujia (Liturgy)', label: 'Kamati ya Liturujia \u2014 Liturgy (Ibara ya 16.2)' },
+      { key: 'media', title: 'Kamati ya Media (Media & Comms)', label: 'Kamati ya Media \u2014 Media & Comms (Ibara ya 16.3)' },
+      { key: 'kijamii', title: 'Kamati ya Kijamii (Social Welfare)', label: 'Kamati ya Kijamii \u2014 Social Welfare (Ibara ya 16.4)' }
+    ];
 
     static WORKSPACES = {
       chairperson: {
+        roleKey: 'chairperson',
         table: 'chairperson_workspace',
-        name: 'Chairperson',
+        name: 'Mwenyekiti wa Kwaya (Chairperson)',
+        shortName: 'Chairperson',
+        ibara: 'Ibara ya 11',
+        mandateSummary: 'Msemaji na kiongozi mkuu wa Kwaya ya Maranatha, mwenyekiti wa mikutano yote ya kwaya na Kamati Tendaji, na mmoja wa watia saini wa akaunti ya benki (Ibara ya 11 & 24.2).',
+        duties: [
+          'Kuitisha na kuongoza mikutano yote ya Kwaya na ya Kamati Tendaji (Ibara 11.2a).',
+          'Kuwa msemaji mkuu wa Kwaya na mwakilishi kwenye vikao vya Parokia na Jumuiya (Ibara 11.2b).',
+          'Kusimamia utekelezaji wa maazimio ya mikutano, Katiba, na nidhamu ya viongozi (Ibara 11.2c).',
+          'Kuidhinisha miamala ya fedha na kuwa miongoni mwa watia saini wa akaunti ya Kwaya Mkombozi Bank (Ibara 11.2d & 24.2).',
+          'Kuteua wajumbe wa kamati ndogo kwa kushirikiana na Kamati Tendaji (Ibara 16).'
+        ],
+        defaultResources: [
+          {
+            title: 'Katiba ya Kwaya \u2014 Ibara ya 11: Madaraka na Wajibu wa Mwenyekiti',
+            body: 'Mwongozo rasmi wa kikatiba kuhusu uongozi wa vikao vya Kamati Tendaji, Mkutano Mkuu wa Kwaya, uwakilishi wa Parokia, na utiaji saini wa nyaraka na miamala ya benki.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            date: 'Katiba \u00b7 Ibara ya 11'
+          },
+          {
+            title: 'Mwongozo wa Uidhinishaji Fedha & Benki (Ibara ya 24)',
+            body: 'Miamala yote ya utoaji fedha Mkombozi Bank inahitaji idhini ya Kamati Tendaji na saini za angalau viongozi wawili (2) kati ya Mwenyekiti, Katibu, Mtunza Hazina, na Mlezi wa Kiroho.',
+            date: 'Katiba \u00b7 Ibara ya 24.2'
+          }
+        ],
+        kpis: list => {
+          const meetings = list.filter(r => r.record_type === 'meeting').length;
+          const appts = list.filter(r => r.record_type === 'appointment').length;
+          const docs = list.filter(r => r.record_type === 'document').length;
+          return [
+            { label: 'Executive & General Meetings', val: String(meetings), sub: 'Chaired & logged (Ibara 11.2a)' },
+            { label: 'Committee Appointments', val: String(appts), sub: 'Kamati Ndogo (Ibara 16)' },
+            { label: 'Official & Bank Authorizations', val: String(docs), sub: 'Signed directives & letters' },
+            { label: 'Total Executive Records', val: String(list.length), sub: 'Active leadership term' }
+          ];
+        },
         types: {
           meeting: {
-            label: 'Meeting',
+            label: 'Executive / General Meeting',
             title: r => 'Meeting: ' + (r.meeting_title || ''),
             fields: [
               { k: 'meeting_title', l: 'Meeting title', req: true },
               { k: 'meeting_date', l: 'Meeting date', t: 'date', req: true },
               { k: 'meeting_type', l: 'Meeting type', t: 'select', opts: ['executive', 'general_assembly', 'sub_committee', 'other'] },
+              { k: 'attendees', l: 'Attendees / Quorum summary' },
               { k: 'agenda', l: 'Agenda', t: 'textarea' },
-              { k: 'attendees', l: 'Attendees' },
-              { k: 'minutes', l: 'Minutes', t: 'textarea' },
-              { k: 'action_items', l: 'Action items', t: 'textarea' }
+              { k: 'minutes', l: 'Resolutions & key summary', t: 'textarea' },
+              { k: 'action_items', l: 'Action items & directives', t: 'textarea' },
+              { k: 'status', l: 'Status', t: 'select', opts: ['draft', 'submitted', 'approved', 'archived'] },
+              { k: 'notes', l: 'Notes', t: 'textarea' }
             ]
           },
           appointment: {
-            label: 'Sub-committee appointment',
+            label: 'Sub-committee Appointment',
             title: r => 'Appointment: ' + (r.committee_name || '') + ' \u2014 ' + (r.appointee_name || ''),
             fields: [
-              { k: 'committee_name', l: 'Committee', req: true },
+              { k: 'committee_name', l: 'Committee (Kamati Ndogo)', t: 'select', opts: ['Nidhamu', 'Liturujia', 'Media', 'Masuala ya Kijamii', 'Muziki na Ufundi', 'Other'], req: true },
               { k: 'appointee_name', l: 'Appointee name', req: true },
               { k: 'appointment_date', l: 'Appointment date', t: 'date' },
-              { k: 'appointment_letter_url', l: 'Letter link (URL)' }
+              { k: 'appointment_letter_url', l: 'Appointment letter (File / URL)', file: true },
+              { k: 'status', l: 'Status', t: 'select', opts: ['draft', 'submitted', 'approved', 'archived'] },
+              { k: 'notes', l: 'Mandate & terms of reference', t: 'textarea' }
             ]
           },
           document: {
-            label: 'Bank & official document',
-            title: r => 'Document: ' + (r.document_title || ''),
+            label: 'Bank & Official Authorization',
+            title: r => 'Authorization: ' + (r.document_title || ''),
             fields: [
-              { k: 'document_title', l: 'Document title', req: true },
+              { k: 'document_title', l: 'Document / Authorization title', req: true },
               { k: 'document_type', l: 'Document type', t: 'select', opts: ['bank_signatory', 'official_letter', 'authorization', 'other'] },
-              { k: 'document_date', l: 'Document date', t: 'date' },
-              { k: 'document_file_url', l: 'File link (URL)' }
+              { k: 'document_date', l: 'Date signed', t: 'date' },
+              { k: 'document_file_url', l: 'Signed document (File / URL)', file: true },
+              { k: 'notes', l: 'Summary / Co-signatories', t: 'textarea' }
             ]
           }
         }
       },
 
       choirmaster: {
+        roleKey: 'choirmaster',
         table: 'choirmaster_workspace',
-        name: 'Choir Master',
+        name: 'Mwalimu wa Kwaya (Choir Master)',
+        shortName: 'Choir Master',
+        ibara: 'Ibara ya 12',
+        mandateSummary: 'Msimamizi mkuu wa uimbaji, ufundishaji wa nyimbo, ratiba za mazoezi, na ubora wa muziki wa Kwaya katika adhimisho la Misa na matukio yote (Ibara ya 12).',
+        duties: [
+          'Kufundisha na kuongoza nyimbo wakati wa mazoezi, Misa Takatifu, na shughuli zote za Kwaya (Ibara 12.2a).',
+          'Kupanga ratiba ya mazoezi na kuchagua nyimbo zinazoendana na Kalenda ya Liturujia (Ibara 12.2b).',
+          'Kuteua walimu wasaidizi na viongozi wa sauti (Soprano, Alto, Tenor, Bass) kwa kushirikiana na Kamati Tendaji (Ibara 12.2c).',
+          'Kutunza maktaba ya nota na kumbukumbu za nyimbo za Kwaya (Ibara 12.2d).'
+        ],
+        defaultResources: [
+          {
+            title: 'Katiba ya Kwaya \u2014 Ibara ya 12: Wajibu wa Mwalimu wa Kwaya',
+            body: 'Maelekezo ya kikatiba kuhusu ufundishaji wa sauti nne (SATB), uteuzi wa nyimbo za Liturujia, usimamizi wa walimu wasaidizi, na nidhamu ya mazoezi.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            date: 'Katiba \u00b7 Ibara ya 12'
+          },
+          {
+            title: 'Mwongozo wa Mazoezi na Maktaba ya Nota (SATB)',
+            body: 'Tumia sehemu ya Song Library kupakia nota za PDF na sauti za mazoezi, na rekodi ratiba ya mazoezi na nyimbo zilizofundishwa kwenye mfumo huu.',
+            date: 'Ufundi na Muziki'
+          }
+        ],
+        kpis: list => {
+          const rehearsals = list.filter(r => r.record_type === 'rehearsal');
+          const songs = list.filter(r => r.record_type === 'repertoire');
+          const readySongs = songs.filter(r => r.status_repertoire === 'performance_ready').length;
+          const events = list.filter(r => r.record_type === 'event').length;
+          return [
+            { label: 'Rehearsals Logged', val: String(rehearsals.length), sub: 'Technical sessions recorded' },
+            { label: 'Active Repertoire', val: String(songs.length), sub: readySongs + ' performance-ready' },
+            { label: 'Liturgical / Ministry Plans', val: String(events), sub: 'Masses & concerts planned' },
+            { label: 'Assistant Trainers', val: String(list.filter(r => r.record_type === 'assistant').length), sub: 'Appointed section trainers' }
+          ];
+        },
         types: {
           rehearsal: {
-            label: 'Rehearsal',
+            label: 'Rehearsal Log',
             title: r => 'Rehearsal: ' + (r.pieces_practiced || r.rehearsal_date || ''),
             fields: [
               { k: 'rehearsal_date', l: 'Rehearsal date', t: 'date', req: true },
               { k: 'rehearsal_time', l: 'Time', t: 'time' },
               { k: 'venue', l: 'Venue' },
-              { k: 'pieces_practiced', l: 'Pieces practiced', t: 'textarea' },
-              { k: 'focus_areas', l: 'Focus areas', t: 'textarea' },
-              { k: 'attendance_count', l: 'Attendance count', t: 'number' }
+              { k: 'pieces_practiced', l: 'Songs / Pieces practiced', t: 'textarea', req: true },
+              { k: 'focus_areas', l: 'Vocal / Technical focus areas', t: 'textarea' },
+              { k: 'attendance_count', l: 'Attendance count', t: 'number' },
+              { k: 'notes', l: 'Evaluation notes', t: 'textarea' }
             ]
           },
           repertoire: {
-            label: 'Song repertoire',
+            label: 'Song Repertoire',
             title: r => 'Song: ' + (r.song_title || ''),
             fields: [
               { k: 'song_title', l: 'Song title', req: true },
               { k: 'composer', l: 'Composer' },
-              { k: 'arrangement', l: 'Arrangement' },
+              { k: 'arrangement', l: 'Key / Arrangement (SATB)' },
               { k: 'difficulty', l: 'Difficulty', t: 'select', opts: ['easy', 'medium', 'hard'] },
-              { k: 'status_repertoire', l: 'Status', t: 'select', opts: ['learning', 'polishing', 'performance_ready', 'archived'] }
+              { k: 'status_repertoire', l: 'Mastery status', t: 'select', opts: ['learning', 'polishing', 'performance_ready', 'archived'] },
+              { k: 'notes', l: 'Liturgical season / Notes', t: 'textarea' }
             ]
           },
           event: {
-            label: 'Ministry calendar',
-            title: r => 'Event: ' + (r.event_title || ''),
+            label: 'Ministry & Mass Calendar',
+            title: r => 'Ministry Event: ' + (r.event_title || ''),
             fields: [
-              { k: 'event_title', l: 'Event title', req: true },
+              { k: 'event_title', l: 'Mass / Event title', req: true },
               { k: 'event_date', l: 'Event date', t: 'date', req: true },
               { k: 'event_type', l: 'Event type', t: 'select', opts: ['mass', 'concert', 'wedding', 'funeral', 'festival', 'rehearsal', 'other'] },
-              { k: 'event_venue', l: 'Venue' },
-              { k: 'preparation_notes', l: 'Preparation notes', t: 'textarea' }
+              { k: 'event_venue', l: 'Venue / Parish' },
+              { k: 'preparation_notes', l: 'Setlist & liturgical preparation notes', t: 'textarea' }
             ]
           },
           assistant: {
-            label: 'Assistant',
+            label: 'Assistant / Voice Trainer',
             title: r => 'Assistant: ' + (r.assistant_name || ''),
             fields: [
-              { k: 'assistant_name', l: 'Assistant name', req: true },
-              { k: 'assistant_role', l: 'Role given' },
-              { k: 'appointment_date', l: 'Appointment date', t: 'date' }
+              { k: 'assistant_name', l: 'Assistant / Voice leader name', req: true },
+              { k: 'assistant_role', l: 'Assigned voice part / Duty (e.g. Soprano Trainer)' },
+              { k: 'appointment_date', l: 'Appointment date', t: 'date' },
+              { k: 'notes', l: 'Responsibilities', t: 'textarea' }
             ]
           }
         }
       },
 
       secretary: {
+        roleKey: 'secretary',
         table: 'secretary_workspace',
-        name: 'Secretary',
+        name: 'Katibu wa Kwaya (Secretary)',
+        shortName: 'Secretary',
+        ibara: 'Ibara ya 13',
+        mandateSummary: 'Mtendaji mkuu wa shughuli za kila siku za Kwaya, mtunzaji wa mihutasari ya vikao, nyaraka rasmi, barua, daftari la wanakwaya, na orodha ya mali za Kwaya (Ibara ya 13).',
+        duties: [
+          'Kuandaa dondoo (agenda) za mikutano kwa kushirikiana na Mwenyekiti na kuandika mihutasari ya vikao vyote (Ibara 13.2a-b).',
+          'Kutunza nyaraka zote rasmi, barua zinazoingia na kutoka, na mihuri ya Kwaya (Ibara 13.2c).',
+          'Kutunza daftari la orodha ya wanakwaya hai, walio katika ruhusa, na wahitimu (Ibara 13.2d).',
+          'Kutunza na kuhakiki Daftari la Mali za Kwaya (Asset Register \u2014 ala za muziki, sare, na vifaa) (Ibara 13.2e).',
+          'Kuwa mmoja wa watia saini wa akaunti ya Kwaya Mkombozi Bank (Ibara 24.2).'
+        ],
+        defaultResources: [
+          {
+            title: 'Katiba ya Kwaya \u2014 Ibara ya 13: Wajibu wa Katibu wa Kwaya',
+            body: 'Mwongozo wa utunzaji wa nyaraka za kwaya, uandishi wa mihutasari ya Kamati Tendaji na Mkutano Mkuu, na usimamizi wa daftari la mali za kwaya.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            date: 'Katiba \u00b7 Ibara ya 13'
+          },
+          {
+            title: 'Kigezo cha Mhutasari wa Kikao na Daftari la Barua',
+            body: 'Kila mhutasari ujumuishe: Tarehe, Mahali, Mahudhurio, Udhuru, Agenda, Yatokanayo, Maazimio, na Mpango Kazi. Pakia nakala ya PDF kwenye kichupo cha Document & Correspondence Manager au Meeting Minutes.',
+            date: 'Mwongozo wa Katibu'
+          }
+        ],
+        kpis: list => {
+          const docs = list.filter(r => r.record_type === 'correspondence').length;
+          const mins = list.filter(r => r.record_type === 'minutes').length;
+          const assets = list.filter(r => r.record_type === 'asset');
+          const assetVal = assets.reduce((acc, r) => acc + (Number(r.asset_value) || 0), 0);
+          const members = list.filter(r => r.record_type === 'membership').length;
+          return [
+            { label: 'Official Documents & Letters', val: String(docs), sub: 'Incoming, outgoing & filings' },
+            { label: 'Meeting Minutes Logged', val: String(mins), sub: 'Executive & General meetings' },
+            { label: 'Choir Assets (' + assets.length + ' items)', val: MemberPortal.fmtTzs(assetVal), sub: 'Total registered asset value' },
+            { label: 'Membership Registry Logs', val: String(members), sub: 'Status & leave records' }
+          ];
+        },
         types: {
+          correspondence: {
+            label: 'Document & Correspondence Manager',
+            title: r => 'Document: ' + (r.subject || ''),
+            fields: [
+              { k: 'subject', l: 'Document title / Subject', req: true },
+              { k: 'correspondence_type', l: 'Document category', t: 'select', opts: ['incoming', 'outgoing', 'internal'], req: true },
+              { k: 'correspondence_date', l: 'Document date', t: 'date', req: true },
+              { k: 'reference_number', l: 'Reference number (Kumb. Na.)' },
+              { k: 'from_to', l: 'Sender / Recipient / Office' },
+              { k: 'file_url', l: 'Official document (Upload PDF/File or URL)', file: true },
+              { k: 'action_required', l: 'Action required / Follow-up' },
+              { k: 'status', l: 'Status', t: 'select', opts: ['draft', 'final', 'distributed', 'archived'] },
+              { k: 'notes', l: 'Document summary / Notes', t: 'textarea' }
+            ]
+          },
           minutes: {
-            label: 'Meeting minutes',
-            title: r => 'Minutes: ' + (r.meeting_type || '') + ' \u00b7 ' + (r.meeting_date || ''),
+            label: 'Meeting Minutes',
+            title: r => 'Minutes: ' + MemberPortal.optLabel(r.meeting_type || 'Meeting') + ' \u00b7 ' + (r.meeting_date || ''),
             fields: [
               { k: 'meeting_date', l: 'Meeting date', t: 'date', req: true },
-              { k: 'meeting_type', l: 'Meeting type', t: 'select', opts: ['executive', 'general', 'sub_committee', 'annual_general', 'other'] },
-              { k: 'attendees', l: 'Attendees', t: 'textarea' },
-              { k: 'apologies', l: 'Apologies', t: 'textarea' },
-              { k: 'minutes_text', l: 'Minutes', t: 'textarea' },
-              { k: 'matters_arising', l: 'Matters arising', t: 'textarea' },
-              { k: 'decisions_made', l: 'Decisions made', t: 'textarea' },
-              { k: 'action_items', l: 'Action items', t: 'textarea' },
-              { k: 'next_meeting_date', l: 'Next meeting date', t: 'date' }
+              { k: 'meeting_type', l: 'Meeting type', t: 'select', opts: ['executive', 'general', 'sub_committee', 'annual_general', 'other'], req: true },
+              { k: 'attendees', l: 'Attendees summary / Quorum', t: 'textarea' },
+              { k: 'apologies', l: 'Apologies (Udhuru)', t: 'textarea' },
+              { k: 'matters_arising', l: 'Matters arising (Yatokanayo)', t: 'textarea' },
+              { k: 'minutes_text', l: 'Proceedings & minutes summary', t: 'textarea', req: true },
+              { k: 'decisions_made', l: 'Resolutions passed (Maazimio)', t: 'textarea' },
+              { k: 'action_items', l: 'Action items & responsible persons', t: 'textarea' },
+              { k: 'next_meeting_date', l: 'Next meeting date', t: 'date' },
+              { k: 'file_url', l: 'Signed minutes PDF (Upload or URL)', file: true }
             ]
           },
           asset: {
-            label: 'Asset register',
+            label: 'Choir Asset Register (Mali za Kwaya)',
             title: r => 'Asset: ' + (r.asset_name || ''),
             fields: [
-              { k: 'asset_name', l: 'Asset name', req: true },
-              { k: 'asset_category', l: 'Category', t: 'select', opts: ['instruments', 'sound_equipment', 'furniture', 'vestments', 'documents', 'other'] },
+              { k: 'asset_name', l: 'Asset / Equipment name', req: true },
+              { k: 'asset_category', l: 'Category', t: 'select', opts: ['instruments', 'sound_equipment', 'vestments', 'furniture', 'documents', 'other'], req: true },
               { k: 'asset_condition', l: 'Condition', t: 'select', opts: ['excellent', 'good', 'fair', 'needs_repair', 'disposed'] },
-              { k: 'asset_location', l: 'Location' },
-              { k: 'asset_value', l: 'Value (TZS)', t: 'number' },
-              { k: 'acquisition_date', l: 'Acquired on', t: 'date' }
-            ]
-          },
-          correspondence: {
-            label: 'Correspondence',
-            title: r => 'Correspondence: ' + (r.subject || ''),
-            fields: [
-              { k: 'subject', l: 'Subject', req: true },
-              { k: 'correspondence_type', l: 'Direction', t: 'select', opts: ['incoming', 'outgoing', 'internal'] },
-              { k: 'correspondence_date', l: 'Date', t: 'date' },
-              { k: 'from_to', l: 'From / To' },
-              { k: 'reference_number', l: 'Reference number' },
-              { k: 'file_url', l: 'File link (URL)' }
+              { k: 'asset_location', l: 'Storage location / Custodian' },
+              { k: 'asset_value', l: 'Estimated value (TZS)', t: 'number' },
+              { k: 'acquisition_date', l: 'Date acquired', t: 'date' },
+              { k: 'notes', l: 'Serial number / Inspection remarks', t: 'textarea' }
             ]
           },
           membership: {
-            label: 'Membership record',
-            title: r => 'Member: ' + (r.member_name || ''),
+            label: 'Membership Status Log',
+            title: r => 'Member: ' + (r.member_name || '') + (r.membership_status ? ' (' + MemberPortal.optLabel(r.membership_status) + ')' : ''),
             fields: [
-              { k: 'member_name', l: 'Member name', req: true },
-              { k: 'member_role', l: 'Role' },
-              { k: 'membership_status', l: 'Status', t: 'select', opts: ['active', 'on_leave', 'resigned', 'suspended'] },
-              { k: 'membership_date', l: 'Effective date', t: 'date' }
+              { k: 'member_name', l: 'Member full name', req: true },
+              { k: 'member_role', l: 'Voice part / Role' },
+              { k: 'membership_status', l: 'Status', t: 'select', opts: ['active', 'on_leave', 'resigned', 'suspended'], req: true },
+              { k: 'membership_date', l: 'Effective date', t: 'date' },
+              { k: 'notes', l: 'Reason / Official remarks', t: 'textarea' }
             ]
           }
         }
       },
 
       asst_secretary: {
+        roleKey: 'asst_secretary',
         table: 'asst_secretary_workspace',
-        name: 'Assistant Secretary',
+        name: 'Katibu Msaidizi (Assistant Secretary)',
+        shortName: 'Asst. Secretary',
+        ibara: 'Ibara ya 14',
+        mandateSummary: 'Msaidizi mkuu wa Katibu wa Kwaya katika utunzaji wa kumbukumbu za vikao, maandalizi ya nyaraka, na usambazaji wa taarifa rasmi kwa wanakwaya (Ibara ya 14).',
+        duties: [
+          'Kumsaidia Katibu wa Kwaya katika majukumu yote ya utendaji na utunzaji wa nyaraka (Ibara 14.2a).',
+          'Kukaimu nafasi na majukumu ya Katibu wa Kwaya anapokuwa hayupo (Ibara 14.2b).',
+          'Kuratibu usambazaji wa matangazo, barua, na taarifa za vikao kwa wanakwaya (Ibara 14.2c).'
+        ],
+        defaultResources: [
+          {
+            title: 'Katiba ya Kwaya \u2014 Ibara ya 14: Wajibu wa Katibu Msaidizi',
+            body: 'Maelekezo ya kikatiba kuhusu kumsaidia Katibu Mkuu, uandishi wa rasimu za mihutasari, na uratibu wa mawasiliano ya ndani ya kwaya.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            date: 'Katiba \u00b7 Ibara ya 14'
+          }
+        ],
+        kpis: list => {
+          const support = list.filter(r => r.record_type === 'meeting_support').length;
+          const backups = list.filter(r => r.record_type === 'backup_minutes').length;
+          const comms = list.filter(r => r.record_type === 'communication').length;
+          return [
+            { label: 'Meeting Support Logs', val: String(support), sub: 'Prep & attendance logs' },
+            { label: 'Backup Minutes Drafted', val: String(backups), sub: 'Deputized sessions' },
+            { label: 'Communications Prepared', val: String(comms), sub: 'Notices & dispatches' },
+            { label: 'Total Secretariat Records', val: String(list.length), sub: 'Active leadership term' }
+          ];
+        },
         types: {
           meeting_support: {
-            label: 'Meeting support',
-            title: r => 'Support: ' + (r.support_role || '') + ' \u00b7 ' + (r.meeting_date || ''),
+            label: 'Meeting Support & Prep',
+            title: r => 'Support: ' + MemberPortal.optLabel(r.support_role || 'Task') + ' \u00b7 ' + (r.meeting_date || ''),
             fields: [
               { k: 'support_role', l: 'Support task', t: 'select', opts: ['minutes_draft', 'attendance', 'documents_prep', 'distribution', 'other'], req: true },
-              { k: 'meeting_date', l: 'Meeting date', t: 'date' },
+              { k: 'meeting_date', l: 'Meeting date', t: 'date', req: true },
               { k: 'meeting_type', l: 'Meeting type', t: 'select', opts: ['executive', 'general', 'sub_committee', 'other'] },
-              { k: 'draft_minutes', l: 'Draft minutes', t: 'textarea' },
+              { k: 'draft_minutes', l: 'Draft minutes / Key notes', t: 'textarea' },
               { k: 'documents_prepared', l: 'Documents prepared', t: 'textarea' },
-              { k: 'distribution_list', l: 'Distribution list', t: 'textarea' }
+              { k: 'distribution_list', l: 'Distribution list / Channels', t: 'textarea' }
             ]
           },
           backup_minutes: {
-            label: 'Backup minutes',
-            title: r => 'Backup minutes: ' + (r.backup_for_date || ''),
+            label: 'Deputized / Backup Minutes',
+            title: r => 'Backup Minutes: ' + (r.backup_for_date || ''),
             fields: [
               { k: 'backup_for_date', l: 'Meeting date', t: 'date', req: true },
-              { k: 'backup_minutes', l: 'Minutes', t: 'textarea' }
+              { k: 'backup_minutes', l: 'Full minutes text', t: 'textarea', req: true },
+              { k: 'notes', l: 'Handover notes to Secretary', t: 'textarea' }
             ]
           },
           communication: {
-            label: 'Communication draft',
-            title: r => 'Communication: ' + (r.comm_type || ''),
+            label: 'Member Communication & Notices',
+            title: r => 'Notice (' + MemberPortal.optLabel(r.comm_type || 'notice') + '): ' + (r.comm_recipients || ''),
             fields: [
-              { k: 'comm_type', l: 'Type', t: 'select', opts: ['letter', 'email', 'notice', 'announcement', 'other'], req: true },
-              { k: 'comm_draft', l: 'Draft', t: 'textarea' },
-              { k: 'comm_recipients', l: 'Recipients' },
-              { k: 'comm_status', l: 'Status', t: 'select', opts: ['draft', 'ready_to_send', 'sent'] }
+              { k: 'comm_type', l: 'Communication type', t: 'select', opts: ['letter', 'email', 'notice', 'announcement', 'other'], req: true },
+              { k: 'comm_recipients', l: 'Target recipients (e.g. All Members, Kamati Tendaji)', req: true },
+              { k: 'comm_draft', l: 'Message / Notice content', t: 'textarea', req: true },
+              { k: 'comm_status', l: 'Dispatch status', t: 'select', opts: ['draft', 'ready_to_send', 'sent'] }
             ]
           }
         }
       },
 
       treasurer: {
+        roleKey: 'treasurer',
         table: 'treasurer_workspace',
-        name: 'Treasurer',
+        name: 'Mtunza Hazina (Treasurer)',
+        shortName: 'Treasurer',
+        ibara: 'Ibara ya 15 & Ibara ya 23\u201326',
+        mandateSummary: 'Msimamizi mkuu wa fedha, mapato, michango, matumizi, uhamisho wa fedha, na akaunti ya benki ya Kwaya (Mkombozi Bank), pamoja na uandaaji wa taarifa za fedha za kila muhula (Ibara ya 15 & 23\u201326).',
+        duties: [
+          'Kupokea na kutunza fedha zote za Kwaya (ada za wanakwaya, michango, sadaka za shukrani, na miradi) na kutoa stakabadhi (Ibara 15.2a & 23).',
+          'Kupeleka fedha benki (Mkombozi Bank) na kurekodi miamala yote ya kuweka, kutoa, na kuhamisha fedha (Ibara 15.2b & 24).',
+          'Kufanya malipo na matumizi yaliyoidhinishwa na Kamati Tendaji kwa kuzingatia bajeti ya Kwaya (Ibara 15.2c & 25).',
+          'Kuandaa na kuwasilisha Taarifa ya Mapato na Matumizi ya Kwaya kwa kila muhula (Semester Financial Report) kwenye Mkutano Mkuu (Ibara 15.2d & 26).',
+          'Kuwa mmoja wa watia saini wanne wa akaunti ya benki ya Kwaya (ambapo saini 2 kati ya 4 zinahitajika kwa kila muamala \u2014 Ibara 24.2).'
+        ],
+        defaultResources: [
+          {
+            title: 'Katiba ya Kwaya \u2014 Ibara ya 15 & Ibara ya 23\u201326: Usimamizi wa Fedha na Hazina',
+            body: 'Mwongozo kamili wa vyanzo vya mapato ya kwaya (Ibara 23), utunzaji wa fedha Mkombozi Bank (Ibara 24), utaratibu wa idhini ya matumizi (Ibara 25), na taarifa za fedha za muhula (Ibara 26).<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            date: 'Katiba \u00b7 Ibara ya 15 & 23\u201326'
+          },
+          {
+            title: 'Kanuni za Akaunti ya Mkombozi Bank & Watia Saini (Ibara ya 24)',
+            body: 'Akaunti ya Kwaya inatunzwa katika Benki ya Mkombozi. Watia saini ni wanne: (1) Mwenyekiti wa Kwaya, (2) Katibu wa Kwaya, (3) Mtunza Hazina, na (4) Mlezi wa Kiroho. Muamala wowote wa kutoa au kuhamisha fedha unahitaji saini za angalau wawili.',
+            date: 'Udhibiti wa Fedha'
+          }
+        ],
+        kpis: list => {
+          const contribs = list.filter(r => r.record_type === 'contribution');
+          const expenses = list.filter(r => r.record_type === 'expense');
+          const txns = list.filter(r => r.record_type === 'transaction');
+          const reports = list.filter(r => r.record_type === 'semester_report');
+
+          const totalContrib = contribs.reduce((s, r) => s + (Number(r.contribution_amount) || 0), 0);
+          const totalInterests = txns.filter(r => r.transaction_type === 'interest').reduce((s, r) => s + (Number(r.amount) || 0), 0);
+          const totalExp = expenses.reduce((s, r) => s + (Number(r.expense_amount) || 0), 0);
+          const totalFees = txns.filter(r => r.transaction_type === 'fee').reduce((s, r) => s + (Number(r.amount) || 0), 0);
+          const totalDepositsTransfers = txns
+            .filter(r => r.transaction_type === 'deposit' || r.transaction_type === 'transfer' || r.transaction_type === 'withdrawal')
+            .reduce((s, r) => s + (Number(r.amount) || 0), 0);
+
+          let incomeVal = totalContrib + totalInterests;
+          let expVal = totalExp + totalFees;
+          let netVal = incomeVal - expVal;
+
+          if (incomeVal === 0 && expVal === 0 && reports.length > 0) {
+            const latest = reports[0];
+            incomeVal = Number(latest.total_income) || 0;
+            expVal = Number(latest.total_expenses) || 0;
+            netVal = latest.balance_carried_forward !== undefined && latest.balance_carried_forward !== null
+              ? Number(latest.balance_carried_forward)
+              : (Number(latest.balance_brought_forward) || 0) + incomeVal - expVal;
+          }
+
+          return [
+            { label: 'Total Income & Funds', val: MemberPortal.fmtTzs(incomeVal), sub: contribs.length + ' contribution entries (Ibara 23)' },
+            { label: 'Total Expenditure', val: MemberPortal.fmtTzs(expVal), sub: expenses.length + ' approved expenses (Ibara 25)' },
+            { label: 'Bank & Fund Transfers', val: MemberPortal.fmtTzs(totalDepositsTransfers), sub: txns.length + ' Mkombozi Bank transactions' },
+            { label: 'Net Treasury Balance', val: MemberPortal.fmtTzs(netVal), sub: reports.length + ' semester report(s) filed' }
+          ];
+        },
         types: {
-          semester_report: {
-            label: 'Semester report',
-            title: r => 'Report: ' + (r.semester || ''),
+          contribution: {
+            label: 'Record Income & Funds',
+            title: r => 'Income: ' + (r.contributor_name || '') + (r.contribution_amount ? ' \u2014 ' + MemberPortal.fmtTzs(r.contribution_amount) : ''),
             fields: [
-              { k: 'semester', l: 'Semester (e.g. 2026-1)', req: true },
-              { k: 'report_date', l: 'Report date', t: 'date' },
-              { k: 'total_income', l: 'Total income', t: 'number' },
-              { k: 'total_expenses', l: 'Total expenses', t: 'number' },
-              { k: 'balance_brought_forward', l: 'Balance b/f', t: 'number' },
-              { k: 'balance_carried_forward', l: 'Balance c/f', t: 'number' },
-              { k: 'report_file_url', l: 'Report file link (URL)' }
+              { k: 'contributor_name', l: 'Contributor / Fund source name', req: true },
+              { k: 'contributor_type', l: 'Fund / Income category (Ibara 23)', t: 'select', opts: ['member', 'donor', 'fundraising', 'parish', 'other'], req: true },
+              { k: 'contribution_amount', l: 'Amount received (TZS)', t: 'number', req: true },
+              { k: 'contribution_date', l: 'Date received', t: 'date', req: true },
+              { k: 'contribution_method', l: 'Payment channel', t: 'select', opts: ['cash', 'mobile_money', 'bank_transfer', 'cheque', 'other'], req: true },
+              { k: 'receipt_number', l: 'Receipt / Control number (Stakabadhi Na.)' },
+              { k: 'notes', l: 'Fund purpose (e.g. Ada ya Mwaka, Harambee, Sare)', t: 'textarea' }
             ]
           },
           transaction: {
-            label: 'Bank transaction',
-            title: r => 'Transaction: ' + (r.description || ''),
+            label: 'Bank & Fund Transfers',
+            title: r => MemberPortal.optLabel(r.transaction_type || 'Transaction') + ': ' + (r.description || '') + (r.amount ? ' (' + MemberPortal.fmtTzs(r.amount) + ')' : ''),
             fields: [
-              { k: 'transaction_date', l: 'Date', t: 'date', req: true },
-              { k: 'transaction_type', l: 'Type', t: 'select', opts: ['deposit', 'withdrawal', 'transfer', 'fee', 'interest'], req: true },
+              { k: 'transaction_date', l: 'Transaction date', t: 'date', req: true },
+              { k: 'transaction_type', l: 'Operation type', t: 'select', opts: ['deposit', 'withdrawal', 'transfer', 'fee', 'interest'], req: true },
               { k: 'amount', l: 'Amount (TZS)', t: 'number', req: true },
-              { k: 'description', l: 'Description', req: true },
-              { k: 'reference_number', l: 'Reference number' },
-              { k: 'bank_statement_ref', l: 'Statement reference' }
-            ]
-          },
-          contribution: {
-            label: 'Contribution received',
-            title: r => 'Contribution: ' + (r.contributor_name || ''),
-            fields: [
-              { k: 'contributor_name', l: 'Contributor', req: true },
-              { k: 'contributor_type', l: 'Source', t: 'select', opts: ['member', 'donor', 'fundraising', 'parish', 'other'] },
-              { k: 'contribution_amount', l: 'Amount (TZS)', t: 'number' },
-              { k: 'contribution_date', l: 'Date', t: 'date' },
-              { k: 'contribution_method', l: 'Method', t: 'select', opts: ['cash', 'mobile_money', 'bank_transfer', 'cheque', 'other'] },
-              { k: 'receipt_number', l: 'Receipt number' }
+              { k: 'description', l: 'Transfer / Transaction details (From \u2192 To)', req: true },
+              { k: 'reference_number', l: 'Bank slip / Transfer reference No.' },
+              { k: 'bank_statement_ref', l: 'Authorizing signatories (min 2 of 4 \u2014 Ibara 24.2)' },
+              { k: 'notes', l: 'Reconciliation notes', t: 'textarea' }
             ]
           },
           expense: {
-            label: 'Expense',
-            title: r => 'Expense: ' + (r.expense_description || ''),
+            label: 'Record Expenditure',
+            title: r => 'Expense: ' + (r.expense_description || '') + (r.expense_amount ? ' \u2014 ' + MemberPortal.fmtTzs(r.expense_amount) : ''),
             fields: [
-              { k: 'expense_description', l: 'Description', req: true },
-              { k: 'expense_category', l: 'Category', t: 'select', opts: ['instruments', 'vestments', 'transport', 'venue', 'meals', 'stationery', 'maintenance', 'utilities', 'honoraria', 'other'] },
-              { k: 'expense_amount', l: 'Amount (TZS)', t: 'number' },
-              { k: 'expense_date', l: 'Date', t: 'date' },
-              { k: 'payee', l: 'Paid to' },
-              { k: 'invoice_receipt_url', l: 'Invoice/receipt link (URL)' },
-              { k: 'approved_by', l: 'Approved by' }
+              { k: 'expense_description', l: 'Expenditure purpose / Item', req: true },
+              { k: 'expense_category', l: 'Budget category', t: 'select', opts: ['instruments', 'vestments', 'transport', 'venue', 'meals', 'stationery', 'maintenance', 'utilities', 'honoraria', 'other'], req: true },
+              { k: 'expense_amount', l: 'Amount paid (TZS)', t: 'number', req: true },
+              { k: 'expense_date', l: 'Payment date', t: 'date', req: true },
+              { k: 'payee', l: 'Paid to (Payee / Vendor)' },
+              { k: 'approved_by', l: 'Approved by (Kamati Tendaji / Signatories)' },
+              { k: 'invoice_receipt_url', l: 'Payment voucher / Receipt (Upload File or URL)', file: true },
+              { k: 'notes', l: 'Additional voucher notes', t: 'textarea' }
+            ]
+          },
+          semester_report: {
+            label: 'Semester Financial Report',
+            title: r => 'Financial Report: ' + (r.semester || ''),
+            fields: [
+              { k: 'semester', l: 'Semester / Financial period (e.g. Semester I 2025/2026)', req: true },
+              { k: 'report_date', l: 'Report date', t: 'date', req: true },
+              { k: 'balance_brought_forward', l: 'Opening balance B/F (TZS)', t: 'number' },
+              { k: 'total_income', l: 'Total semester income (TZS)', t: 'number', req: true },
+              { k: 'total_expenses', l: 'Total semester expenses (TZS)', t: 'number', req: true },
+              { k: 'balance_carried_forward', l: 'Closing balance C/F (TZS)', t: 'number' },
+              { k: 'report_file_url', l: 'Audited / Signed report PDF (Upload File or URL)', file: true },
+              { k: 'notes', l: 'Executive summary & audit remarks', t: 'textarea' }
             ]
           }
         }
       },
 
-      subcommittee: {
+      nidhamu: {
+        roleKey: 'nidhamu',
+        committee: 'nidhamu',
         table: 'subcommittee_workspace',
+        name: 'Kamati ya Nidhamu (Disciplinary Committee)',
+        shortName: 'Nidhamu',
+        ibara: 'Ibara ya 16.1 & Ibara ya 29',
+        mandateSummary: 'Kusimamia maadili, mahudhurio, utunzaji wa muda, sare za Kwaya, na kushughulikia masuala ya kinidhamu na usuluhishi kwa mujibu wa Katiba (Ibara ya 16.1 & 29).',
+        duties: [
+          'Kusimamia nidhamu na maadili ya wanakwaya wakati wa mazoezi, Misa, na safari za Kwaya (Ibara 16.1a).',
+          'Kufuatilia mahudhurio ya wanakwaya kwa kushirikiana na viongozi wa sauti na Katibu (Ibara 16.1b).',
+          'Kupokea na kujadili mashauri ya utovu wa nidhamu na kuwasilisha mapendekezo kwenye Kamati Tendaji (Ibara 16.1c & 29).',
+          'Kukagua uvaaji sahihi wa sare za Kwaya katika matukio rasmi.'
+        ],
+        defaultResources: [
+          {
+            title: 'Katiba ya Kwaya \u2014 Ibara ya 16.1 & 29: Kamati ya Nidhamu na Kanuni za Maadili',
+            body: 'Mwongozo wa kikatiba wa kushughulikia masuala ya mahudhurio, maonyo, na taratibu za kinidhamu kwa haki na upendo wa Kikristo.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            date: 'Katiba \u00b7 Ibara ya 16.1 & 29'
+          }
+        ],
+        kpis: list => [
+          { label: 'Disciplinary & Conduct Cases', val: String(list.filter(r => r.record_type === 'member_issue').length), sub: 'Logged & counselled' },
+          { label: 'Committee Meetings', val: String(list.filter(r => r.record_type === 'meeting').length), sub: 'Nidhamu sessions' },
+          { label: 'Inspections & Reports', val: String(list.filter(r => r.record_type === 'activity').length), sub: 'Attendance & uniform checks' }
+        ],
         types: {
-          meeting: {
-            label: 'Committee meeting',
-            title: r => 'Meeting: ' + (r.meeting_date || ''),
+          member_issue: {
+            label: 'Conduct & Attendance Case',
+            title: r => 'Case (' + MemberPortal.optLabel(r.issue_type || 'conduct') + '): ' + (r.member_name || ''),
             fields: [
-              { k: 'meeting_date', l: 'Meeting date', t: 'date' },
+              { k: 'member_name', l: 'Member name', req: true },
+              { k: 'issue_type', l: 'Case category', t: 'select', opts: ['attendance', 'conduct', 'uniform', 'conflict', 'other'], req: true },
+              { k: 'issue_description', l: 'Case description & date', t: 'textarea', req: true },
+              { k: 'resolution', l: 'Guidance / Resolution / Action taken', t: 'textarea' },
+              { k: 'follow_up_date', l: 'Follow-up review date', t: 'date' },
+              { k: 'status', l: 'Case status', t: 'select', opts: ['draft', 'submitted', 'approved', 'completed'] }
+            ]
+          },
+          meeting: {
+            label: 'Committee Meeting',
+            title: r => 'Nidhamu Meeting: ' + (r.meeting_date || ''),
+            fields: [
+              { k: 'meeting_date', l: 'Meeting date', t: 'date', req: true },
               { k: 'meeting_venue', l: 'Venue' },
-              { k: 'attendees', l: 'Attendees', t: 'textarea' },
+              { k: 'attendees', l: 'Committee members present', t: 'textarea' },
               { k: 'agenda', l: 'Agenda', t: 'textarea' },
-              { k: 'minutes', l: 'Minutes', t: 'textarea' },
-              { k: 'decisions', l: 'Decisions', t: 'textarea' },
-              { k: 'action_items', l: 'Action items', t: 'textarea' },
+              { k: 'decisions', l: 'Decisions & recommendations', t: 'textarea' },
               { k: 'next_meeting_date', l: 'Next meeting date', t: 'date' }
             ]
           },
           activity: {
-            label: 'Activity report',
+            label: 'Inspection / Activity Report',
             title: r => 'Activity: ' + (r.activity_title || ''),
             fields: [
-              { k: 'activity_title', l: 'Activity title', req: true },
-              { k: 'activity_date', l: 'Date', t: 'date' },
-              { k: 'participants_count', l: 'Participants', t: 'number' },
-              { k: 'activity_description', l: 'Description', t: 'textarea' },
-              { k: 'outcome', l: 'Outcome', t: 'textarea' },
-              { k: 'challenges', l: 'Challenges', t: 'textarea' },
-              { k: 'recommendations', l: 'Recommendations', t: 'textarea' }
+              { k: 'activity_title', l: 'Activity / Inspection title', req: true },
+              { k: 'activity_date', l: 'Date', t: 'date', req: true },
+              { k: 'activity_description', l: 'Summary of findings', t: 'textarea' },
+              { k: 'recommendations', l: 'Recommendations to Kamati Tendaji', t: 'textarea' }
             ]
-          },
-          member_issue: {
-            label: 'Member issue',
-            title: r => 'Issue: ' + (r.member_name || ''),
-            fields: [
-              { k: 'member_name', l: 'Member name', req: true },
-              { k: 'issue_type', l: 'Issue type', t: 'select', opts: ['attendance', 'conduct', 'uniform', 'conflict', 'other'] },
-              { k: 'issue_description', l: 'Description', t: 'textarea' },
-              { k: 'resolution', l: 'Resolution', t: 'textarea' },
-              { k: 'follow_up_date', l: 'Follow-up date', t: 'date' }
-            ]
-          },
+          }
+        }
+      },
+
+      liturujia: {
+        roleKey: 'liturujia',
+        committee: 'liturujia',
+        table: 'subcommittee_workspace',
+        name: 'Kamati ya Liturujia (Liturgy & Spiritual Committee)',
+        shortName: 'Liturujia',
+        ibara: 'Ibara ya 16.2',
+        mandateSummary: 'Kuratibu maisha ya kiroho ya wanakwaya, semina, mafungo, sala, na maandalizi ya adhimisho la Misa Takatifu kwa kushirikiana na Mwalimu wa Kwaya na Mlezi wa Kiroho (Ibara ya 16.2).',
+        duties: [
+          'Kuratibu ratiba za masomo ya Misa, zaburi, na nyimbo za Liturujia kwa kushirikiana na Mwalimu wa Kwaya (Ibara 16.2a).',
+          'Kuandaa programu za kiroho kama mafungo (retreats), semina, rozari, na sala za wanakwaya (Ibara 16.2b).',
+          'Kuhakikisha utaratibu wa kiliturujia wa Kanisa Katoliki unazingatiwa katika huduma zote za Kwaya (Ibara 16.2c).'
+        ],
+        defaultResources: [
+          {
+            title: 'Katiba ya Kwaya \u2014 Ibara ya 16.2: Kamati ya Liturujia na Malezi ya Kiroho',
+            body: 'Mwongozo wa uratibu wa Misa Takatifu, masomo ya Dominika na Sikukuu, mafungo ya kiroho, na ushirikiano na Kamati ya Liturujia ya Parokia.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            date: 'Katiba \u00b7 Ibara ya 16.2'
+          }
+        ],
+        kpis: list => [
+          { label: 'Liturgical Celebration Plans', val: String(list.filter(r => r.record_type === 'liturgy').length), sub: 'Sunday Masses & Feast days' },
+          { label: 'Spiritual Retreats & Seminars', val: String(list.filter(r => r.record_type === 'activity').length), sub: 'Mafungo & prayer programs' },
+          { label: 'Committee Meetings', val: String(list.filter(r => r.record_type === 'meeting').length), sub: 'Liturujia planning sessions' }
+        ],
+        types: {
           liturgy: {
-            label: 'Liturgy plan',
-            title: r => 'Liturgy: ' + (r.liturgy_type || '') + ' \u00b7 ' + (r.liturgy_date || ''),
+            label: 'Mass & Liturgy Plan',
+            title: r => 'Liturgy: ' + MemberPortal.optLabel(r.liturgy_type || 'Mass') + ' \u00b7 ' + (r.liturgy_date || ''),
             fields: [
-              { k: 'liturgy_date', l: 'Date', t: 'date' },
-              { k: 'liturgy_type', l: 'Celebration', t: 'select', opts: ['sunday_mass', 'feast_day', 'wedding', 'funeral', 'special', 'other'] },
-              { k: 'readings', l: 'Readings', t: 'textarea' },
-              { k: 'songs_selected', l: 'Songs selected', t: 'textarea' },
-              { k: 'special_notes', l: 'Special notes', t: 'textarea' }
+              { k: 'liturgy_date', l: 'Celebration date', t: 'date', req: true },
+              { k: 'liturgy_type', l: 'Celebration type', t: 'select', opts: ['sunday_mass', 'feast_day', 'wedding', 'funeral', 'special', 'other'], req: true },
+              { k: 'readings', l: 'Liturgical readings & Readers assigned', t: 'textarea' },
+              { k: 'songs_selected', l: 'Selected liturgical hymns (Mwanzo, Bwana Utuhurumie, Utukufu, Sadaka, Komunyo, Shukrani)', t: 'textarea', req: true },
+              { k: 'special_notes', l: 'Vestment color / Liturgical notes', t: 'textarea' }
             ]
           },
+          activity: {
+            label: 'Retreat / Spiritual Program',
+            title: r => 'Spiritual Program: ' + (r.activity_title || ''),
+            fields: [
+              { k: 'activity_title', l: 'Program title (e.g. Mafungo ya Kwaresima)', req: true },
+              { k: 'activity_date', l: 'Date', t: 'date', req: true },
+              { k: 'participants_count', l: 'Participants count', t: 'number' },
+              { k: 'activity_description', l: 'Facilitator / Theme & schedule', t: 'textarea' },
+              { k: 'outcome', l: 'Spiritual fruits & follow-up', t: 'textarea' }
+            ]
+          },
+          meeting: {
+            label: 'Committee Meeting',
+            title: r => 'Liturujia Meeting: ' + (r.meeting_date || ''),
+            fields: [
+              { k: 'meeting_date', l: 'Meeting date', t: 'date', req: true },
+              { k: 'meeting_venue', l: 'Venue' },
+              { k: 'attendees', l: 'Attendees', t: 'textarea' },
+              { k: 'agenda', l: 'Agenda', t: 'textarea' },
+              { k: 'decisions', l: 'Resolutions', t: 'textarea' }
+            ]
+          }
+        }
+      },
+
+      media: {
+        roleKey: 'media',
+        committee: 'media',
+        table: 'subcommittee_workspace',
+        name: 'Kamati ya Media na Habari (Media & Communications)',
+        shortName: 'Media',
+        ibara: 'Ibara ya 16.3',
+        mandateSummary: 'Kusimamia habari, picha, video, rekodi za sauti, mitandao ya kijamii, na utangazaji wa kazi za uinjilishaji za Kwaya ya Maranatha (Ibara ya 16.3).',
+        duties: [
+          'Kurekodi na kuhifadhi picha, video, na sauti za matukio na huduma za Kwaya (Ibara 16.3a).',
+          'Kusimamia kurasa rasmi za mitandao ya kijamii na tovuti ya Kwaya kwa maudhui yenye maadili ya Kikatoliki (Ibara 16.3b).',
+          'Kuandaa matangazo ya kidijitali (posters) na kushirikiana na Katibu katika kuhabarisha umma (Ibara 16.3c).'
+        ],
+        defaultResources: [
+          {
+            title: 'Katiba ya Kwaya \u2014 Ibara ya 16.3: Kamati ya Media na Mawasiliano',
+            body: 'Mwongozo wa usimamizi wa maudhui ya kidijitali, hifadhi ya picha na video za kwaya, na uinjilishaji kupitia mitandao ya kijamii.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            date: 'Katiba \u00b7 Ibara ya 16.3'
+          }
+        ],
+        kpis: list => [
+          { label: 'Media Productions & Posts', val: String(list.filter(r => r.record_type === 'media').length), sub: 'Photos, videos & digital posts' },
+          { label: 'Coverage & Campaigns', val: String(list.filter(r => r.record_type === 'activity').length), sub: 'Events covered' },
+          { label: 'Committee Meetings', val: String(list.filter(r => r.record_type === 'meeting').length), sub: 'Editorial sessions' }
+        ],
+        types: {
           media: {
-            label: 'Media item',
-            title: r => 'Media: ' + (r.media_title || ''),
+            label: 'Media Production & Post',
+            title: r => 'Media (' + MemberPortal.optLabel(r.media_type || 'item') + '): ' + (r.media_title || ''),
             fields: [
-              { k: 'media_title', l: 'Title', req: true },
-              { k: 'media_type', l: 'Type', t: 'select', opts: ['photo', 'video', 'audio', 'livestream', 'social_post', 'website_update', 'other'] },
-              { k: 'media_description', l: 'Description', t: 'textarea' },
-              { k: 'platform', l: 'Platform' },
-              { k: 'publish_date', l: 'Publish date', t: 'date' },
-              { k: 'media_file_url', l: 'File link (URL)' }
+              { k: 'media_title', l: 'Content / Production title', req: true },
+              { k: 'media_type', l: 'Media format', t: 'select', opts: ['photo', 'video', 'audio', 'livestream', 'social_post', 'website_update', 'other'], req: true },
+              { k: 'platform', l: 'Platform (YouTube, Instagram, Website, Archive)' },
+              { k: 'publish_date', l: 'Publish / Event date', t: 'date', req: true },
+              { k: 'media_file_url', l: 'Media asset / Link (Upload File or URL)', file: true },
+              { k: 'media_description', l: 'Caption / Production notes', t: 'textarea' }
             ]
           },
-          social_event: {
-            label: 'Social event',
-            title: r => 'Social: ' + (r.event_title || ''),
+          activity: {
+            label: 'Event Coverage Report',
+            title: r => 'Coverage: ' + (r.activity_title || ''),
             fields: [
-              { k: 'event_title', l: 'Event title', req: true },
-              { k: 'event_date', l: 'Date', t: 'date' },
-              { k: 'beneficiaries', l: 'Beneficiaries' },
-              { k: 'budget_allocated', l: 'Budget allocated', t: 'number' },
-              { k: 'budget_spent', l: 'Budget spent', t: 'number' },
-              { k: 'event_description', l: 'Description', t: 'textarea' }
+              { k: 'activity_title', l: 'Event covered', req: true },
+              { k: 'activity_date', l: 'Date', t: 'date', req: true },
+              { k: 'activity_description', l: 'Equipment used & crew assigned', t: 'textarea' },
+              { k: 'outcome', l: 'Deliverables & archive links', t: 'textarea' }
+            ]
+          },
+          meeting: {
+            label: 'Committee Meeting',
+            title: r => 'Media Meeting: ' + (r.meeting_date || ''),
+            fields: [
+              { k: 'meeting_date', l: 'Meeting date', t: 'date', req: true },
+              { k: 'attendees', l: 'Attendees', t: 'textarea' },
+              { k: 'agenda', l: 'Agenda', t: 'textarea' },
+              { k: 'decisions', l: 'Editorial decisions', t: 'textarea' }
+            ]
+          }
+        }
+      },
+
+      kijamii: {
+        roleKey: 'kijamii',
+        committee: 'kijamii',
+        table: 'subcommittee_workspace',
+        name: 'Kamati ya Masuala ya Kijamii (Social Welfare Committee)',
+        shortName: 'Kijamii',
+        ibara: 'Ibara ya 16.4',
+        mandateSummary: 'Kuratibu masuala ya ustawi wa kijamii, faraja na rambirambi, pongezi za mahafali na harusi, ukarimu, na matendo ya huruma ya Kwaya (Ibara ya 16.4).',
+        duties: [
+          'Kuratibu ushiriki wa Kwaya katika matukio ya furaha (mahafali, harusi, kipaimara) na huzuni (ugonjwa, msiba) yanayowahusu wanakwaya (Ibara 16.4a).',
+          'Kusimamia matendo ya huruma na ziara za kijamii (yatima, wagonjwa, na wahitaji) (Ibara 16.4b).',
+          'Kuandaa bajeti ya matukio ya kijamii kwa kushirikiana na Mtunza Hazina (Ibara 16.4c).'
+        ],
+        defaultResources: [
+          {
+            title: 'Katiba ya Kwaya \u2014 Ibara ya 16.4: Kamati ya Masuala ya Kijamii',
+            body: 'Mwongozo wa kikatiba kuhusu taratibu za rambirambi, faraja kwa wagonjwa, sherehe za mahafali ya wanakwaya, na matendo ya huruma.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            date: 'Katiba \u00b7 Ibara ya 16.4'
+          }
+        ],
+        kpis: list => {
+          const socials = list.filter(r => r.record_type === 'social_event');
+          const spent = socials.reduce((s, r) => s + (Number(r.budget_spent) || 0), 0);
+          return [
+            { label: 'Welfare & Charity Events', val: String(socials.length), sub: 'Celebrations, visits & condolence' },
+            { label: 'Welfare Funds Utilized', val: MemberPortal.fmtTzs(spent), sub: 'Total social expenditure logged' },
+            { label: 'Committee Meetings', val: String(list.filter(r => r.record_type === 'meeting').length), sub: 'Welfare planning sessions' }
+          ];
+        },
+        types: {
+          social_event: {
+            label: 'Social Welfare / Charity Event',
+            title: r => 'Welfare: ' + (r.event_title || ''),
+            fields: [
+              { k: 'event_title', l: 'Event title (e.g. Mahafali, Faraja, Matendo ya Huruma)', req: true },
+              { k: 'event_date', l: 'Event date', t: 'date', req: true },
+              { k: 'beneficiaries', l: 'Member(s) / Beneficiaries', req: true },
+              { k: 'budget_allocated', l: 'Budget allocated (TZS)', t: 'number' },
+              { k: 'budget_spent', l: 'Actual amount spent (TZS)', t: 'number' },
+              { k: 'event_description', l: 'Event summary & choir participation', t: 'textarea' }
+            ]
+          },
+          activity: {
+            label: 'Outreach / Hospitality Report',
+            title: r => 'Outreach: ' + (r.activity_title || ''),
+            fields: [
+              { k: 'activity_title', l: 'Activity title', req: true },
+              { k: 'activity_date', l: 'Date', t: 'date', req: true },
+              { k: 'participants_count', l: 'Members participated', t: 'number' },
+              { k: 'activity_description', l: 'Description & impact', t: 'textarea' }
+            ]
+          },
+          meeting: {
+            label: 'Committee Meeting',
+            title: r => 'Kijamii Meeting: ' + (r.meeting_date || ''),
+            fields: [
+              { k: 'meeting_date', l: 'Meeting date', t: 'date', req: true },
+              { k: 'attendees', l: 'Attendees', t: 'textarea' },
+              { k: 'agenda', l: 'Agenda', t: 'textarea' },
+              { k: 'decisions', l: 'Resolutions', t: 'textarea' }
             ]
           }
         }
@@ -1981,45 +2417,77 @@
 
     static GENERIC_WS = {
       key: 'generic',
+      roleKey: 'generic',
       table: 'leader_records',
-      name: 'Leader',
+      name: 'Kiongozi wa Kwaya (Choir Leader)',
+      shortName: 'Leader',
+      ibara: 'Ibara ya 11\u201316',
+      mandateSummary: 'Uongozi wa Kwaya ya Maranatha kwa mujibu wa Katiba (Ibara ya 11\u201316). Wasiliana na Admin kuwekewa cheo mahususi (mf. Mtunza Hazina, Katibu, Mwenyekiti, Mwalimu wa Kwaya, au Kamati Ndogo) ili kupata moduli mahususi za nafasi yako.',
+      duties: [
+        'Kusimamia utekelezaji wa malengo ya Kwaya ya Maranatha kwa mujibu wa Katiba (Ibara ya 11\u201316).',
+        'Kushiriki kikamilifu katika vikao vya uongozi na kuhamasisha nidhamu na uimbaji bora.',
+        'Kutunza kumbukumbu za majukumu ya uongozi katika mwaka husika wa uongozi.'
+      ],
+      defaultResources: [
+        {
+          title: 'Katiba ya Kwaya ya Maranatha \u2014 Ibara ya 11 hadi 16 (Muundo wa Uongozi)',
+          body: 'Soma mwongozo kamili wa madaraka na wajibu wa Kamati Tendaji (Mwenyekiti, Mwalimu wa Kwaya, Katibu, Katibu Msaidizi, Mtunza Hazina) na Kamati Ndogo.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+          date: 'Katiba \u00b7 Ibara ya 11\u201316'
+        }
+      ],
+      kpis: list => [
+        { label: 'Leadership Notes Logged', val: String(list.length), sub: 'Personal leadership records' }
+      ],
       types: {
         note: {
-          label: 'Note',
+          label: 'Leadership Record / Note',
           title: r => r.title || 'Untitled',
           fields: [
             { k: 'title', l: 'Title', req: true },
-            { k: 'body', l: 'Notes', t: 'textarea' },
-            { k: 'record_date', l: 'Date', t: 'date' }
+            { k: 'record_date', l: 'Date', t: 'date' },
+            { k: 'body', l: 'Notes & details', t: 'textarea', req: true }
           ]
         }
       }
     };
 
     static SUB_COMMITTEES = [
-      ['nidhamu', /nidhamu|discipline/],
-      ['liturujia', /liturujia|liturgy/],
-      ['media', /\bmedia\b/],
-      ['kijamii', /kijamii|\bsocial\b/]
+      ['nidhamu', /nidhamu|discipline|disciplinary/],
+      ['liturujia', /liturujia|liturgy|kiroho/],
+      ['media', /\bmedia\b|habari|communication/],
+      ['kijamii', /kijamii|\bsocial\b|ustawi|welfare/]
     ];
+
+    static workspaceByKey(roleKey) {
+      const W = MemberPortal.WORKSPACES;
+      if (roleKey && W[roleKey]) {
+        return Object.assign({ key: W[roleKey].committee ? 'subcommittee' : roleKey }, W[roleKey]);
+      }
+      return null;
+    }
 
     static workspaceForProfile(p) {
       if (!p || !p.title) return null;
-      const norm = (' ' + p.title.toLowerCase().replace(/[.,]/g, ' ').replace(/\s+/g, ' ').trim() + ' ');
-      const W = MemberPortal.WORKSPACES;
-      const mk = key => Object.assign({ key: key }, W[key]);
-      if (/katibu msaidizi|assistant secretary|asst secretary|asst sec/.test(norm)) return mk('asst_secretary');
-      if (/mwenyekiti|chair/.test(norm)) return mk('chairperson');
-      if (/mwalimu mkuu|mwaimaji|choir ?master/.test(norm)) return mk('choirmaster');
-      if (/mtunza hazina|hazina|treasurer/.test(norm)) return mk('treasurer');
-      if (/katibu|secretary/.test(norm)) return mk('secretary');
+      const norm = (' ' + p.title.toLowerCase().replace(/[.,()/\\-]/g, ' ').replace(/\s+/g, ' ').trim() + ' ');
+      if (/katibu msaidizi|assistant secretary|asst secretary|asst sec|deputy secretary/.test(norm)) {
+        return MemberPortal.workspaceByKey('asst_secretary');
+      }
+      if (/mtunza hazina|mweka hazina|hazina|treasurer|finance|fedha/.test(norm)) {
+        return MemberPortal.workspaceByKey('treasurer');
+      }
+      if (/mwalimu|mwimbishaji|choir ?master|music director|conductor|trainer/.test(norm)) {
+        return MemberPortal.workspaceByKey('choirmaster');
+      }
+      if (/katibu|secretary/.test(norm)) {
+        return MemberPortal.workspaceByKey('secretary');
+      }
       for (const [committee, re] of MemberPortal.SUB_COMMITTEES) {
         if (re.test(norm.trim())) {
-          const ws = mk('subcommittee');
-          ws.committee = committee;
-          ws.name = MemberPortal.optLabel(committee) + ' sub-committee';
-          return ws;
+          return MemberPortal.workspaceByKey(committee);
         }
+      }
+      if (/mwenyekiti|chairperson|chairman|chair/.test(norm)) {
+        return MemberPortal.workspaceByKey('chairperson');
       }
       return null;
     }
@@ -2028,18 +2496,234 @@
       return this._wsType && this.ws.types[this._wsType] ? this._wsType : Object.keys(this.ws.types)[0];
     }
 
+    renderRoleMandateCard() {
+      const card = $('mpRoleMandateCard');
+      const switcher = $('mpLeaderRoleSwitcher');
+      const content = $('mpRoleMandateContent');
+      if (!card || !content || !this.ws) return;
+
+      const isAdmin = this.profile && this.profile.role === 'admin';
+      if (switcher) {
+        if (isAdmin) {
+          switcher.hidden = false;
+          switcher.innerHTML = '';
+          const lbl = document.createElement('span');
+          lbl.className = 'lr-switcher-label';
+          lbl.textContent = 'Inspect Role Workspace (Ibara 11\u201316):';
+          switcher.appendChild(lbl);
+
+          MemberPortal.ROLE_POSITIONS.forEach(pos => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'lr-role-pill' + (this.ws.roleKey === pos.key ? ' active' : '');
+            const wsDef = MemberPortal.WORKSPACES[pos.key];
+            btn.textContent = (wsDef ? wsDef.shortName : pos.key) + ' (' + (wsDef ? wsDef.ibara.replace(/ &.*$/, '') : '') + ')';
+            btn.addEventListener('click', () => {
+              this._adminInspectRole = pos.key;
+              this.renderLeaderWorkspace();
+            });
+            switcher.appendChild(btn);
+          });
+        } else {
+          switcher.hidden = true;
+          switcher.innerHTML = '';
+        }
+      }
+
+      content.innerHTML = '';
+      const head = document.createElement('div');
+      head.className = 'lr-mandate-head';
+
+      const titleWrap = document.createElement('div');
+      const h2 = document.createElement('h2');
+      h2.className = 'lr-mandate-title';
+      h2.textContent = this.ws.name;
+      titleWrap.appendChild(h2);
+
+      const sub = document.createElement('p');
+      sub.className = 'lr-mandate-sub';
+      sub.textContent = this.ws.mandateSummary || '';
+      titleWrap.appendChild(sub);
+      head.appendChild(titleWrap);
+
+      const badges = document.createElement('div');
+      badges.style.display = 'flex';
+      badges.style.gap = '8px';
+      badges.style.flexWrap = 'wrap';
+
+      const ibaraBadge = document.createElement('span');
+      ibaraBadge.className = 'mp-badge leader';
+      ibaraBadge.textContent = 'Katiba \u00b7 ' + (this.ws.ibara || 'Ibara ya 11\u201316');
+      badges.appendChild(ibaraBadge);
+
+      const katibaLink = document.createElement('a');
+      katibaLink.href = MemberPortal.KATIBA_DOC_URL;
+      katibaLink.target = '_blank';
+      katibaLink.rel = 'noopener';
+      katibaLink.className = 'mp-btn small';
+      katibaLink.textContent = 'Open Katiba (PDF)';
+      badges.appendChild(katibaLink);
+
+      head.appendChild(badges);
+      content.appendChild(head);
+
+      if (this.ws.duties && this.ws.duties.length) {
+        const ul = document.createElement('ul');
+        ul.className = 'lr-duties-list';
+        this.ws.duties.forEach(d => {
+          const li = document.createElement('li');
+          li.textContent = d;
+          ul.appendChild(li);
+        });
+        content.appendChild(ul);
+      }
+    }
+
+    renderLeaderResources() {
+      const box = $('mpLeaderInfo');
+      if (!box || !this.ws) return;
+      const roleKey = this.ws.roleKey || 'generic';
+      if ($('lrResTitle')) {
+        $('lrResTitle').textContent = roleKey === 'generic'
+          ? 'Leadership Reference & Resources'
+          : this.ws.shortName + ' Resources & Reference (' + this.ws.ibara + ')';
+      }
+      if ($('lrResBadge')) {
+        $('lrResBadge').textContent = roleKey === 'generic' ? 'Leader Only' : this.ws.shortName + ' Only';
+      }
+
+      const dbLeaderResources = (this.resources || []).filter(r => {
+        if (r.audience === 'leader:' + roleKey) return true;
+        if (r.audience !== 'leader') return false;
+        const m = String(r.body || '').match(/data-leader-role="([^"]+)"/);
+        if (!m) return true; // General leader resource
+        return m[1] === roleKey;
+      });
+
+      const combined = (this.ws.defaultResources || []).concat(dbLeaderResources);
+      this.renderList(
+        box,
+        combined,
+        'No role resources yet \u2014 leadership reference materials for this office will appear here.'
+      );
+    }
+
+    renderWorkspaceKpis(records) {
+      const grid = $('lrSummaryGrid');
+      if (!grid || !this.ws) return;
+      grid.innerHTML = '';
+      if (typeof this.ws.kpis !== 'function') {
+        grid.hidden = true;
+        return;
+      }
+      const items = this.ws.kpis(records || []) || [];
+      if (!items.length) {
+        grid.hidden = true;
+        return;
+      }
+      grid.hidden = false;
+      items.forEach(k => {
+        const card = document.createElement('div');
+        card.className = 'lr-kpi-card';
+        const l = document.createElement('div');
+        l.className = 'lr-kpi-label';
+        l.textContent = k.label;
+        const v = document.createElement('div');
+        v.className = 'lr-kpi-val';
+        v.textContent = k.val;
+        card.appendChild(l);
+        card.appendChild(v);
+        if (k.sub) {
+          const s = document.createElement('div');
+          s.className = 'lr-kpi-sub';
+          s.textContent = k.sub;
+          card.appendChild(s);
+        }
+        grid.appendChild(card);
+      });
+    }
+
     renderLeaderWorkspace() {
-      this.ws = MemberPortal.workspaceForProfile(this.profile) || MemberPortal.GENERIC_WS;
-      this._wsType = null;
+      const isAdmin = this.profile && this.profile.role === 'admin';
+      const profileWs = MemberPortal.workspaceForProfile(this.profile);
+      if (isAdmin) {
+        const targetKey = this._adminInspectRole || (profileWs && profileWs.roleKey) || 'treasurer';
+        this._adminInspectRole = targetKey;
+        this.ws = MemberPortal.workspaceByKey(targetKey) || MemberPortal.GENERIC_WS;
+      } else {
+        this.ws = profileWs || MemberPortal.GENERIC_WS;
+      }
+
+      this._wsType = Object.keys(this.ws.types)[0];
+      this._wsRecords = [];
+
+      this.renderRoleMandateCard();
+      this.renderLeaderResources();
+
+      const workTitle = $('lrWorkTitle');
+      const workBadge = $('lrWorkBadge');
       const hint = $('lrHint');
+      const tabsBox = $('lrTypeTabs');
       const form = $('lrForm');
       const list = $('lrList');
+      const filterType = $('lrFilterType');
+      const searchInp = $('lrSearchInput');
       if (!form || !list) return;
 
+      if (workTitle) {
+        workTitle.textContent = this.ws.roleKey === 'generic'
+          ? 'My Leadership Workspace'
+          : this.ws.name + ' \u2014 Workspace';
+      }
+      if (workBadge) {
+        workBadge.textContent = this.ws.ibara || 'Protected';
+      }
       if (hint) {
-        hint.textContent = this.ws.key === 'generic'
-          ? 'Your personal records for this leadership year \u2014 only you and the admins can see them.'
-          : this.ws.name + ' workspace \u2014 your structured records, visible only to you and the admins.';
+        hint.textContent = this.ws.roleKey === 'generic'
+          ? 'Your private leadership records \u2014 visible only to you and choir administrators.'
+          : 'Dedicated tools & records for ' + this.ws.name + ' (' + this.ws.ibara + '). Protected by role-based access control.';
+      }
+
+      // Render module switcher tabs
+      const typeKeys = Object.keys(this.ws.types);
+      if (tabsBox) {
+        tabsBox.innerHTML = '';
+        if (typeKeys.length > 1) {
+          tabsBox.hidden = false;
+          typeKeys.forEach(k => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'lr-tab' + (k === this._wsType ? ' active' : '');
+            b.dataset.tkey = k;
+            b.textContent = this.ws.types[k].label;
+            b.addEventListener('click', () => {
+              this._wsType = k;
+              const selEl = $('lrType');
+              if (selEl) selEl.value = k;
+              tabsBox.querySelectorAll('.lr-tab').forEach(tb => tb.classList.toggle('active', tb.dataset.tkey === k));
+              this.renderWsFields();
+            });
+            tabsBox.appendChild(b);
+          });
+        } else {
+          tabsBox.hidden = true;
+        }
+      }
+
+      // Populate filter dropdown
+      if (filterType) {
+        filterType.innerHTML = '<option value="all">All module records</option>';
+        typeKeys.forEach(k => {
+          const o = document.createElement('option');
+          o.value = k;
+          o.textContent = this.ws.types[k].label;
+          filterType.appendChild(o);
+        });
+        filterType.onchange = () => this.renderFilteredWorkspaceRecords();
+      }
+      if (searchInp) {
+        searchInp.value = '';
+        searchInp.oninput = () => this.renderFilteredWorkspaceRecords();
       }
 
       form.innerHTML = '';
@@ -2048,11 +2732,11 @@
       const typeLbl = document.createElement('label');
       typeLbl.className = 'mp-field';
       const ts = document.createElement('span');
-      ts.textContent = 'Record type';
+      ts.textContent = 'Active workspace module';
       typeLbl.appendChild(ts);
       const sel = document.createElement('select');
       sel.id = 'lrType';
-      Object.keys(this.ws.types).forEach(k => {
+      typeKeys.forEach(k => {
         const o = document.createElement('option');
         o.value = k;
         o.textContent = this.ws.types[k].label;
@@ -2060,6 +2744,9 @@
       });
       sel.addEventListener('change', () => {
         this._wsType = sel.value;
+        if (tabsBox) {
+          tabsBox.querySelectorAll('.lr-tab').forEach(tb => tb.classList.toggle('active', tb.dataset.tkey === sel.value));
+        }
         this.renderWsFields();
       });
       typeLbl.appendChild(sel);
@@ -2076,7 +2763,8 @@
       const btn = document.createElement('button');
       btn.type = 'submit';
       btn.className = 'mp-btn';
-      btn.textContent = 'Save record';
+      btn.id = 'lrSubmitBtn';
+      btn.textContent = 'Save ' + (this.ws.types[this._wsType] ? this.ws.types[this._wsType].label : 'Record');
       form.appendChild(btn);
 
       this.renderWsFields();
@@ -2087,12 +2775,43 @@
       if (!this.wsFields) return;
       const t = this.ws.types[this.wsTypeKey()];
       this.wsFields.innerHTML = '';
+      const submitBtn = $('lrSubmitBtn');
+      if (submitBtn && t) {
+        submitBtn.textContent = 'Save ' + t.label;
+      }
       t.fields.forEach(f => {
         const lab = document.createElement('label');
         lab.className = 'mp-field';
         const sp = document.createElement('span');
         sp.textContent = f.l + (f.req ? ' *' : '');
         lab.appendChild(sp);
+
+        if (f.file || MemberPortal.FILE_FIELDS.has(f.k)) {
+          const wrap = document.createElement('div');
+          wrap.className = 'lr-file-wrap';
+
+          const fileInp = document.createElement('input');
+          fileInp.type = 'file';
+          fileInp.dataset.fileFor = f.k;
+          fileInp.accept = '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg';
+          wrap.appendChild(fileInp);
+
+          const urlInp = document.createElement('input');
+          urlInp.type = 'text';
+          urlInp.dataset.k = f.k;
+          urlInp.placeholder = 'Or paste an external document link (https://...)';
+          wrap.appendChild(urlInp);
+
+          const note = document.createElement('div');
+          note.className = 'lr-file-note';
+          note.textContent = 'Choose a PDF, Word, Excel, or image file to upload directly to secure choir storage, or paste a link.';
+          wrap.appendChild(note);
+
+          lab.appendChild(wrap);
+          this.wsFields.appendChild(lab);
+          return;
+        }
+
         let inp;
         if (f.t === 'textarea') {
           inp = document.createElement('textarea');
@@ -2102,12 +2821,13 @@
           [''].concat(f.opts).forEach(v => {
             const o = document.createElement('option');
             o.value = v;
-            o.textContent = v === '' ? '\u2014' : MemberPortal.optLabel(v);
+            o.textContent = v === '' ? '\u2014 Select \u2014' : MemberPortal.optLabel(v);
             inp.appendChild(o);
           });
         } else {
           inp = document.createElement('input');
           inp.type = f.t || 'text';
+          if (f.t === 'number') inp.step = 'any';
         }
         inp.dataset.k = f.k;
         lab.appendChild(inp);
@@ -2119,56 +2839,201 @@
       const card = document.createElement('div');
       card.className = 'mp-item';
       const t = this.ws.types[r.record_type];
+
+      const head = document.createElement('div');
+      head.className = 'lr-rec-head';
+
+      const h = document.createElement('h3');
+      h.textContent = t ? (t.title(r) || 'Untitled') : (r.title || 'Untitled');
+      head.appendChild(h);
+
       if (Object.keys(this.ws.types).length > 1) {
         const b = document.createElement('span');
         b.className = 'mp-badge member';
         b.textContent = t ? t.label : MemberPortal.optLabel(r.record_type || 'record');
-        card.appendChild(b);
+        head.appendChild(b);
       }
-      const h = document.createElement('h3');
-      h.textContent = t ? (t.title(r) || 'Untitled') : (r.title || 'Untitled');
-      card.appendChild(h);
+      card.appendChild(head);
+
+      // Render structured field values
+      const fieldsDef = t && t.fields ? t.fields : [];
+      const grid = document.createElement('div');
+      grid.className = 'lr-rec-grid';
+      let hasCells = false;
+      let docUrl = '';
+
+      fieldsDef.forEach(f => {
+        const raw = r[f.k];
+        if (raw === undefined || raw === null || raw === '') return;
+        if (f.file || MemberPortal.FILE_FIELDS.has(f.k)) {
+          docUrl = String(raw);
+          return;
+        }
+        hasCells = true;
+        const cell = document.createElement('div');
+        cell.className = 'lr-rec-cell';
+        const kEl = document.createElement('span');
+        kEl.className = 'lr-rec-k';
+        kEl.textContent = f.l.replace(/\s*\(.*?\)\s*$/, '');
+        const vEl = document.createElement('div');
+        vEl.className = 'lr-rec-v';
+        if (MemberPortal.CURRENCY_FIELDS.has(f.k)) {
+          vEl.textContent = MemberPortal.fmtTzs(raw);
+        } else if (f.t === 'select') {
+          vEl.textContent = MemberPortal.optLabel(raw);
+        } else {
+          vEl.textContent = String(raw);
+        }
+        cell.appendChild(kEl);
+        cell.appendChild(vEl);
+        grid.appendChild(cell);
+      });
+
+      if (!hasCells && r.body) {
+        const p = document.createElement('p');
+        p.textContent = r.body;
+        card.appendChild(p);
+      } else if (hasCells) {
+        card.appendChild(grid);
+      }
+
+      if (docUrl) {
+        const docWrap = document.createElement('div');
+        docWrap.className = 'lr-doc-actions';
+        const openLink = document.createElement('a');
+        openLink.href = docUrl;
+        openLink.target = '_blank';
+        openLink.rel = 'noopener';
+        openLink.className = 'mp-btn small';
+        openLink.textContent = 'Open / Download Document \u2197';
+        docWrap.appendChild(openLink);
+        card.appendChild(docWrap);
+
+        if (/\.pdf(\?|$)/i.test(docUrl)) {
+          const det = document.createElement('details');
+          det.style.cssText = 'margin-top:10px;background:#F8F8F8;padding:10px;border-radius:8px;border:1px solid var(--line);';
+          const sum = document.createElement('summary');
+          sum.style.cssText = 'cursor:pointer;font-weight:600;font-size:12px;color:var(--ink);';
+          sum.textContent = 'Preview PDF Document';
+          const ifr = document.createElement('iframe');
+          ifr.src = docUrl;
+          ifr.style.cssText = 'width:100%;height:420px;border:none;margin-top:8px;border-radius:4px;background:#fff;';
+          det.appendChild(sum);
+          det.appendChild(ifr);
+          card.appendChild(det);
+        }
+      }
+
+      const foot = document.createElement('div');
+      foot.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;';
       const d = document.createElement('div');
       d.className = 'mp-date';
-      d.textContent = new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-      card.appendChild(d);
+      d.textContent = r.created_at
+        ? 'Recorded ' + new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+        : '';
+      foot.appendChild(d);
+
       const del = document.createElement('button');
       del.type = 'button';
       del.className = 'mp-btn small danger';
       del.textContent = 'Delete';
-      del.addEventListener('click', () => this.deleteRecord(r.id));
-      card.appendChild(del);
+      del.addEventListener('click', () => {
+        if (window.confirm('Delete this workspace record?')) {
+          this.deleteRecord(r.id, r._fallbackSource);
+        }
+      });
+      foot.appendChild(del);
+      card.appendChild(foot);
       return card;
+    }
+
+    renderFilteredWorkspaceRecords() {
+      const box = $('lrList');
+      if (!box) return;
+      box.innerHTML = '';
+
+      const all = this._wsRecords || [];
+      const fType = ($('lrFilterType') && $('lrFilterType').value) || 'all';
+      const q = (($('lrSearchInput') && $('lrSearchInput').value) || '').trim().toLowerCase();
+
+      const filtered = all.filter(r => {
+        if (fType !== 'all' && r.record_type !== fType) return false;
+        if (!q) return true;
+        return JSON.stringify(r).toLowerCase().indexOf(q) !== -1;
+      });
+
+      const fBar = $('lrFilterBar');
+      if (fBar) fBar.hidden = all.length === 0;
+
+      if (!filtered.length) {
+        const e = document.createElement('p');
+        e.className = 'mp-empty';
+        e.textContent = all.length === 0
+          ? 'No records in ' + this.ws.name + ' workspace yet \u2014 add your first entry above.'
+          : 'No records match your current filter.';
+        box.appendChild(e);
+        return;
+      }
+      filtered.forEach(r => box.appendChild(this.makeRecord(r)));
     }
 
     async loadLeaderWorkspace() {
       const box = $('lrList');
       if (!box || !this.supabase || !this.ws) return;
-      const { data, error } = await this.supabase
-        .from(this.ws.table)
-        .select('*')
-        .eq('owner_id', this.profile.id)
-        .order('created_at', { ascending: false });
-      box.innerHTML = '';
+
+      const isAdmin = this.profile && this.profile.role === 'admin';
+      let q = this.supabase.from(this.ws.table).select('*');
+      if (this.ws.table === 'leader_records' && !isAdmin) {
+        q = q.eq('owner_id', this.profile.id);
+      } else if (this.ws.committee) {
+        q = q.eq('committee_name', this.ws.committee);
+      }
+      const { data, error } = await q.order('created_at', { ascending: false });
+
+      if (error && /does not exist|schema cache|relation/i.test(error.message)) {
+        // Fallback to generic leader_records table if role-specific tables haven't been created yet
+        const prefix = '[ws:' + this.ws.roleKey + ':';
+        let fbQuery = this.supabase.from('leader_records').select('*').order('created_at', { ascending: false });
+        if (!isAdmin) fbQuery = fbQuery.eq('owner_id', this.profile.id);
+        const { data: fbData, error: fbErr } = await fbQuery;
+        if (!fbErr && Array.isArray(fbData)) {
+          const parsed = [];
+          fbData.forEach(item => {
+            if (this.ws.roleKey === 'generic' && (!item.title || item.title.indexOf('[ws:') !== 0)) {
+              parsed.push(Object.assign({ record_type: 'note', _fallbackSource: 'leader_records' }, item));
+              return;
+            }
+            if (item.title && item.title.indexOf(prefix) === 0) {
+              try {
+                const obj = JSON.parse(item.body || '{}');
+                parsed.push(Object.assign({}, obj, {
+                  id: item.id,
+                  created_at: item.created_at,
+                  _fallbackSource: 'leader_records'
+                }));
+              } catch (e) { /* ignore malformed */ }
+            }
+          });
+          this._wsRecords = parsed;
+          this.renderWorkspaceKpis(this._wsRecords);
+          this.renderFilteredWorkspaceRecords();
+          return;
+        }
+      }
+
       if (error) {
         console.warn('leader workspace:', error);
+        box.innerHTML = '';
         const e = document.createElement('p');
         e.className = 'mp-empty';
-        e.textContent = /does not exist|schema cache|relation/i.test(error.message)
-          ? 'This workspace is not set up yet \u2014 ask an admin to run supabase-leader-workspaces.sql in Supabase first.'
-          : error.message;
+        e.textContent = error.message;
         box.appendChild(e);
         return;
       }
-      const list = data || [];
-      if (!list.length) {
-        const e = document.createElement('p');
-        e.className = 'mp-empty';
-        e.textContent = 'No records yet \u2014 add your first one above.';
-        box.appendChild(e);
-        return;
-      }
-      list.forEach(r => box.appendChild(this.makeRecord(r)));
+
+      this._wsRecords = data || [];
+      this.renderWorkspaceKpis(this._wsRecords);
+      this.renderFilteredWorkspaceRecords();
     }
 
     async onAddRecord(e) {
@@ -2177,25 +3042,84 @@
       if (!msg || !this.supabase || !this.ws) return;
       const tkey = this.wsTypeKey();
       const t = this.ws.types[tkey];
-      const row = { owner_id: this.profile.id, record_type: tkey };
+      const row = { owner_id: this.profile.id };
+      if (this.ws.table !== 'leader_records') {
+        row.record_type = tkey;
+      }
       const missing = [];
+
       this.wsFields.querySelectorAll('[data-k]').forEach(inp => {
         const f = t.fields.find(x => x.k === inp.dataset.k);
         if (!f) return;
         const v = (inp.value || '').trim();
-        if (f.req && !v) { missing.push(f.l); return; }
+        const fileInp = this.wsFields.querySelector('[data-file-for="' + f.k + '"]');
+        const hasFile = fileInp && fileInp.files && fileInp.files[0];
+        if (f.req && !v && !hasFile) {
+          missing.push(f.l);
+          return;
+        }
         if (!v) return;
         row[f.k] = f.t === 'number' ? Number(v) : v;
       });
+
       if (missing.length) {
         msg.className = 'mp-msg err';
         msg.textContent = 'Please fill in: ' + missing.join(', ');
         return;
       }
-      if (this.ws.key === 'subcommittee') row.committee_name = this.ws.committee;
+
+      // Upload any attached files to the 'documents' bucket first
+      const fileInputs = Array.from(this.wsFields.querySelectorAll('input[type="file"][data-file-for]'));
+      for (const fInp of fileInputs) {
+        if (fInp.files && fInp.files[0]) {
+          const file = fInp.files[0];
+          const fieldKey = fInp.dataset.fileFor;
+          msg.className = 'mp-msg';
+          msg.textContent = 'Uploading document (' + file.name + ')\u2026';
+          const safeName = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+          const storagePath = 'leader_' + (this.ws.roleKey || 'general') + '/' + safeName;
+          const isPdf = file.name.toLowerCase().endsWith('.pdf');
+          const { error: upErr } = await this.supabase.storage
+            .from('documents')
+            .upload(storagePath, file, {
+              contentType: file.type || (isPdf ? 'application/pdf' : 'application/octet-stream')
+            });
+          if (upErr) {
+            msg.className = 'mp-msg err';
+            msg.textContent = 'File upload failed: ' + upErr.message;
+            return;
+          }
+          const { data: pubData } = this.supabase.storage.from('documents').getPublicUrl(storagePath);
+          if (pubData && pubData.publicUrl) {
+            row[fieldKey] = pubData.publicUrl;
+          }
+        }
+      }
+
+      if (this.ws.committee) row.committee_name = this.ws.committee;
       msg.className = 'mp-msg';
-      msg.textContent = 'Saving\u2026';
-      const { error } = await this.supabase.from(this.ws.table).insert(row);
+      msg.textContent = 'Saving record\u2026';
+
+      let { error } = await this.supabase.from(this.ws.table).insert(row);
+      if (error && /column .* does not exist|schema cache/i.test(error.message) && !/relation .* does not exist/i.test(error.message)) {
+        const cleanRow = Object.assign({}, row);
+        delete cleanRow.notes;
+        delete cleanRow.action_required;
+        const retryRes = await this.supabase.from(this.ws.table).insert(cleanRow);
+        error = retryRes.error;
+      }
+      if (error && /does not exist|schema cache|relation/i.test(error.message) && this.ws.table !== 'leader_records') {
+        // Automatic fallback into leader_records if dedicated workspace table is not yet created
+        const fbTitle = '[ws:' + this.ws.roleKey + ':' + tkey + '] ' + (t.title ? t.title(row) : tkey);
+        const fbRes = await this.supabase.from('leader_records').insert({
+          owner_id: this.profile.id,
+          title: fbTitle,
+          body: JSON.stringify(Object.assign({}, row, { record_type: tkey })),
+          record_date: new Date().toISOString().slice(0, 10)
+        });
+        error = fbRes.error;
+      }
+
       if (error) {
         msg.className = 'mp-msg err';
         msg.textContent = error.message;
@@ -2204,13 +3128,14 @@
       this.wsFields.querySelectorAll('input, textarea').forEach(i => { i.value = ''; });
       this.wsFields.querySelectorAll('select').forEach(s => { s.selectedIndex = 0; });
       msg.className = 'mp-msg ok';
-      msg.textContent = 'Record saved \u2713';
+      msg.textContent = 'Record saved to ' + this.ws.shortName + ' workspace \u2713';
       this.loadLeaderWorkspace();
     }
 
-    async deleteRecord(id) {
+    async deleteRecord(id, fallbackSource) {
       if (!this.supabase || !this.ws) return;
-      await this.supabase.from(this.ws.table).delete().eq('id', id);
+      const targetTable = fallbackSource === 'leader_records' ? 'leader_records' : this.ws.table;
+      await this.supabase.from(targetTable).delete().eq('id', id);
       this.loadLeaderWorkspace();
     }
 
@@ -2916,14 +3841,30 @@
           }
         });
         row.appendChild(sel);
+
+        const posSel = document.createElement('select');
+        posSel.title = 'Assign Katiba Leadership Position (Ibara ya 11\u201316)';
+        const emptyOpt = document.createElement('option');
+        emptyOpt.value = '';
+        emptyOpt.textContent = '\u2014 Katiba Position (Ibara 11\u201316) \u2014';
+        posSel.appendChild(emptyOpt);
+        const matchedWs = MemberPortal.workspaceForProfile(m);
+        MemberPortal.ROLE_POSITIONS.forEach(pos => {
+          const o = document.createElement('option');
+          o.value = pos.title;
+          o.textContent = pos.label;
+          if (matchedWs && matchedWs.roleKey === pos.key) o.selected = true;
+          posSel.appendChild(o);
+        });
+
         const tit = document.createElement('input');
         tit.type = 'text';
         tit.className = 'mp-mtitle';
         tit.value = m.title || '';
-        tit.placeholder = 'Title (e.g. Chairperson)';
+        tit.placeholder = 'Custom / Official Title';
         tit.maxLength = 60;
-        tit.addEventListener('change', async () => {
-          const val = tit.value.trim();
+
+        const saveTitle = async val => {
           if (val === (m.title || '')) return;
           const { error } = await this.supabase.rpc('admin_set_title', {
             p_email: m.email,
@@ -2935,26 +3876,39 @@
             return;
           }
           m.title = val;
+          if (val && m.role === 'member') {
+            const { error: rErr } = await this.supabase.rpc('admin_set_role', {
+              p_email: m.email,
+              p_role: 'leader'
+            });
+            if (!rErr) {
+              m.role = 'leader';
+              sel.value = 'leader';
+            }
+          }
+          if (m.id === this.profile.id) {
+            this.profile.title = val;
+            this.renderDashboard();
+          }
+        };
+
+        posSel.addEventListener('change', () => {
+          tit.value = posSel.value;
+          saveTitle(posSel.value.trim());
         });
+
+        tit.addEventListener('change', () => saveTitle(tit.value.trim()));
+
         const saveBtn = document.createElement('button');
         saveBtn.type = 'button';
         saveBtn.className = 'mp-btn small';
         saveBtn.textContent = 'Save';
         saveBtn.addEventListener('click', async () => {
-          const val = tit.value.trim();
-          if (val === (m.title || '')) return;
-          const { error } = await this.supabase.rpc('admin_set_title', {
-            p_email: m.email,
-            p_title: val
-          });
-          if (error) {
-            window.alert('Could not change title: ' + error.message);
-            return;
-          }
-          m.title = val;
+          await saveTitle(tit.value.trim());
           saveBtn.textContent = 'Saved!';
-          setTimeout(() => saveBtn.textContent = 'Save', 1500);
+          setTimeout(() => { saveBtn.textContent = 'Save'; }, 1500);
         });
+        row.appendChild(posSel);
         row.appendChild(tit);
         row.appendChild(saveBtn);
         row.appendChild(det);
@@ -3330,10 +4284,17 @@
         }
       }
 
+      let dbAudience = audience;
+      if (audience && audience.indexOf('leader:') === 0) {
+        const targetRole = audience.slice(7).replace(/[^a-z0-9_]/gi, '');
+        dbAudience = 'leader';
+        body = `<span class="mp-res-role-tag" data-leader-role="${targetRole}" hidden></span>` + body;
+      }
+
       const { error } = await this.supabase.from('resources').insert({
         title: title,
         body: body,
-        audience: audience
+        audience: dbAudience
       });
       if (error) {
         if (msg) {

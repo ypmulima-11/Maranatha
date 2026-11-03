@@ -49,6 +49,24 @@ exception when undefined_table then null; end $$;
 
 do $$ begin
   alter table public.subcommittee_workspace add column if not exists event_title text;
+  alter table public.subcommittee_workspace add column if not exists notes text;
+exception when undefined_table then null; end $$;
+
+do $$ begin
+  alter table public.chairperson_workspace add column if not exists notes text;
+exception when undefined_table then null; end $$;
+
+do $$ begin
+  alter table public.secretary_workspace add column if not exists action_required text;
+  alter table public.secretary_workspace add column if not exists notes text;
+exception when undefined_table then null; end $$;
+
+do $$ begin
+  alter table public.asst_secretary_workspace add column if not exists notes text;
+exception when undefined_table then null; end $$;
+
+do $$ begin
+  alter table public.treasurer_workspace add column if not exists notes text;
 exception when undefined_table then null; end $$;
 
 -- ------------------------------------------------------------
@@ -76,6 +94,7 @@ create table if not exists public.chairperson_workspace (
   document_file_url text,
   document_date date,
   -- General
+  notes text,
   record_type text not null check (record_type in ('meeting', 'appointment', 'document')),
   status text not null default 'draft' check (status in ('draft', 'submitted', 'approved', 'archived')),
   created_at timestamptz not null default now(),
@@ -86,15 +105,17 @@ alter table public.chairperson_workspace enable row level security;
 
 drop policy if exists "chairperson manages own workspace" on public.chairperson_workspace;
 drop policy if exists "admins read all chairperson workspace" on public.chairperson_workspace;
+drop policy if exists "admins manage all chairperson workspace" on public.chairperson_workspace;
 
 create policy "chairperson manages own workspace" on public.chairperson_workspace
   for all to authenticated
   using (owner_id = auth.uid())
   with check (owner_id = auth.uid());
 
-create policy "admins read all chairperson workspace" on public.chairperson_workspace
-  for select to authenticated
-  using ((select role from public.profiles where id = auth.uid()) = 'admin');
+create policy "admins manage all chairperson workspace" on public.chairperson_workspace
+  for all to authenticated
+  using ((select role from public.profiles where id = auth.uid()) = 'admin')
+  with check ((select role from public.profiles where id = auth.uid()) = 'admin');
 
 grant select, insert, update, delete on public.chairperson_workspace to authenticated;
 
@@ -138,15 +159,17 @@ alter table public.choirmaster_workspace enable row level security;
 
 drop policy if exists "choirmaster manages own workspace" on public.choirmaster_workspace;
 drop policy if exists "admins read all choirmaster workspace" on public.choirmaster_workspace;
+drop policy if exists "admins manage all choirmaster workspace" on public.choirmaster_workspace;
 
 create policy "choirmaster manages own workspace" on public.choirmaster_workspace
   for all to authenticated
   using (owner_id = auth.uid())
   with check (owner_id = auth.uid());
 
-create policy "admins read all choirmaster workspace" on public.choirmaster_workspace
-  for select to authenticated
-  using ((select role from public.profiles where id = auth.uid()) = 'admin');
+create policy "admins manage all choirmaster workspace" on public.choirmaster_workspace
+  for all to authenticated
+  using ((select role from public.profiles where id = auth.uid()) = 'admin')
+  with check ((select role from public.profiles where id = auth.uid()) = 'admin');
 
 grant select, insert, update, delete on public.choirmaster_workspace to authenticated;
 
@@ -186,6 +209,8 @@ create table if not exists public.secretary_workspace (
   membership_date date,
   membership_status text check (membership_status in ('active', 'on_leave', 'resigned', 'suspended')),
   -- General
+  action_required text,
+  notes text,
   record_type text not null check (record_type in ('minutes', 'asset', 'correspondence', 'membership')),
   status text not null default 'draft' check (status in ('draft', 'final', 'distributed', 'archived')),
   created_at timestamptz not null default now(),
@@ -196,15 +221,17 @@ alter table public.secretary_workspace enable row level security;
 
 drop policy if exists "secretary manages own workspace" on public.secretary_workspace;
 drop policy if exists "admins read all secretary workspace" on public.secretary_workspace;
+drop policy if exists "admins manage all secretary workspace" on public.secretary_workspace;
 
 create policy "secretary manages own workspace" on public.secretary_workspace
   for all to authenticated
   using (owner_id = auth.uid())
   with check (owner_id = auth.uid());
 
-create policy "admins read all secretary workspace" on public.secretary_workspace
-  for select to authenticated
-  using ((select role from public.profiles where id = auth.uid()) = 'admin');
+create policy "admins manage all secretary workspace" on public.secretary_workspace
+  for all to authenticated
+  using ((select role from public.profiles where id = auth.uid()) = 'admin')
+  with check ((select role from public.profiles where id = auth.uid()) = 'admin');
 
 grant select, insert, update, delete on public.secretary_workspace to authenticated;
 
@@ -232,6 +259,7 @@ create table if not exists public.asst_secretary_workspace (
   comm_recipients text,
   comm_status text check (comm_status in ('draft', 'ready_to_send', 'sent')),
   -- General
+  notes text,
   record_type text not null check (record_type in ('meeting_support', 'backup_minutes', 'communication')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -241,15 +269,17 @@ alter table public.asst_secretary_workspace enable row level security;
 
 drop policy if exists "asst_secretary manages own workspace" on public.asst_secretary_workspace;
 drop policy if exists "admins read all asst_secretary workspace" on public.asst_secretary_workspace;
+drop policy if exists "admins manage all asst_secretary workspace" on public.asst_secretary_workspace;
 
 create policy "asst_secretary manages own workspace" on public.asst_secretary_workspace
   for all to authenticated
   using (owner_id = auth.uid())
   with check (owner_id = auth.uid());
 
-create policy "admins read all asst_secretary workspace" on public.asst_secretary_workspace
-  for select to authenticated
-  using ((select role from public.profiles where id = auth.uid()) = 'admin');
+create policy "admins manage all asst_secretary workspace" on public.asst_secretary_workspace
+  for all to authenticated
+  using ((select role from public.profiles where id = auth.uid()) = 'admin')
+  with check ((select role from public.profiles where id = auth.uid()) = 'admin');
 
 grant select, insert, update, delete on public.asst_secretary_workspace to authenticated;
 
@@ -291,6 +321,7 @@ create table if not exists public.treasurer_workspace (
   invoice_receipt_url text,
   approved_by text,
   -- General
+  notes text,
   record_type text not null check (record_type in ('semester_report', 'transaction', 'contribution', 'expense')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -300,15 +331,17 @@ alter table public.treasurer_workspace enable row level security;
 
 drop policy if exists "treasurer manages own workspace" on public.treasurer_workspace;
 drop policy if exists "admins read all treasurer workspace" on public.treasurer_workspace;
+drop policy if exists "admins manage all treasurer workspace" on public.treasurer_workspace;
 
 create policy "treasurer manages own workspace" on public.treasurer_workspace
   for all to authenticated
   using (owner_id = auth.uid())
   with check (owner_id = auth.uid());
 
-create policy "admins read all treasurer workspace" on public.treasurer_workspace
-  for select to authenticated
-  using ((select role from public.profiles where id = auth.uid()) = 'admin');
+create policy "admins manage all treasurer workspace" on public.treasurer_workspace
+  for all to authenticated
+  using ((select role from public.profiles where id = auth.uid()) = 'admin')
+  with check ((select role from public.profiles where id = auth.uid()) = 'admin');
 
 grant select, insert, update, delete on public.treasurer_workspace to authenticated;
 
@@ -364,6 +397,7 @@ create table if not exists public.subcommittee_workspace (
   budget_allocated numeric(12,2),
   budget_spent numeric(12,2),
   -- General
+  notes text,
   record_type text not null check (record_type in ('meeting', 'activity', 'member_issue', 'liturgy', 'media', 'social_event')),
   status text not null default 'draft' check (status in ('draft', 'submitted', 'approved', 'completed')),
   created_at timestamptz not null default now(),
@@ -376,6 +410,7 @@ drop policy if exists "subcommittee member manages own records" on public.subcom
 drop policy if exists "leaders read all subcommittee records" on public.subcommittee_workspace;
 drop policy if exists "chairperson reads all subcommittee records" on public.subcommittee_workspace;
 drop policy if exists "admins read all subcommittee workspace" on public.subcommittee_workspace;
+drop policy if exists "admins manage all subcommittee workspace" on public.subcommittee_workspace;
 
 create policy "subcommittee member manages own records" on public.subcommittee_workspace
   for all to authenticated
@@ -393,9 +428,10 @@ create policy "leaders read all subcommittee records" on public.subcommittee_wor
     )
   );
 
-create policy "admins read all subcommittee workspace" on public.subcommittee_workspace
-  for select to authenticated
-  using ((select role from public.profiles where id = auth.uid()) = 'admin');
+create policy "admins manage all subcommittee workspace" on public.subcommittee_workspace
+  for all to authenticated
+  using ((select role from public.profiles where id = auth.uid()) = 'admin')
+  with check ((select role from public.profiles where id = auth.uid()) = 'admin');
 
 grant select, insert, update, delete on public.subcommittee_workspace to authenticated;
 
