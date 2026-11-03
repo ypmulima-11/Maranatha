@@ -482,9 +482,10 @@ button.danger:hover,
 }
 .mp-card2 {
   background: var(--card);
-  border: 1px solid var(--line);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   padding: 22px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 .mp-card2 h2 {
   font-size: 16px;
@@ -512,20 +513,23 @@ button.danger:hover,
 .mp-badge.leader { background: #EDEDED; color: #1A1A1A; border: 1px solid rgba(0, 0, 0, .12); }
 .mp-badge.admin { background: #000000; color: #FFFFFF; }
 
-.mp-list { display: flex; flex-direction: column; gap: 10px; }
+.mp-list { display: flex; flex-direction: column; gap: 14px; }
 .mp-item {
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 12px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  padding: 14px 16px;
   background: #FFFFFF;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .mp-item h3 { font-size: 14px; margin-bottom: 4px; color: var(--ink); }
 .mp-item p { font-size: 13px; color: var(--mut); }
 .mp-item .mp-date { font-size: 11px; color: #6B6B6B; margin-top: 6px; }
 .mp-pinned {
-  border-color: #000000;
-  border-left: 3px solid #000000;
-  background: #F8F8F8;
+  border-color: rgba(0, 0, 0, 0.08);
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  background: #FFFFFF;
 }
 .mp-empty { color: var(--mut); font-size: 13px; font-style: italic; }
 
@@ -646,7 +650,7 @@ button.danger:hover,
 .att-late { background: #D6D6D6; color: #1A1A1A; }
 .att-absent { background: #F4F4F4; color: #6B6B6B; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12); }
 .att-excused { background: #EAEAEA; color: #1A1A1A; }
-.sess-live { border-left: 3px solid #000000; }
+.sess-live { border-left: 1px solid rgba(0, 0, 0, 0.08); }
 
 /* ---------- Library, directory, posting ---------- */
 .mp-two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
