@@ -1322,23 +1322,12 @@
         if (globMenu) globMenu.style.display = 'inline-block';
       }
 
-      if ($('mpRoleMandateCard')) $('mpRoleMandateCard').hidden = !isLeader;
       $('mpLeaderCard').hidden = !isLeader;
       $('mpLeaderWork').hidden = !isLeader;
       $('mpAdminCard').hidden = !isAdmin;
       $('mpNavAdmin').hidden = !isAdmin;
       $('mpSessCard').hidden = !isLeader;
       $('mpPostCard').hidden = !isLeader;
-
-      if ($('mpSideLeader')) {
-        const sp = $('mpSideLeader').querySelector('span');
-        const detected = isLeader ? MemberPortal.workspaceForProfile(this.profile) : null;
-        if (sp) {
-          sp.textContent = detected && detected.shortName
-            ? 'Leader (' + detected.shortName + ')'
-            : 'Leader Resources';
-        }
-      }
 
       this.switchDashboardSection(this.activeSection || 'announcements');
 
@@ -1732,7 +1721,7 @@
         defaultResources: [
           {
             title: 'Katiba ya Kwaya \u2014 Ibara ya 11: Madaraka na Wajibu wa Mwenyekiti',
-            body: 'Mwongozo rasmi wa kikatiba kuhusu uongozi wa vikao vya Kamati Tendaji, Mkutano Mkuu wa Kwaya, uwakilishi wa Parokia, na utiaji saini wa nyaraka na miamala ya benki.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            body: 'Mwongozo rasmi wa kikatiba kuhusu uongozi wa vikao vya Kamati Tendaji, Mkutano Mkuu wa Kwaya, uwakilishi wa Parokia, na utiaji saini wa nyaraka na miamala ya benki.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF)</a>',
             date: 'Katiba \u00b7 Ibara ya 11'
           },
           {
@@ -1810,7 +1799,7 @@
         defaultResources: [
           {
             title: 'Katiba ya Kwaya \u2014 Ibara ya 12: Wajibu wa Mwalimu wa Kwaya',
-            body: 'Maelekezo ya kikatiba kuhusu ufundishaji wa sauti nne (SATB), uteuzi wa nyimbo za Liturujia, usimamizi wa walimu wasaidizi, na nidhamu ya mazoezi.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            body: 'Maelekezo ya kikatiba kuhusu ufundishaji wa sauti nne (SATB), uteuzi wa nyimbo za Liturujia, usimamizi wa walimu wasaidizi, na nidhamu ya mazoezi.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF)</a>',
             date: 'Katiba \u00b7 Ibara ya 12'
           },
           {
@@ -1898,7 +1887,7 @@
         defaultResources: [
           {
             title: 'Katiba ya Kwaya \u2014 Ibara ya 13: Wajibu wa Katibu wa Kwaya',
-            body: 'Mwongozo wa utunzaji wa nyaraka za kwaya, uandishi wa mihutasari ya Kamati Tendaji na Mkutano Mkuu, na usimamizi wa daftari la mali za kwaya.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            body: 'Mwongozo wa utunzaji wa nyaraka za kwaya, uandishi wa mihutasari ya Kamati Tendaji na Mkutano Mkuu, na usimamizi wa daftari la mali za kwaya.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF)</a>',
             date: 'Katiba \u00b7 Ibara ya 13'
           },
           {
@@ -1994,7 +1983,7 @@
         defaultResources: [
           {
             title: 'Katiba ya Kwaya \u2014 Ibara ya 14: Wajibu wa Katibu Msaidizi',
-            body: 'Maelekezo ya kikatiba kuhusu kumsaidia Katibu Mkuu, uandishi wa rasimu za mihutasari, na uratibu wa mawasiliano ya ndani ya kwaya.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            body: 'Maelekezo ya kikatiba kuhusu kumsaidia Katibu Mkuu, uandishi wa rasimu za mihutasari, na uratibu wa mawasiliano ya ndani ya kwaya.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF)</a>',
             date: 'Katiba \u00b7 Ibara ya 14'
           }
         ],
@@ -2061,7 +2050,7 @@
         defaultResources: [
           {
             title: 'Katiba ya Kwaya \u2014 Ibara ya 15 & Ibara ya 23\u201326: Usimamizi wa Fedha na Hazina',
-            body: 'Mwongozo kamili wa vyanzo vya mapato ya kwaya (Ibara 23), utunzaji wa fedha Mkombozi Bank (Ibara 24), utaratibu wa idhini ya matumizi (Ibara 25), na taarifa za fedha za muhula (Ibara 26).<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            body: 'Mwongozo kamili wa vyanzo vya mapato ya kwaya (Ibara 23), utunzaji wa fedha Mkombozi Bank (Ibara 24), utaratibu wa idhini ya matumizi (Ibara 25), na taarifa za fedha za muhula (Ibara 26).<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF)</a>',
             date: 'Katiba \u00b7 Ibara ya 15 & 23\u201326'
           },
           {
@@ -2179,7 +2168,7 @@
         defaultResources: [
           {
             title: 'Katiba ya Kwaya \u2014 Ibara ya 16.1 & 29: Kamati ya Nidhamu na Kanuni za Maadili',
-            body: 'Mwongozo wa kikatiba wa kushughulikia masuala ya mahudhurio, maonyo, na taratibu za kinidhamu kwa haki na upendo wa Kikristo.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            body: 'Mwongozo wa kikatiba wa kushughulikia masuala ya mahudhurio, maonyo, na taratibu za kinidhamu kwa haki na upendo wa Kikristo.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF)</a>',
             date: 'Katiba \u00b7 Ibara ya 16.1 & 29'
           }
         ],
@@ -2242,7 +2231,7 @@
         defaultResources: [
           {
             title: 'Katiba ya Kwaya \u2014 Ibara ya 16.2: Kamati ya Liturujia na Malezi ya Kiroho',
-            body: 'Mwongozo wa uratibu wa Misa Takatifu, masomo ya Dominika na Sikukuu, mafungo ya kiroho, na ushirikiano na Kamati ya Liturujia ya Parokia.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            body: 'Mwongozo wa uratibu wa Misa Takatifu, masomo ya Dominika na Sikukuu, mafungo ya kiroho, na ushirikiano na Kamati ya Liturujia ya Parokia.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF)</a>',
             date: 'Katiba \u00b7 Ibara ya 16.2'
           }
         ],
@@ -2304,7 +2293,7 @@
         defaultResources: [
           {
             title: 'Katiba ya Kwaya \u2014 Ibara ya 16.3: Kamati ya Media na Mawasiliano',
-            body: 'Mwongozo wa usimamizi wa maudhui ya kidijitali, hifadhi ya picha na video za kwaya, na uinjilishaji kupitia mitandao ya kijamii.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            body: 'Mwongozo wa usimamizi wa maudhui ya kidijitali, hifadhi ya picha na video za kwaya, na uinjilishaji kupitia mitandao ya kijamii.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF)</a>',
             date: 'Katiba \u00b7 Ibara ya 16.3'
           }
         ],
@@ -2365,7 +2354,7 @@
         defaultResources: [
           {
             title: 'Katiba ya Kwaya \u2014 Ibara ya 16.4: Kamati ya Masuala ya Kijamii',
-            body: 'Mwongozo wa kikatiba kuhusu taratibu za rambirambi, faraja kwa wagonjwa, sherehe za mahafali ya wanakwaya, na matendo ya huruma.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+            body: 'Mwongozo wa kikatiba kuhusu taratibu za rambirambi, faraja kwa wagonjwa, sherehe za mahafali ya wanakwaya, na matendo ya huruma.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF)</a>',
             date: 'Katiba \u00b7 Ibara ya 16.4'
           }
         ],
@@ -2431,7 +2420,7 @@
       defaultResources: [
         {
           title: 'Katiba ya Kwaya ya Maranatha \u2014 Ibara ya 11 hadi 16 (Muundo wa Uongozi)',
-          body: 'Soma mwongozo kamili wa madaraka na wajibu wa Kamati Tendaji (Mwenyekiti, Mwalimu wa Kwaya, Katibu, Katibu Msaidizi, Mtunza Hazina) na Kamati Ndogo.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF) \u2197</a>',
+          body: 'Soma mwongozo kamili wa madaraka na wajibu wa Kamati Tendaji (Mwenyekiti, Mwalimu wa Kwaya, Katibu, Katibu Msaidizi, Mtunza Hazina) na Kamati Ndogo.<br><a href="assets/documents/Katiba_ya_Kwaya_ya_Maranatha_2025.pdf" target="_blank" class="mp-link" style="display:inline-block;margin-top:8px;">Soma Katiba (PDF)</a>',
           date: 'Katiba \u00b7 Ibara ya 11\u201316'
         }
       ],
@@ -2496,87 +2485,37 @@
       return this._wsType && this.ws.types[this._wsType] ? this._wsType : Object.keys(this.ws.types)[0];
     }
 
-    renderRoleMandateCard() {
-      const card = $('mpRoleMandateCard');
+    renderRoleSwitcher() {
       const switcher = $('mpLeaderRoleSwitcher');
-      const content = $('mpRoleMandateContent');
-      if (!card || !content || !this.ws) return;
-
+      if (!switcher || !this.ws) return;
       const isAdmin = this.profile && this.profile.role === 'admin';
-      if (switcher) {
-        if (isAdmin) {
-          switcher.hidden = false;
-          switcher.innerHTML = '';
-          const lbl = document.createElement('span');
-          lbl.className = 'lr-switcher-label';
-          lbl.textContent = 'Inspect Role Workspace (Ibara 11\u201316):';
-          switcher.appendChild(lbl);
-
-          MemberPortal.ROLE_POSITIONS.forEach(pos => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'lr-role-pill' + (this.ws.roleKey === pos.key ? ' active' : '');
-            const wsDef = MemberPortal.WORKSPACES[pos.key];
-            btn.textContent = (wsDef ? wsDef.shortName : pos.key) + ' (' + (wsDef ? wsDef.ibara.replace(/ &.*$/, '') : '') + ')';
-            btn.addEventListener('click', () => {
-              this._adminInspectRole = pos.key;
-              this.renderLeaderWorkspace();
-            });
-            switcher.appendChild(btn);
-          });
-        } else {
-          switcher.hidden = true;
-          switcher.innerHTML = '';
-        }
+      if (!isAdmin) {
+        switcher.hidden = true;
+        switcher.innerHTML = '';
+        return;
       }
+      switcher.hidden = false;
+      switcher.innerHTML = '';
+      const lab = document.createElement('label');
+      lab.className = 'mp-field';
+      const sp = document.createElement('span');
+      sp.textContent = 'Role workspace';
+      lab.appendChild(sp);
 
-      content.innerHTML = '';
-      const head = document.createElement('div');
-      head.className = 'lr-mandate-head';
-
-      const titleWrap = document.createElement('div');
-      const h2 = document.createElement('h2');
-      h2.className = 'lr-mandate-title';
-      h2.textContent = this.ws.name;
-      titleWrap.appendChild(h2);
-
-      const sub = document.createElement('p');
-      sub.className = 'lr-mandate-sub';
-      sub.textContent = this.ws.mandateSummary || '';
-      titleWrap.appendChild(sub);
-      head.appendChild(titleWrap);
-
-      const badges = document.createElement('div');
-      badges.style.display = 'flex';
-      badges.style.gap = '8px';
-      badges.style.flexWrap = 'wrap';
-
-      const ibaraBadge = document.createElement('span');
-      ibaraBadge.className = 'mp-badge leader';
-      ibaraBadge.textContent = 'Katiba \u00b7 ' + (this.ws.ibara || 'Ibara ya 11\u201316');
-      badges.appendChild(ibaraBadge);
-
-      const katibaLink = document.createElement('a');
-      katibaLink.href = MemberPortal.KATIBA_DOC_URL;
-      katibaLink.target = '_blank';
-      katibaLink.rel = 'noopener';
-      katibaLink.className = 'mp-btn small';
-      katibaLink.textContent = 'Open Katiba (PDF)';
-      badges.appendChild(katibaLink);
-
-      head.appendChild(badges);
-      content.appendChild(head);
-
-      if (this.ws.duties && this.ws.duties.length) {
-        const ul = document.createElement('ul');
-        ul.className = 'lr-duties-list';
-        this.ws.duties.forEach(d => {
-          const li = document.createElement('li');
-          li.textContent = d;
-          ul.appendChild(li);
-        });
-        content.appendChild(ul);
-      }
+      const sel = document.createElement('select');
+      MemberPortal.ROLE_POSITIONS.forEach(pos => {
+        const o = document.createElement('option');
+        o.value = pos.key;
+        o.textContent = pos.title + ' \u00b7 ' + (MemberPortal.WORKSPACES[pos.key] ? MemberPortal.WORKSPACES[pos.key].ibara : '');
+        if (this.ws.roleKey === pos.key) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.addEventListener('change', () => {
+        this._adminInspectRole = sel.value;
+        this.renderLeaderWorkspace();
+      });
+      lab.appendChild(sel);
+      switcher.appendChild(lab);
     }
 
     renderLeaderResources() {
@@ -2585,18 +2524,18 @@
       const roleKey = this.ws.roleKey || 'generic';
       if ($('lrResTitle')) {
         $('lrResTitle').textContent = roleKey === 'generic'
-          ? 'Leadership Reference & Resources'
-          : this.ws.shortName + ' Resources & Reference (' + this.ws.ibara + ')';
+          ? 'Leader resources'
+          : this.ws.shortName + ' resources';
       }
       if ($('lrResBadge')) {
-        $('lrResBadge').textContent = roleKey === 'generic' ? 'Leader Only' : this.ws.shortName + ' Only';
+        $('lrResBadge').textContent = roleKey === 'generic' ? 'Leader' : this.ws.shortName;
       }
 
       const dbLeaderResources = (this.resources || []).filter(r => {
         if (r.audience === 'leader:' + roleKey) return true;
         if (r.audience !== 'leader') return false;
         const m = String(r.body || '').match(/data-leader-role="([^"]+)"/);
-        if (!m) return true; // General leader resource
+        if (!m) return true;
         return m[1] === roleKey;
       });
 
@@ -2604,7 +2543,7 @@
       this.renderList(
         box,
         combined,
-        'No role resources yet \u2014 leadership reference materials for this office will appear here.'
+        'Nothing here yet \u2014 leadership materials will be added soon.'
       );
     }
 
@@ -2612,11 +2551,11 @@
       const grid = $('lrSummaryGrid');
       if (!grid || !this.ws) return;
       grid.innerHTML = '';
-      if (typeof this.ws.kpis !== 'function') {
+      if (!records || !records.length || typeof this.ws.kpis !== 'function') {
         grid.hidden = true;
         return;
       }
-      const items = this.ws.kpis(records || []) || [];
+      const items = this.ws.kpis(records) || [];
       if (!items.length) {
         grid.hidden = true;
         return;
@@ -2633,12 +2572,6 @@
         v.textContent = k.val;
         card.appendChild(l);
         card.appendChild(v);
-        if (k.sub) {
-          const s = document.createElement('div');
-          s.className = 'lr-kpi-sub';
-          s.textContent = k.sub;
-          card.appendChild(s);
-        }
         grid.appendChild(card);
       });
     }
@@ -2657,100 +2590,55 @@
       this._wsType = Object.keys(this.ws.types)[0];
       this._wsRecords = [];
 
-      this.renderRoleMandateCard();
+      this.renderRoleSwitcher();
       this.renderLeaderResources();
 
       const workTitle = $('lrWorkTitle');
       const workBadge = $('lrWorkBadge');
       const hint = $('lrHint');
-      const tabsBox = $('lrTypeTabs');
       const form = $('lrForm');
       const list = $('lrList');
-      const filterType = $('lrFilterType');
-      const searchInp = $('lrSearchInput');
       if (!form || !list) return;
 
       if (workTitle) {
         workTitle.textContent = this.ws.roleKey === 'generic'
-          ? 'My Leadership Workspace'
-          : this.ws.name + ' \u2014 Workspace';
+          ? 'Leader workspace'
+          : this.ws.shortName + ' workspace';
       }
       if (workBadge) {
-        workBadge.textContent = this.ws.ibara || 'Protected';
+        workBadge.textContent = this.ws.ibara || 'Leader';
       }
       if (hint) {
         hint.textContent = this.ws.roleKey === 'generic'
-          ? 'Your private leadership records \u2014 visible only to you and choir administrators.'
-          : 'Dedicated tools & records for ' + this.ws.name + ' (' + this.ws.ibara + '). Protected by role-based access control.';
-      }
-
-      // Render module switcher tabs
-      const typeKeys = Object.keys(this.ws.types);
-      if (tabsBox) {
-        tabsBox.innerHTML = '';
-        if (typeKeys.length > 1) {
-          tabsBox.hidden = false;
-          typeKeys.forEach(k => {
-            const b = document.createElement('button');
-            b.type = 'button';
-            b.className = 'lr-tab' + (k === this._wsType ? ' active' : '');
-            b.dataset.tkey = k;
-            b.textContent = this.ws.types[k].label;
-            b.addEventListener('click', () => {
-              this._wsType = k;
-              const selEl = $('lrType');
-              if (selEl) selEl.value = k;
-              tabsBox.querySelectorAll('.lr-tab').forEach(tb => tb.classList.toggle('active', tb.dataset.tkey === k));
-              this.renderWsFields();
-            });
-            tabsBox.appendChild(b);
-          });
-        } else {
-          tabsBox.hidden = true;
-        }
-      }
-
-      // Populate filter dropdown
-      if (filterType) {
-        filterType.innerHTML = '<option value="all">All module records</option>';
-        typeKeys.forEach(k => {
-          const o = document.createElement('option');
-          o.value = k;
-          o.textContent = this.ws.types[k].label;
-          filterType.appendChild(o);
-        });
-        filterType.onchange = () => this.renderFilteredWorkspaceRecords();
-      }
-      if (searchInp) {
-        searchInp.value = '';
-        searchInp.oninput = () => this.renderFilteredWorkspaceRecords();
+          ? 'Your personal records for this leadership year \u2014 only you and the admins can see them.'
+          : this.ws.name + ' \u2014 records are private to your office and choir admins.';
       }
 
       form.innerHTML = '';
       list.innerHTML = '';
 
-      const typeLbl = document.createElement('label');
-      typeLbl.className = 'mp-field';
-      const ts = document.createElement('span');
-      ts.textContent = 'Active workspace module';
-      typeLbl.appendChild(ts);
-      const sel = document.createElement('select');
-      sel.id = 'lrType';
-      typeKeys.forEach(k => {
-        const o = document.createElement('option');
-        o.value = k;
-        o.textContent = this.ws.types[k].label;
-        sel.appendChild(o);
-      });
-      sel.addEventListener('change', () => {
-        this._wsType = sel.value;
-        if (tabsBox) {
-          tabsBox.querySelectorAll('.lr-tab').forEach(tb => tb.classList.toggle('active', tb.dataset.tkey === sel.value));
-        }
-        this.renderWsFields();
-      });
-      typeLbl.appendChild(sel);
-      form.appendChild(typeLbl);
+      const typeKeys = Object.keys(this.ws.types);
+      if (typeKeys.length > 1) {
+        const typeLbl = document.createElement('label');
+        typeLbl.className = 'mp-field';
+        const ts = document.createElement('span');
+        ts.textContent = 'Record type';
+        typeLbl.appendChild(ts);
+        const sel = document.createElement('select');
+        sel.id = 'lrType';
+        typeKeys.forEach(k => {
+          const o = document.createElement('option');
+          o.value = k;
+          o.textContent = this.ws.types[k].label;
+          sel.appendChild(o);
+        });
+        sel.addEventListener('change', () => {
+          this._wsType = sel.value;
+          this.renderWsFields();
+        });
+        typeLbl.appendChild(sel);
+        form.appendChild(typeLbl);
+      }
 
       this.wsFields = document.createElement('div');
       form.appendChild(this.wsFields);
@@ -2764,7 +2652,7 @@
       btn.type = 'submit';
       btn.className = 'mp-btn';
       btn.id = 'lrSubmitBtn';
-      btn.textContent = 'Save ' + (this.ws.types[this._wsType] ? this.ws.types[this._wsType].label : 'Record');
+      btn.textContent = 'Save record';
       form.appendChild(btn);
 
       this.renderWsFields();
@@ -2775,41 +2663,21 @@
       if (!this.wsFields) return;
       const t = this.ws.types[this.wsTypeKey()];
       this.wsFields.innerHTML = '';
-      const submitBtn = $('lrSubmitBtn');
-      if (submitBtn && t) {
-        submitBtn.textContent = 'Save ' + t.label;
-      }
-      t.fields.forEach(f => {
+
+      const makeFieldEl = f => {
         const lab = document.createElement('label');
         lab.className = 'mp-field';
         const sp = document.createElement('span');
-        sp.textContent = f.l + (f.req ? ' *' : '');
+        sp.textContent = f.l.replace(/\s*\(.*?\)\s*$/, '') + (f.req ? ' *' : '');
         lab.appendChild(sp);
 
         if (f.file || MemberPortal.FILE_FIELDS.has(f.k)) {
-          const wrap = document.createElement('div');
-          wrap.className = 'lr-file-wrap';
-
           const fileInp = document.createElement('input');
           fileInp.type = 'file';
           fileInp.dataset.fileFor = f.k;
           fileInp.accept = '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg';
-          wrap.appendChild(fileInp);
-
-          const urlInp = document.createElement('input');
-          urlInp.type = 'text';
-          urlInp.dataset.k = f.k;
-          urlInp.placeholder = 'Or paste an external document link (https://...)';
-          wrap.appendChild(urlInp);
-
-          const note = document.createElement('div');
-          note.className = 'lr-file-note';
-          note.textContent = 'Choose a PDF, Word, Excel, or image file to upload directly to secure choir storage, or paste a link.';
-          wrap.appendChild(note);
-
-          lab.appendChild(wrap);
-          this.wsFields.appendChild(lab);
-          return;
+          lab.appendChild(fileInp);
+          return lab;
         }
 
         let inp;
@@ -2821,7 +2689,7 @@
           [''].concat(f.opts).forEach(v => {
             const o = document.createElement('option');
             o.value = v;
-            o.textContent = v === '' ? '\u2014 Select \u2014' : MemberPortal.optLabel(v);
+            o.textContent = v === '' ? '\u2014' : MemberPortal.optLabel(v);
             inp.appendChild(o);
           });
         } else {
@@ -2831,8 +2699,37 @@
         }
         inp.dataset.k = f.k;
         lab.appendChild(inp);
-        this.wsFields.appendChild(lab);
+        return lab;
+      };
+
+      // Group consecutive short fields into two-column (.mp-two) rows for a balanced layout
+      let pairBuf = [];
+      const flushPair = () => {
+        if (!pairBuf.length) return;
+        if (pairBuf.length === 1) {
+          this.wsFields.appendChild(pairBuf[0]);
+        } else {
+          const row = document.createElement('div');
+          row.className = 'mp-two';
+          row.appendChild(pairBuf[0]);
+          row.appendChild(pairBuf[1]);
+          this.wsFields.appendChild(row);
+        }
+        pairBuf = [];
+      };
+
+      t.fields.forEach(f => {
+        const isWide = f.t === 'textarea' || f.file || MemberPortal.FILE_FIELDS.has(f.k);
+        const el = makeFieldEl(f);
+        if (isWide) {
+          flushPair();
+          this.wsFields.appendChild(el);
+        } else {
+          pairBuf.push(el);
+          if (pairBuf.length === 2) flushPair();
+        }
       });
+      flushPair();
     }
 
     makeRecord(r) {
@@ -2855,11 +2752,9 @@
       }
       card.appendChild(head);
 
-      // Render structured field values
       const fieldsDef = t && t.fields ? t.fields : [];
-      const grid = document.createElement('div');
-      grid.className = 'lr-rec-grid';
-      let hasCells = false;
+      const metaParts = [];
+      const textBlocks = [];
       let docUrl = '';
 
       fieldsDef.forEach(f => {
@@ -2869,67 +2764,58 @@
           docUrl = String(raw);
           return;
         }
-        hasCells = true;
-        const cell = document.createElement('div');
-        cell.className = 'lr-rec-cell';
-        const kEl = document.createElement('span');
-        kEl.className = 'lr-rec-k';
-        kEl.textContent = f.l.replace(/\s*\(.*?\)\s*$/, '');
-        const vEl = document.createElement('div');
-        vEl.className = 'lr-rec-v';
-        if (MemberPortal.CURRENCY_FIELDS.has(f.k)) {
-          vEl.textContent = MemberPortal.fmtTzs(raw);
-        } else if (f.t === 'select') {
-          vEl.textContent = MemberPortal.optLabel(raw);
-        } else {
-          vEl.textContent = String(raw);
+        if (f.t === 'textarea') {
+          textBlocks.push(String(raw));
+          return;
         }
-        cell.appendChild(kEl);
-        cell.appendChild(vEl);
-        grid.appendChild(cell);
+        const label = f.l.replace(/\s*\(.*?\)\s*$/, '');
+        if (MemberPortal.CURRENCY_FIELDS.has(f.k)) {
+          metaParts.push(label + ': ' + MemberPortal.fmtTzs(raw));
+        } else if (f.t === 'select') {
+          metaParts.push(MemberPortal.optLabel(raw));
+        } else {
+          metaParts.push(String(raw));
+        }
       });
 
-      if (!hasCells && r.body) {
+      if (metaParts.length) {
+        const meta = document.createElement('div');
+        meta.className = 'lr-rec-meta';
+        meta.textContent = metaParts.join(' \u00b7 ');
+        card.appendChild(meta);
+      }
+
+      if (textBlocks.length) {
+        const p = document.createElement('p');
+        p.style.marginTop = '4px';
+        p.textContent = textBlocks.join(' \u2014 ');
+        card.appendChild(p);
+      } else if (!metaParts.length && r.body) {
         const p = document.createElement('p');
         p.textContent = r.body;
         card.appendChild(p);
-      } else if (hasCells) {
-        card.appendChild(grid);
       }
 
       if (docUrl) {
-        const docWrap = document.createElement('div');
-        docWrap.className = 'lr-doc-actions';
+        const p = document.createElement('p');
+        p.style.marginTop = '6px';
         const openLink = document.createElement('a');
         openLink.href = docUrl;
         openLink.target = '_blank';
         openLink.rel = 'noopener';
-        openLink.className = 'mp-btn small';
-        openLink.textContent = 'Open / Download Document \u2197';
-        docWrap.appendChild(openLink);
-        card.appendChild(docWrap);
-
-        if (/\.pdf(\?|$)/i.test(docUrl)) {
-          const det = document.createElement('details');
-          det.style.cssText = 'margin-top:10px;background:#F8F8F8;padding:10px;border-radius:8px;border:1px solid var(--line);';
-          const sum = document.createElement('summary');
-          sum.style.cssText = 'cursor:pointer;font-weight:600;font-size:12px;color:var(--ink);';
-          sum.textContent = 'Preview PDF Document';
-          const ifr = document.createElement('iframe');
-          ifr.src = docUrl;
-          ifr.style.cssText = 'width:100%;height:420px;border:none;margin-top:8px;border-radius:4px;background:#fff;';
-          det.appendChild(sum);
-          det.appendChild(ifr);
-          card.appendChild(det);
-        }
+        openLink.className = 'mp-link';
+        openLink.textContent = 'Open document';
+        p.appendChild(openLink);
+        card.appendChild(p);
       }
 
       const foot = document.createElement('div');
-      foot.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;';
+      foot.className = 'lr-rec-foot';
       const d = document.createElement('div');
       d.className = 'mp-date';
+      d.style.marginTop = '0';
       d.textContent = r.created_at
-        ? 'Recorded ' + new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+        ? new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
         : '';
       foot.appendChild(d);
 
@@ -2938,7 +2824,7 @@
       del.className = 'mp-btn small danger';
       del.textContent = 'Delete';
       del.addEventListener('click', () => {
-        if (window.confirm('Delete this workspace record?')) {
+        if (window.confirm('Delete this record?')) {
           this.deleteRecord(r.id, r._fallbackSource);
         }
       });
@@ -2949,32 +2835,21 @@
 
     renderFilteredWorkspaceRecords() {
       const box = $('lrList');
+      const heading = $('lrSavedHeading');
       if (!box) return;
       box.innerHTML = '';
 
       const all = this._wsRecords || [];
-      const fType = ($('lrFilterType') && $('lrFilterType').value) || 'all';
-      const q = (($('lrSearchInput') && $('lrSearchInput').value) || '').trim().toLowerCase();
+      if (heading) heading.hidden = all.length === 0;
 
-      const filtered = all.filter(r => {
-        if (fType !== 'all' && r.record_type !== fType) return false;
-        if (!q) return true;
-        return JSON.stringify(r).toLowerCase().indexOf(q) !== -1;
-      });
-
-      const fBar = $('lrFilterBar');
-      if (fBar) fBar.hidden = all.length === 0;
-
-      if (!filtered.length) {
+      if (!all.length) {
         const e = document.createElement('p');
         e.className = 'mp-empty';
-        e.textContent = all.length === 0
-          ? 'No records in ' + this.ws.name + ' workspace yet \u2014 add your first entry above.'
-          : 'No records match your current filter.';
+        e.textContent = 'No records yet \u2014 add your first one above.';
         box.appendChild(e);
         return;
       }
-      filtered.forEach(r => box.appendChild(this.makeRecord(r)));
+      all.forEach(r => box.appendChild(this.makeRecord(r)));
     }
 
     async loadLeaderWorkspace() {
@@ -2991,7 +2866,6 @@
       const { data, error } = await q.order('created_at', { ascending: false });
 
       if (error && /does not exist|schema cache|relation/i.test(error.message)) {
-        // Fallback to generic leader_records table if role-specific tables haven't been created yet
         const prefix = '[ws:' + this.ws.roleKey + ':';
         let fbQuery = this.supabase.from('leader_records').select('*').order('created_at', { ascending: false });
         if (!isAdmin) fbQuery = fbQuery.eq('owner_id', this.profile.id);
@@ -3011,7 +2885,7 @@
                   created_at: item.created_at,
                   _fallbackSource: 'leader_records'
                 }));
-              } catch (e) { /* ignore malformed */ }
+              } catch (e) { /* ignore */ }
             }
           });
           this._wsRecords = parsed;
@@ -3052,10 +2926,8 @@
         const f = t.fields.find(x => x.k === inp.dataset.k);
         if (!f) return;
         const v = (inp.value || '').trim();
-        const fileInp = this.wsFields.querySelector('[data-file-for="' + f.k + '"]');
-        const hasFile = fileInp && fileInp.files && fileInp.files[0];
-        if (f.req && !v && !hasFile) {
-          missing.push(f.l);
+        if (f.req && !v) {
+          missing.push(f.l.replace(/\s*\(.*?\)\s*$/, ''));
           return;
         }
         if (!v) return;
@@ -3068,14 +2940,13 @@
         return;
       }
 
-      // Upload any attached files to the 'documents' bucket first
       const fileInputs = Array.from(this.wsFields.querySelectorAll('input[type="file"][data-file-for]'));
       for (const fInp of fileInputs) {
         if (fInp.files && fInp.files[0]) {
           const file = fInp.files[0];
           const fieldKey = fInp.dataset.fileFor;
           msg.className = 'mp-msg';
-          msg.textContent = 'Uploading document (' + file.name + ')\u2026';
+          msg.textContent = 'Uploading file\u2026';
           const safeName = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
           const storagePath = 'leader_' + (this.ws.roleKey || 'general') + '/' + safeName;
           const isPdf = file.name.toLowerCase().endsWith('.pdf');
@@ -3086,7 +2957,7 @@
             });
           if (upErr) {
             msg.className = 'mp-msg err';
-            msg.textContent = 'File upload failed: ' + upErr.message;
+            msg.textContent = 'Upload failed: ' + upErr.message;
             return;
           }
           const { data: pubData } = this.supabase.storage.from('documents').getPublicUrl(storagePath);
@@ -3098,7 +2969,7 @@
 
       if (this.ws.committee) row.committee_name = this.ws.committee;
       msg.className = 'mp-msg';
-      msg.textContent = 'Saving record\u2026';
+      msg.textContent = 'Saving\u2026';
 
       let { error } = await this.supabase.from(this.ws.table).insert(row);
       if (error && /column .* does not exist|schema cache/i.test(error.message) && !/relation .* does not exist/i.test(error.message)) {
@@ -3109,7 +2980,6 @@
         error = retryRes.error;
       }
       if (error && /does not exist|schema cache|relation/i.test(error.message) && this.ws.table !== 'leader_records') {
-        // Automatic fallback into leader_records if dedicated workspace table is not yet created
         const fbTitle = '[ws:' + this.ws.roleKey + ':' + tkey + '] ' + (t.title ? t.title(row) : tkey);
         const fbRes = await this.supabase.from('leader_records').insert({
           owner_id: this.profile.id,
@@ -3128,7 +2998,7 @@
       this.wsFields.querySelectorAll('input, textarea').forEach(i => { i.value = ''; });
       this.wsFields.querySelectorAll('select').forEach(s => { s.selectedIndex = 0; });
       msg.className = 'mp-msg ok';
-      msg.textContent = 'Record saved to ' + this.ws.shortName + ' workspace \u2713';
+      msg.textContent = 'Record saved.';
       this.loadLeaderWorkspace();
     }
 
@@ -3784,6 +3654,16 @@
       if (!box) return;
       const { data } = await this.supabase.from('profiles').select('*').eq('status', 'active').order('full_name');
       box.innerHTML = '';
+      if (!document.getElementById('mpKatibaTitles')) {
+        const dl = document.createElement('datalist');
+        dl.id = 'mpKatibaTitles';
+        MemberPortal.ROLE_POSITIONS.forEach(pos => {
+          const o = document.createElement('option');
+          o.value = pos.title;
+          dl.appendChild(o);
+        });
+        document.body.appendChild(dl);
+      }
       (data || []).forEach(m => {
         const row = document.createElement('div');
         row.className = 'mp-mrow';
@@ -3842,26 +3722,12 @@
         });
         row.appendChild(sel);
 
-        const posSel = document.createElement('select');
-        posSel.title = 'Assign Katiba Leadership Position (Ibara ya 11\u201316)';
-        const emptyOpt = document.createElement('option');
-        emptyOpt.value = '';
-        emptyOpt.textContent = '\u2014 Katiba Position (Ibara 11\u201316) \u2014';
-        posSel.appendChild(emptyOpt);
-        const matchedWs = MemberPortal.workspaceForProfile(m);
-        MemberPortal.ROLE_POSITIONS.forEach(pos => {
-          const o = document.createElement('option');
-          o.value = pos.title;
-          o.textContent = pos.label;
-          if (matchedWs && matchedWs.roleKey === pos.key) o.selected = true;
-          posSel.appendChild(o);
-        });
-
         const tit = document.createElement('input');
         tit.type = 'text';
         tit.className = 'mp-mtitle';
         tit.value = m.title || '';
-        tit.placeholder = 'Custom / Official Title';
+        tit.placeholder = 'Title (e.g. Treasurer, Secretary)';
+        tit.setAttribute('list', 'mpKatibaTitles');
         tit.maxLength = 60;
 
         const saveTitle = async val => {
@@ -3892,11 +3758,6 @@
           }
         };
 
-        posSel.addEventListener('change', () => {
-          tit.value = posSel.value;
-          saveTitle(posSel.value.trim());
-        });
-
         tit.addEventListener('change', () => saveTitle(tit.value.trim()));
 
         const saveBtn = document.createElement('button');
@@ -3908,7 +3769,6 @@
           saveBtn.textContent = 'Saved!';
           setTimeout(() => { saveBtn.textContent = 'Save'; }, 1500);
         });
-        row.appendChild(posSel);
         row.appendChild(tit);
         row.appendChild(saveBtn);
         row.appendChild(det);

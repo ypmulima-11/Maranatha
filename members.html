@@ -27,7 +27,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="maranatha.css?v=86">
 <link rel="stylesheet" href="ui.css?v=1">
-<link rel="stylesheet" href="members.css?v=39">
+<link rel="stylesheet" href="members.css?v=40">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <script src="supabase-config.js" defer></script>
 <script src="firebase-config.js" defer></script>
@@ -35,7 +35,7 @@
   <script src="qrcode.min.js" defer></script>
   <script src="ui.js?v=2" defer></script>
 <script src="maranatha.js?v=78" defer></script>
-<script src="members.js?v=38" defer></script>
+<script src="members.js?v=39" defer></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
@@ -577,9 +577,12 @@
 
               <!-- 7. Leader Resources -->
               <div class="mp-dash-panel" data-panel="leader-resources" hidden>
-                <div class="mp-card2 mp-card-wide" id="mpRoleMandateCard" hidden>
-                  <div class="lr-role-switcher" id="mpLeaderRoleSwitcher" hidden></div>
-                  <div id="mpRoleMandateContent"></div>
+                <div class="mp-card2 mp-card-wide" id="mpLeaderCard" hidden>
+                  <h2>
+                    <span id="lrResTitle" data-i18n="portal.lres">Leader resources</span>
+                    <span class="mp-badge leader" id="lrResBadge">Leader</span>
+                  </h2>
+                  <div class="mp-list" id="mpLeaderInfo"></div>
                 </div>
 
                 <div class="mp-card2 mp-card-wide" id="mpLeaderWork" hidden>
@@ -588,19 +591,11 @@
                     <span class="mp-badge leader" id="lrWorkBadge">Leader</span>
                   </h2>
                   <p class="mp-hint" id="lrHint">Your personal records for this leadership year — only you and the admins can see them.</p>
+                  <div id="mpLeaderRoleSwitcher" hidden></div>
                   <div class="lr-kpi-grid" id="lrSummaryGrid" hidden></div>
-                  <div class="lr-tabs" id="lrTypeTabs" role="tablist" aria-label="Workspace modules"></div>
                   <form class="mp-res-form" id="lrForm" novalidate></form>
-                  <div class="lr-filter-bar" id="lrFilterBar" hidden></div>
+                  <h3 class="mp-sec" id="lrSavedHeading" hidden>Saved records</h3>
                   <div class="mp-list" id="lrList"></div>
-                </div>
-
-                <div class="mp-card2 mp-card-wide" id="mpLeaderCard" hidden>
-                  <h2>
-                    <span id="lrResTitle" data-i18n="portal.lres">Leader resources</span>
-                    <span class="mp-badge leader" id="lrResBadge">Leader</span>
-                  </h2>
-                  <div class="mp-list" id="mpLeaderInfo"></div>
                 </div>
 
                 <div class="mp-card2 mp-card-wide" id="mpPostCard" hidden>
@@ -741,16 +736,16 @@
                     <label class="mp-field"><span data-i18n="portal.shown">Shown to</span>
                       <select id="arAudience">
                         <option value="member" data-i18n="portal.all">All members</option>
-                        <option value="leader" data-i18n="portal.leaders">All Choir Leaders (Kamati Tendaji &amp; Kamati Ndogo)</option>
-                        <option value="leader:chairperson">Mwenyekiti (Chairperson — Ibara ya 11)</option>
-                        <option value="leader:choirmaster">Mwalimu wa Kwaya (Choir Master — Ibara ya 12)</option>
-                        <option value="leader:secretary">Katibu wa Kwaya (Secretary — Ibara ya 13)</option>
-                        <option value="leader:asst_secretary">Katibu Msaidizi (Assistant Secretary — Ibara ya 14)</option>
-                        <option value="leader:treasurer">Mtunza Hazina (Treasurer — Ibara ya 15)</option>
-                        <option value="leader:nidhamu">Kamati ya Nidhamu (Discipline — Ibara ya 16.1)</option>
-                        <option value="leader:liturujia">Kamati ya Liturujia (Liturgy — Ibara ya 16.2)</option>
-                        <option value="leader:media">Kamati ya Media (Media — Ibara ya 16.3)</option>
-                        <option value="leader:kijamii">Kamati ya Masuala ya Kijamii (Social — Ibara ya 16.4)</option>
+                        <option value="leader" data-i18n="portal.leaders">All leaders</option>
+                        <option value="leader:chairperson">Chairperson (Mwenyekiti)</option>
+                        <option value="leader:choirmaster">Choir Master (Mwalimu wa Kwaya)</option>
+                        <option value="leader:secretary">Secretary (Katibu wa Kwaya)</option>
+                        <option value="leader:asst_secretary">Assistant Secretary (Katibu Msaidizi)</option>
+                        <option value="leader:treasurer">Treasurer (Mtunza Hazina)</option>
+                        <option value="leader:nidhamu">Disciplinary Committee (Nidhamu)</option>
+                        <option value="leader:liturujia">Liturgy Committee (Liturujia)</option>
+                        <option value="leader:media">Media Committee (Media)</option>
+                        <option value="leader:kijamii">Social Welfare Committee (Kijamii)</option>
                         <option value="admin" data-i18n="portal.admins">Admins only</option>
                       </select>
                     </label>
